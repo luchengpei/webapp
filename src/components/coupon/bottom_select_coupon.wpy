@@ -1,0 +1,122 @@
+
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .pannel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background:  $bgColor;
+    transform: translateY(150%);
+    transition: all 0.4s ease;
+    z-index: 100001;
+    &.pannel-show {
+      transform: translateY(0);
+    }
+  }
+  .main {
+    width: 100%; // border: 1px solid red;
+    box-sizing: border-box;
+    .title {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background: #fff;
+      padding: 30rpx;
+      box-sizing: border-box;
+      .text-dis {
+        flex: 1;
+        text-align: center;
+        font-size: 28rpx;
+        color: #444444;
+      }
+      .img {
+        height: 40rpx;
+        width: 40rpx;
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .content{
+      height: 900rpx;
+      overflow-y: auto;
+    }
+  }
+</style>
+
+<template>
+  <view>
+    <MaskLayer :display.sync="display" @tap.user="close" />
+    <view class="pannel {{display ? 'pannel-show' : ''}}">
+      <view class="main">
+        <view class="title" >
+          <view class="text-dis">选择优惠券</view>
+          <view class="img" @tap="close">
+            <image src="http://static.laoganbu.cn//ic-close.png"></image> 
+          </view>
+        </view>
+        <view class="content" >
+          <!-- 优惠券 -->
+          <CouponPage :list.sync="list" status="buy" :select="selectData" @select.user="select" wx:if="{{list.length}}"></CouponPage>
+          <Empty :fixed="fixed" title="你没有可用的优惠券" subtitle="赶紧去领取优惠券喔" wx:if="{{list.length===0}}"></Empty>
+          <!--  -->
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+ import wepy from 'wepy'
+ import base from '@/mixins/base'
+ import MaskLayer from '@/components/common/mask_layer'
+ import CouponPage from '@/components/coupon/coupon_item'
+ import Empty from '@/components/common/empty'
+ export default class BottomSelectCoupon extends wepy.component {
+   props = {
+     display: {
+       default: '',
+       twoWay: true
+     },
+     list: { // 优惠券列表
+       default: []
+     },
+     selectData: {// 选择的数据
+       default: {},
+       twoWay: true
+     }
+   }
+   components = {
+     MaskLayer,
+     CouponPage,
+     Empty
+   }
+   mixins = [base]
+   data = {
+     fixed: false
+   }
+   computed = {}
+   methods = {
+     close() {
+       this.closePannel()
+     },
+     select(val) {
+       this.$emit('select', val)
+     }
+   };
+   async onLoad() {}
+    /**
+     * 关闭选项
+     */
+   closePannel() {
+     this.display = false
+     this.$apply()
+   }
+  }
+</script>
+
+
+  

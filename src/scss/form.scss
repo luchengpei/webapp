@@ -1,0 +1,62 @@
+  @import './common.scss';
+  .g-form {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    margin-bottom: 30rpx;
+    .g-form-item {
+      position: relative;
+      display: flex;
+      justify-content: left;
+      font-size: $fontSize2;
+      align-items: center;
+      margin: 0 30rpx;
+      &::after {
+        position: absolute;
+        content: '';
+        bottom: 0;
+        right: 0;
+        width: 710rpx;
+        height: 1rpx;
+        color: $borderColor;
+      }
+      .g-form-label {
+        .g-form-label__inner {
+          width: 140rpx;
+          height: 88rpx;
+          line-height: 88rpx;
+          text-align: justify;
+          color: $black;
+        }
+        .g-form-label__justify {
+          &::after {
+            width: 100%;
+            display: inline-block;
+            content: ''; //这三个都不可以少
+          }
+        }
+      }
+      .g-form-content {
+        display: flex;
+        .g-form-input {
+          flex: 1;
+          font-size: $fontSize2;
+          margin-left: 50rpx;
+          height: 88rpx;
+          line-height: 88rpx;
+        }
+        .g-form-content__inner {
+          margin-left: 50rpx;
+          font-size: $fontSize2;
+          color: #a5a5a5;
+        }
+        .g-form-input__code {
+          font-size: $fontSize2;
+          margin-left: 30rpx;
+          color: #a5a5a5;
+          height: 88rpx;
+          line-height: 88rpx;
+        }
+      }
+    }
+  }

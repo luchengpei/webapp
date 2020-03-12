@@ -1,0 +1,140 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .enterprise-list {
+    background: #ffffff;
+    .enterprise-list-item {
+      position: relative;
+      margin-left: 30rpx;
+      padding: 30rpx 30rpx 30rpx 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      >image {
+        width: 690rpx;
+        height: 240rpx;
+        border-radius: 10rpx;
+        margin-bottom: 22rpx;
+      }
+      >text {
+        font-size: $fontSize8;
+        color: $black;
+      }
+      .introduce {
+        width: 100%;
+        font-size: $fontSize4;
+        color: $gray;
+        margin-top: 6rpx;
+      }
+      .member-wrapper {
+        width: 100%;
+        .location {
+          font-size: $fontSize4;
+          color: $gray;
+          margin: 12rpx 0;
+        }
+        .member {
+          width: 110rpx;
+          height: 28rpx;
+          font-size: $fontSize5;
+          color: $subMainColor;
+          background-color: $mainColor;
+          border-radius: 6rpx;
+          text-align: center;
+          line-height: 28rpx;
+        }
+      }
+      .delete {
+        width: 120rpx;
+        height: 60rpx;
+        color: $subMainColor;
+        background: #f7564c;
+        line-height: 60rpx;
+        text-align: center;
+        border-radius: 6rpx;
+        font-size: $fontSize4;
+      }
+    }
+    .enterprise-list-item:after {
+      right: 0;
+      bottom: 1rpx;
+      content: ' ';
+      position: absolute;
+      width: 720rpx;
+      height: 1rpx;
+      background: #d7dbdf;
+    }
+    .enterprise-list-item:nth-last-child(1)::after {
+      width: 0;
+      height: 0;
+    }
+  }
+</style>
+
+<template>
+  <view class="enterprise-list">
+    <view class="enterprise-list-item" wx:for="{{listData}}" item="item">
+      <image src="{{item.backgroundPicture}}" @tap="sikpDetails('{{item.clanCompanyId}}')" mode="aspectFill"></image>
+      <text>{{item.companyName?item.companyName:''}}</text>
+      <view class="introduce">{{item.companyProfile}}</view>
+      <view class="member-wrapper">
+        <view class="location">地址：{{item.province}}{{item.city}}{{item.area}}{{item.address}}</view>
+        <view class="member" wx:if="{{ item.applyState=== 1 }}">企业会员</view>
+        <view class="member" wx:if="{{ item.applyState=== 0 }}">正在审核</view>
+        <view class="member" wx:if="{{ item.applyState=== 2 }}">审核驳回</view>
+      </view>
+      <view class="delete" wx:if="{{ type=== '2' }}" @tap="deleteIitem('{{item}}')">删除</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Tips from '@/utils/Tips'
+  import enterprise from '@/api/enterprise'
+  import base from '@/mixins/base'
+  export default class EnterpriseList extends wepy.page {
+    mixins = [base]
+    props = {
+      type: {
+        default: '1'
+      },
+      listData: {
+        default: []
+      }
+    }
+    components = {}
+    watch = {}
+    data = {}
+    onLoad() {}
+    onShow() {}
+    methods = {
+      init() {
+        console.log(this.listData)
+        this.$apply()
+      },
+      deleteIitem(item) {
+        let prmams = {
+          objectType: 7,
+          isCollection: 1,
+          informationId: item.clanCompanyId
+        }
+        this.addOrCloeCollection(prmams)
+        this.$emit('upDate', '')
+      },
+      sikpDetails(clanCompanyId) {
+        wepy.navigateTo({
+          url: `/pages/enterprise/details?clanCompanyId=${clanCompanyId}`
+        })
+      }
+    }
+    // 收藏
+    async addOrCloeCollection(prmams) {
+      try {
+        await enterprise.addOrCloeCollection(prmams)
+        Tips.success('取消收藏成功')
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+</script>

@@ -1,0 +1,161 @@
+<style lang="scss" scoped>
+  @import '../../scss/common.scss';
+  .my-wallet {
+    width: 100%;
+    height: 100%;
+    background-color: $bgColor;
+    .able {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background-color: #fff;
+      padding: 48rpx 30rpx;
+      box-sizing: border-box;
+      margin-bottom: 30rpx;
+      .balance {
+        font-size: $fontSize3;
+        color: $gray;
+      }
+      .number {
+        font-size: 72rpx;
+        margin-top: 10rpx;
+        color: $mainColor;
+      }
+      .withdrawal-btn {
+        padding: 10rpx 52rpx;
+        margin-top: 30rpx;
+        background: $mainColor;
+        font-size: $fontSize3;
+        color: #fff;
+        border-radius: 10rpx;
+      }
+    }
+    .cell-list {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      .cell {
+        position: relative;
+        display: flex;
+        height: 88rpx;
+        justify-content: space-between;
+        align-items: center;
+        font-size: $fontSize2;
+        margin: 0 30rpx;
+        &:last-child{
+          &::after {
+            height: 0;
+          }
+        }
+        &::after {
+          position: absolute;
+          content: '';
+          bottom: 0;
+          right: 0;
+          height: 1rpx;
+          width: 720rpx;
+          background: $borderColor;
+        }
+        .cell-title {
+          color: $black;
+        }
+        .cell-value {
+          flex: 1;
+          text-align: right;
+          margin-right: 10rpx;
+          color: $gray;
+          &.not-bind {
+            color:#F76260;
+          }
+        }
+        .cell-right-arrow {
+          color: $gray;
+        }
+
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="my-wallet" style="{{configStyle}}">
+    <view class="able">
+      <view class="balance">可提现余额(元)</view>
+      <view class="number">{{wallet.availableAccount || '0.00'}}</view>
+      <view class="withdrawal-btn" @tap="toWithdrawal">提现</view>
+    </view>
+    <view class="cell-list">
+      <view class="cell" hover-class="g-hover" @tap="navigateTo({{item}})" wx:for="{{pannelList}}" wx:key="{{index}}">
+        <view class="cell-title">{{item.title}}</view>
+        <view class="cell-value {{!wallet.isBind ? 'not-bind' : ''}}" wx:if="{{item.type === 'bankcard'}}">
+          {{!wallet.isBind ? '未认证' : wallet.cardText}}
+        </view>
+        <i class="iconfont icon-arrow cell-right-arrow"></i>
+      </view>
+      <!-- <repeat for="{{pannelList}}" key="index" index="index" item="item">
+        <SimplePannelList :list.sync="item" />
+      </repeat> -->
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import wallet from '@/api/wallet'
+  import Tips from '@/utils/Tips'
+  import SimplePannelList from '@/components/mine/simple_pannel_list'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  export default class MyWallet extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的收益'
+    }
+    components = {
+      SimplePannelList
+    }
+    data = {
+      wallet: {},
+      pannelList: [
+        {
+          title: '实名认证',
+          url: '/pages/bank/card',
+          type: 'bankcard'
+        }, {
+          title: '账单明细',
+          url: '/pages/mine/money_detial'
+        }, {
+          title: '佣金明细',
+          url: '/pages/dis/commission'
+        }]
+    }
+    mixins = [base, router]
+    // 获取收益金额
+    async getWalletNum() {
+      this.wallet = await wallet.walletNum()
+      console.log('www', this.wallet)
+      this.$apply()
+    }
+    methods = {
+      navigateTo(item) {
+        if (item.type === 'bankcard' && !this.wallet.isBind) {
+          this._routerTo('/pages/bank/bind_card')
+          return
+        }
+        this._routerTo(item.url)
+      },
+      toWithdrawal() {
+        if (!this.wallet.isBind) {
+          Tips.toast('请先去实名认证', null, 'none')
+          return
+        }
+        this._routerTo('/pages/mine/withdrawal')
+      }
+    }
+    onLoad() {}
+    onRoute() {
+      this.getWalletNum()
+    }
+}
+</script>

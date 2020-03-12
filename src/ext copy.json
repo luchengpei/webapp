@@ -1,0 +1,83 @@
+{
+  "extEnable": false,
+  "extAppid": "wx9eefd0959b4cf9ac",
+  "directCommit": false,
+  "ext": {
+    "platformAppId": "bonaS14FY5KJII7U59U717",
+    "companyId": 536,
+    "color": {
+      "mainColor": "#4CEDC7",
+      "secondaryColor": "#4CEDC7"
+    },
+    "homeConfiguration": [
+      {
+        "controlName": "SearchModule"
+      },
+      {
+        "controlName": "CarouselMap"
+      },
+      {
+        "controlName": "ShopNavigation",
+        "list": [
+          {
+            "image": "/images/navigate_fanxian.png",
+            "link": "/pages/goods/cash_back",
+            "name": "返现优品"
+          },
+          {
+            "image": "/images/navigate_activity.png",
+            "link": "/pages/news/list",
+            "name": "实时资讯"
+          }
+        ]
+      },
+      {
+        "controlName": "ProductModule"
+      }
+    ],
+    "tabBar": {
+      "companyId": 536,
+      "color": "#E6EBAC",
+      "list": [
+        {
+          "selectedIconPath": "https://static.laoganbu.cn/20190716/67ff898fca03477da300c6d0eb7a5a8e.png",
+          "text": "首页",
+          "iconPath": "https://static.laoganbu.cn/20190716/df64abc60ba3473c85f3d3d53d6e93de.jpeg",
+          "pagePath": "pages/index",
+          "pageName": "首页"
+        },
+        {
+          "selectedIconPath": "https://static.laoganbu.cn/20190716/1783caeab2df4e93985fc4e20d30710e.png",
+          "text": "偶读",
+          "iconPath": "https://static.laoganbu.cn/20190716/fd5d30aad83046b5916d655e142f427b.png",
+          "pagePath": "pages/mine",
+          "pageName": "我的"
+        }
+      ],
+      "selectedColor": "#56D2EB",
+      "projectId": 653
+    },
+    "projectId": 653
+  },
+  "window": {
+    "navigationBarBackgroundColor": "#4CEDC7"
+  },
+  "tabBar": {
+    "companyId": 536,
+    "color": "#E6EBAC",
+    "list": [
+      {
+        "text": "首页",
+        "pagePath": "pages/index",
+        "pageName": "首页"
+      },
+      {
+        "text": "偶读",
+        "pagePath": "pages/mine",
+        "pageName": "我的"
+      }
+    ],
+    "selectedColor": "#56D2EB",
+    "projectId": 653
+  }
+}

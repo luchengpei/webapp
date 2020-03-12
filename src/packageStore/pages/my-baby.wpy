@@ -1,0 +1,239 @@
+<style lang='scss' scoped>
+@import '../../scss/common';
+.mod-baby {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 120rpx;
+  .baby-wrap {
+    padding: 0rpx 20rpx;
+    margin-top: 26rpx;
+    .baby-info {
+      box-sizing: border-box;
+      overflow: hidden;
+      height: 160rpx;
+      border-radius: 10rpx;
+      background-color: #fff;
+      padding: 0 30rpx;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .baby-img {
+        display: flex;
+        justify-items: flex-start;
+        .cover {
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+        }
+        .baby-text {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+          margin-left: 30rpx;
+          .baby-name {
+            font-size: $fontSize2;
+            color: $black;
+          }
+          .baby-age {
+            color: $gray;
+            font-size: $fontSize4;
+          }
+        }
+        .baby-authentication {
+          width: 120rpx;
+          height: 28rpx;
+          background-color: $mainColor;
+
+          margin: 12rpx 0 0 34rpx;
+          font-size: 20rpx;
+          color: #ffffff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5rpx;
+        }
+        .no-authentication {
+          background: rgba(153, 153, 153, 1);
+        }
+      }
+      .baby-btn {
+        position: relative;
+        width: 120rpx;
+        height: 60rpx;
+        color: #ffffff;
+        background-color: #f7564c;
+        border-radius: 6rpx;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: $fontSize4;
+      }
+    }
+  }
+  .add-baby-wrap {
+    width: 100%;
+    position: fixed;
+    background-color: #fff;
+    left: 0;
+    bottom: 0;
+    .add-baby {
+      width: 100%;
+      height: 92rpx;
+      background-color: $mainColor;
+      font-size: $fontSize3;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  #iphone-x-pb {
+    padding-bottom: 66rpx;
+  }
+}
+#mod-baby-iphonex {
+  padding-bottom: 186rpx;
+}
+</style>
+
+<template>
+  <view
+    class="mod-baby"
+    style="{{configStyle}}"
+    id="{{isIphoneX ? 'mod-baby-iphonex' : ''}}"
+  >
+    <view
+      class="baby-wrap"
+      wx:if="{{dataList.length!==0}}"
+      wx:for="{{dataList}}"
+      wx:key="{{index}}"
+      wx:for-item="item"
+      bindtap="routerTo('/packageStore/pages/add-baby?babyId={{item.babyId}}')"
+    >
+      <view class="baby-info">
+        <view class="baby-img">
+          <image
+            class="cover"
+            src="{{item.babyPortrait}}"
+            mode="aspectFill"
+          />
+          <view class="baby-text">
+            <view class="baby-name">{{item.babyName}}</view>
+            <view class="baby-age">{{item.babySex == 1 ? '男' : item.babySex == 2 ? '女' : '暂无'}}</view>
+
+          </view>
+          <view class="baby-authentication {{item.isAuth ? '' : 'no-authentication'}}">{{item.isAuth ? '已认证' : '未认证'}}</view>
+
+        </view>
+
+        <view
+          class="baby-btn"
+          catchtap="confirm({{item.babyId}})"
+        >
+          删除
+        </view>
+      </view>
+    </view>
+    <Empty
+      fixed="true"
+      title="暂无宝贝"
+      subtitle=""
+      wx:if="{{dataList.length===0}}"
+    ></Empty>
+    <view
+      class="add-baby-wrap"
+      id="{{isIphoneX ? 'iphone-x-pb' : ''}}"
+    >
+      <view
+        class="add-baby"
+        @tap="routerTo('/packageStore/pages/add-baby')"
+      >
+        + 添加宝贝
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import nRouter from '@/mixins/new_router'
+import Router from '@/mixins/router'
+import Tips from '@/utils/Tips'
+import pagination from '@/mixins/pagination'
+import Empty from '@/components/common/empty'
+import store from '@/api/store'
+export default class Commission extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的宝贝'
+  }
+  mixins = [base, nRouter, pagination, Router]
+  data = {
+    isIphoneX: false,
+    tableType: 'commission',
+    header: ['返佣人', '返佣金额'],
+    withdrawableAmount: 0,
+    cumulativeAmount: 0,
+    accountingAmount: 0,
+    yesterDayAmount: 0,
+    dataList: []
+  }
+  components = {
+    Empty
+  }
+  methods = {
+    async confirm(params) {
+      let selectBaby = wepy.getStorageSync('selectBaby') || []
+      let index = selectBaby.findIndex(row => {
+        if(!row.babyId) return -1
+        return row.babyId === params
+      })
+      if(index!==-1) selectBaby.splice(index, 1)
+      wepy.setStorageSync('selectBaby', selectBaby)
+      Tips.confirm('确定要删除宝贝吗？').then(() => {
+        store.deleteBaby(params)
+        Tips.success('删除成功')
+        this.getList()
+        this.$apply()
+      })
+    }
+  }
+
+  // async onLoad(options) {
+  //   this.getList()
+  //   this.$apply()
+  // }
+
+  onShow() {
+    this.isIphoneX = wepy.getStorageSync('isIpx')
+    this.getList()
+    this.$apply()
+  }
+  async getList() {
+    const data = await store.babyList()
+    this.page = data
+    await this.next()
+    this.dataList = this.page.list
+
+    this.$apply()
+    console.log(this.dataList, 'data')
+  }
+  // 列表传参
+  params() {
+    return {}
+  }
+  // 上拉加载
+  async onReachBottom() {
+    await this.next()
+    this.dataList = this.page.list
+    this.$apply()
+  }
+  // 下拉刷新
+  async onPullDownRefresh() {
+    this.dataList = this.page.list
+    await this.reload()
+  }
+}
+</script>

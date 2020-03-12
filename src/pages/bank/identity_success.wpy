@@ -1,0 +1,58 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .identity-success-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 180rpx 30rpx 0 30rpx;
+
+    .iconfont {
+      color: $mainColor;
+      font-size: 180rpx;
+      margin-bottom: 40rpx;
+    }
+    .success-title {
+      font-size: 32rpx;
+      color: $black;
+      margin-bottom: 180rpx;
+    }
+    
+  }
+</style>
+
+<template>
+  <view class="identity-success-wrap" style="{{configStyle}}">
+    <i class="iconfont icon-info_kick"></i>
+    <view class="success-title">认证成功</view>
+    <view class="g-button" @tap="goCard">查看我的认证信息</view>
+    <view class="g-button g-button__normal" @tap="goBack">返回</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  export default class IdentitySuccess extends wepy.page {
+    config = {
+      navigationBarTitleText: '认证成功'
+    }
+    components = {};
+    data = {
+    }
+    mixins = [base, router];
+    methods = {
+      goCard() {
+        wx.redirectTo({ url: '/pages/bank/card' })
+      },
+      goBack() {
+        wx.navigateBack({
+          delta: 1
+        })
+      }
+    }
+    onLoad(options, data) {
+  
+    }
+  }
+</script>

@@ -1,0 +1,62 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+</style>
+
+<template>
+  <Panel :title.sync="title">
+    <view slot="content">
+      <GoodsList :list.sync="list" mode="index" />
+    </view>
+  </Panel>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import pagination from '@/mixins/pagination'
+  import goods from '@/api/goods'
+  import Panel from '@/components/index/panel'
+  import GoodsList from '@/components/goods/goods_list'
+  
+  export default class GoodsPanel extends wepy.component {
+    mixins = [base, pagination]
+    props = {
+    };
+    data = {
+      title: '热卖',
+      list: []  // 商品列表
+    }
+    components = {
+      Panel,
+      GoodsList
+    }
+    methods = {
+      // 初始化
+      init(data) {
+        console.log('goods init', data)
+        this.title = data.title
+        this.initGoods()
+      }
+    };
+    onLoad() {}
+    // 获取商品列表
+    async initGoods() {
+      this.page = goods.indexGoods()
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+    // 触底加载下一页
+    async handleOnReachBottom() {
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+    // 参数
+    params() {
+      return {
+        type: 1 // 1 热销 0 发现
+      }
+    }
+  }
+</script>

@@ -1,0 +1,91 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .enterprise_profile {
+    padding-bottom: 68rpx;
+  }
+  .textarea-wrap {
+    margin-top: 30rpx;
+    width: 100%;
+    padding: 30rpx 20rpx;
+    background: $subMainColor;
+    >textarea {
+      font-size: $fontSize2;
+      overflow: auto;
+      color: #a5a5a5;
+      min-height: 170rpx;
+      width: 690rpx;
+    }
+  }
+  .bottom {
+    height: 92rpx;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    flex: 1;
+    text-align: center;
+    background: #159dfc;
+    color: #ffffff;
+    line-height: 92rpx;
+    font-size: $fontSize3;
+  }
+</style>
+
+<template>
+  <view class="enterprise_profile">
+    <view class="textarea-wrap">
+      <textarea auto-height @input="bindTextAreaBlur" maxlength="500" value='{{textareaData}}' placeholder="{{placeholder}}" placeholder-class="g-placeholder" />
+    </view>
+    <view class="bottom" @tap="back">
+      保存
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class EnterpriseProfile extends wepy.page {
+    config = {
+      navigationBarTitleText: '自我介绍'
+    }
+    mixins = [base]
+    props = ['type']
+    components = {}
+    data = {
+      typeSkip: '',
+      isAdd: true,
+      placeholder: '',
+      textareaData: ''
+    }
+    onLoad(option) {
+      this.typeSkip = option.typeSkip
+      if (this.typeSkip === 'HomeTextarea') {
+        wx.setNavigationBarTitle({
+          title: '自我介绍'
+        })
+        this.placeholder = '请输入自我介绍'
+      } else if (this.typeSkip === 'quickTextarea') {
+        wx.setNavigationBarTitle({
+          title: '业务介绍'
+        })
+        this.placeholder = '请输入业务介绍'
+      }
+      this.textareaData = wepy.getStorageSync(option.typeSkip)
+      this.$apply()
+    }
+    onShow() {}
+    methods = {
+      bindTextAreaBlur(e) {
+        this.textareaData = e.detail.value
+        this.$apply()
+      },
+      back() {
+        wepy.setStorageSync(this.typeSkip, this.textareaData)
+        wepy.navigateBack({
+          delta: 1
+        })
+      }
+    }
+  }
+</script>

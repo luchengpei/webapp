@@ -1,0 +1,177 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .store{
+    overflow-x: hidden;
+  }
+  .bottom {
+    width: 100%;
+    position: fixed;
+    z-index: 2000;
+    bottom: 0;
+    button{
+      background: $mainColor;
+      color: #fff;
+      border: 1rpx solid $mainColor;
+    }
+  }
+  // 
+  .show-main{
+    display: flex;
+    align-items: center;
+    font-size: $fontSize2;
+    padding: 30rpx;
+    box-sizing: border-box;
+    .left{
+      width: 150rpx;
+      height: 150rpx;
+      border-radius: 12rpx;
+      overflow: hidden;
+      // border: 1px solid red;
+      image{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .right{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-left: 30rpx;
+      // border: 1px solid green;
+      box-sizing: border-box;
+      .title{
+        width: 100%;
+        overflow: hidden;
+        //  border: 1px solid green;
+      }
+      .tip{
+        display: flex;
+         width: 100%;
+        //  border: 1px solid green;
+         .text{
+           width: 60rpx;
+           height: 30rpx;
+           line-height: 30rpx;
+           text-align: center;
+           margin-left: 10rpx;
+           background: #3CC27E;
+           border-radius: 10rpx;
+           color: #fff;
+           font-size: $fontSize5;
+         }
+      }
+      .money{
+         width: 100%;
+         color: #F11717;
+        //  border: 1px solid green;
+      }
+    }
+
+  }
+</style>
+
+<template>
+  <view class="store" style="{{configStyle}}">
+    <view class="main">
+       <Empty wx:if="{{list.length===0}}" title="暂无数据喔" subtitle="快去商城添加吧"></Empty>
+        <repeat for="{{list}}" key="index" index="index" item="item">
+          <SwiperDelete :swipeData.sync="item" :index="index" :stopAnimate.sync="stopAnimate" @delItem.user="deleteCart">
+           <view class="show-main" @tap="goInfo({{item}})" style="{{index===0?'':'margin-top:30rpx'}}">
+              <view class="left">
+                <image src="{{imageUrl}}{{item.productThumbnail}}"></image>
+              </view>
+              <view class="right">
+                <view class="title">{{item.productName}}</view>
+
+                <view class="tip" wx:if="{{item.isPutOn}}">
+                  <view class="text" >上架</view>
+                </view>
+
+                <view class="tip"  wx:if="{{!item.isPutOn}}">
+                  <view class="text" style="background:#c2c2c2;">失效</view>
+                </view>
+
+                <view class="money">￥{{item.productPrice}}</view>
+              </view>
+            </view>
+          </SwiperDelete>
+      </repeat>
+    </view>
+    <view>
+      <view class="bottom">
+        <button type="primary" open-type="share"  @tap="share">立即分享</button>
+      </view>
+    </view>
+  </view> 
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import SwiperDelete from '@/components/common/swiper_delete'
+  import Empty from '@/components/common/empty'
+  import newRouter from '@/mixins/new_router'
+  import pagination from '@/mixins/pagination'
+  import tips from '@/utils/Tips'
+  import base from '@/mixins/base'
+  import mine from '@/api/mine'
+  export default class Store extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的店铺',
+      enablePullDownRefresh: true
+    }
+    components = {
+      SwiperDelete,
+      Empty
+    }
+    data = {
+      stopAnimate: false,
+      list: []
+    }
+    methods = {
+      // 删除
+      async deleteCart(val) {
+        let userBrandId = val.userBrandId
+        await tips.confirm('是否删除')
+        this.delHttp({userBrandId}).then(res => {
+          tips.success('删除成功')
+        })
+        this.$apply()
+      },
+      // 前往详情
+      goInfo(val) {
+        this._goRouter('/pages/goods/detail', {id: val.productId})
+      },
+      // 分享
+      share() {}
+    }
+    mixins = [newRouter, pagination, base]
+    // 删除
+    async delHttp(query) {
+      await mine.delStoreList(query)
+      await this.getData()
+    }
+    // 获取列表
+    async getData() {
+      this.page = await mine.storeList()
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+      // 到达底部
+    async onReachBottom () {
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+     // 下拉刷新
+    async onPullDownRefresh () {
+      await this.reload()
+      this.list = this.page.list
+      this.$apply()
+    }
+    onLoad() {
+      this.getData()
+    }
+  }
+</script>

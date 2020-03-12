@@ -1,0 +1,250 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+  .scroll-wrapper {
+    
+  }
+  .left-list {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 160rpx;
+    .left-scroll {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      height: 100%;
+      width: 100%;
+      background: #efeff4;
+    }
+  }
+  .right-content {
+    position: absolute;
+    left: 160rpx;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    height: 100%;
+    .right-scroll {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      height: 100%;
+      width: 100%;
+      background: #f7f7fa;
+    }
+  }
+  .class-list {
+    .item {
+      height: 100rpx;
+      line-height: 100rpx;
+      text-align: center;
+      font-size: 30rpx;
+      color: #111111;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      &.current {
+        background: #fff;
+        color: $mainColor;
+      }
+    }
+  }
+  .class-goods {
+    padding: 0 20rpx;
+    .class-title {
+      position: relative;
+      font-size: 30rpx;
+      height: 100rpx;
+      line-height: 100rpx;
+      padding-left: 42rpx;
+      color: #333;
+      &::before {
+        position: absolute;
+        top: 50%;
+        left: 20rpx;
+        display: inline-block;
+        content: '';
+        width: 6rpx;
+        height: 32rpx;
+        background: $mainColor;
+        margin-top: -15rpx;
+      }
+    }
+    .goods-list {
+      .goods-item {
+        display: inline-block;
+        text-align: center;
+        width: 140rpx;
+        margin: 0 20rpx 30rpx;
+        &.goods-item-hover {
+          .goods-pic {
+            border-radius: 8rpx;
+            transform: scale(0.9, 0.9);
+            transition: transform 0.2s;
+          }
+        }
+      }
+      .goods-pic {
+        width: 140rpx;
+        height: 140rpx;
+        border-radius: 8rpx;
+      }
+      .goods-name {
+        height: 50rpx;
+        line-height: 50rpx;
+        color: #111111;
+        font-size: 24rpx;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="classify-container" style="{{configStyle}}">
+      <view class="left-list">
+        <scroll-view scroll-y class="left-scroll">
+          <view class="class-list">
+            <block wx:for="{{categories}}" wx:for-item="item" wx:for-index="index" wx:key="index">
+              <view class="item {{curClass === index ? 'current' : ''}}" @tap="changeClass({{index}})">
+                {{item.productCategoryName}}
+              </view>
+            </block>
+          </view>
+        </scroll-view>
+      </view>
+      <view class="right-content" id="right">
+        <scroll-view bindscroll="scroll" scroll-y class="right-scroll" scroll-with-animation="{{withAni}}" scroll-into-view="{{curView}}">
+          <view class="class-goods" wx:for="{{categories}}" wx:for-item="item" wx:for-index="index" id="c{{index}}" wx:key="index">
+            <view class="class-title">{{item.productCategoryName}}</view>
+            <view class="goods-list">
+              <view class="goods-item" hover-class="goods-item-hover" hover-stop-propagation="{{false}}" hover-start-time="{{0}}" wx:for="{{item.childCategoryList}}"  wx:for-item="citem" wx:for-index="cindex" wx:key="cindex" @tap="routerTo('/pages/goods_list?c={{citem.productCategoryId}}')">
+                <image src="{{citem.productCategoryImg}}" class="goods-pic"></image>
+                <view class="goods-name">{{citem.productCategoryName}}</view>
+              </view>
+            </view>
+          </view>
+          <!-- <view hover-class="{{}}" hover-stop-propagation="{{}}" hover-start-time="{{}}" hover-stay-time="{{}}" @tap="">
+              {{}}
+            </view> -->
+        </scroll-view>
+      </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import goods from '@/api/goods'
+  import router from '@/mixins/router'
+  export default class ClassifyPage extends wepy.page {
+    config = {
+      navigationBarTitleText: '分类'
+    }
+    mixins = [base, router]
+    data = {
+      firstLoading: true,
+      nodes: [],
+      categories: [],
+      curClass: 0,
+      curView: 'c0',
+      withAni: true,
+      rightScrollHeight: 0,
+      maxScrollHeight: 0,
+      disableListen: false // 左侧点击切换执行动画期间不监听滚动
+    }
+    methods = {
+      scroll(e) {
+        if (!this.disableListen) {
+          let top = e.detail.scrollTop
+          let index = 0
+          for (let i = this.nodes.length - 1; i > 0; i--) {
+            if (top >= this.nodes[i].top) {
+              index = i
+              break
+            }
+          }
+          if (this.curClass !== index) {
+            this.curClass = index
+          }
+        }
+      },
+      changeClass(index) {
+        this.curClass = index
+        this.curView = this.nodes[index].id
+        this.disableListen = true
+        setTimeout(() => {
+          this.disableListen = false
+          this.$apply()
+        }, 400)
+      }
+    }
+    onLoad() {
+      this.getLists(true)
+      if (!this.firstLoading) return
+      this.firstLoading = false
+    }
+    // 获取分类数据
+    async getLists(reload = false) {
+      if (!reload && wepy.getStorageSync('categories' + wepy.getStorageSync('pid'))) {
+        this.categories = wepy.getStorageSync('categories' + wepy.getStorageSync('pid'))
+      } else {
+        this.loginCatch(async() => {
+          this.categories = await goods.categories()
+          wepy.setStorageSync('categories' + wepy.getStorageSync('pid'), this.categories)
+          this.$apply()
+        }, () => {
+          this.getLists(reload)
+        })
+      }
+      this.$apply()
+      this.autoListInit()
+    }
+    // 列表自移动初始化
+    autoListInit() {
+      let self = this
+      // 获取列表位置数组
+      let query = wx.createSelectorQuery()
+      query.selectAll('.class-goods').boundingClientRect()
+      setTimeout(() => {
+        query.exec(function(res) {
+          self.nodes = res[0]
+          self.$apply()
+        })
+      }, 500)
+      // 获取scroll-view高度（一屏）
+      let query2 = wx.createSelectorQuery()
+      query2.select('.right-scroll').boundingClientRect()
+      setTimeout(() => {
+        query2.exec(function(res) {
+          self.rightScrollHeight = res[0].height
+          self.$apply()
+        })
+      }, 500)
+    }
+    /**
+     * 监听上拉加载事件
+     */
+    async onReachBottom() {}
+    /**
+     * 监听下拉刷新
+     */
+    async onPullDownRefresh() {
+      await this.getLists(true)
+    }
+    /**
+     * 回到页面事件
+     */
+    onRoute() { }
+  }
+</script>

@@ -1,0 +1,57 @@
+<style lang="scss">
+  @import '../../scss/common';
+  .protocol-wrap {
+    padding: 20rpx 30rpx 0 30rpx;
+    font-size: 30rpx;
+    color: $black;
+    // text-indent: 48rpx;
+  }
+</style>
+
+<template>
+  <view class="protocol-wrap">
+    <import src="../../components/wxparse/wxParse.wxml" />
+    <Html2wxml :parserName="name" :parserContent.sync="introduction"></Html2wxml>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Html2wxml from '@/components/common/html2wxml'
+  import base from '@/mixins/base'
+  import mine from '@/api/mine'
+  export default class Protocol extends wepy.page {
+    config = {
+      navigationBarTitleText: ''
+    }
+    data = {
+      introduction: [],
+      type: '',
+      typeMap: {
+        1: '用户协议',
+        3: '隐私协议',
+        4: '软件协议',
+        5: '谱书',
+        6: '协会介绍'
+      }
+    }
+    components = {
+      Html2wxml
+    }
+    mixins = [base]
+    methods = {}
+    async getProtocol() {
+      let res = await mine.getProtocol({
+        type: this.type
+      })
+      wx.setNavigationBarTitle({ title: this.typeMap[+this.type] || '单页文档' })
+      this.introduction = res.content
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    onLoad(options) {
+      this.type = options.type || ''
+      this.getProtocol()
+    }
+  }
+</script>

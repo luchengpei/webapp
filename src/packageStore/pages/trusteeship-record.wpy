@@ -1,0 +1,247 @@
+<style lang='scss' scoped>
+@import '../../scss/common';
+.mod-baby {
+  width: 100%;
+  height: 100%;
+  margin-top: 30rpx;
+  .platform-content {
+    width: 100%;
+    .message-list {
+      width: 100%;
+      height: 200rpx;
+      background-color: #fff;
+      .center {
+        width: 100%;
+        height: 100%;
+        padding: 0rpx 30rpx 0rpx 40rpx;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        .left-img {
+          width: 100rpx;
+          height: 100rpx;
+          margin-top: 36rpx;
+          margin-right: 24rpx;
+          image {
+            width: 100rpx;
+            height: 100rpx;
+            border-radius: 50%;
+          }
+        }
+        .middle-text {
+          width: 430rpx;
+          margin-right: 64rpx;
+          .title {
+            color: #444;
+            font-size: $fontSize2;
+            margin-top: 44rpx;
+            margin-bottom: 15rpx;
+            display: inline-block;
+          }
+          .status {
+            width: 100rpx;
+            height: 28rpx;
+            border-radius: 5rpx;
+            font-size: 20rpx;
+            background-color: #096649;
+            color: #fff;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            vertical-align: 4rpx;
+            margin-left: 26rpx;
+          }
+          .time {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 15rpx;
+            font-size: $fontSize4;
+            color: #999999;
+          }
+        }
+        .without-red-point {
+          margin-right: 90rpx;
+        }
+        .right {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .gt {
+            width: 26rpx;
+            height: 26rpx;
+            margin-left: 24rpx;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaaaaa;
+          }
+        }
+      }
+      .last:after {
+        display: none;
+      }
+      .center:after {
+        position: absolute;
+        left: 40rpx;
+        right: 0rpx;
+        bottom: 0rpx;
+        content: '';
+        border-bottom: 1rpx solid $borderColor;
+      }
+    }
+  }
+}
+</style>
+
+<template>
+  <view
+    class="mod-baby"
+    style="{{configStyle}}"
+  >
+    <view
+      class="platform-content"
+      wx:if="{{dataList.length}}"
+    >
+      <repeat
+        for="{{dataList}}"
+        key="index"
+        index="index"
+        item="item"
+      >
+        <view
+          class="message-list"
+          @tap="routerTo('/packageStore/pages/trusteeship-detail?depositId={{item.depositId}}')"
+        >
+          <view class="{{dataList.length-1 === index ? 'center last':'center'}}">
+            <view class="left-img">
+              <image src='{{item.babyPortrait}}' />
+            </view>
+            <view class="middle-text">
+              <view class="title">{{item.babyName}}</view>
+              <view
+                class="status"
+                style="background:{{colorMap[item.depositType]}}"
+              >{{typeMap[item.depositType]}}</view>
+              <!-- 预约时间 -->
+              <view
+                class="time"
+                wx:if='{{item.depositType === 1 || item.depositType=== 4 || item.depositType === 5}}'
+              >{{item.timeSlot}}</view>
+              <!-- 托管中 -->
+              <view
+                class="time"
+                wx:if='{{item.depositType === 2}}'
+              >{{item.timeSlot}}</view>
+              <!-- 已完成 -->
+              <view
+                class="time"
+                wx:if='{{item.depositType === 3}}'
+              >{{item.timeSlot}}</view>
+
+            </view>
+            <view class="right">
+              <view class="gt">
+                <i class="iconfont icon-arrow"></i>
+              </view>
+            </view>
+          </view>
+        </view>
+      </repeat>
+    </view>
+    <Empty
+      fixed="true"
+      title="暂无托管记录"
+      subtitle=""
+      wx:if="{{dataList.length===0}}"
+    ></Empty>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import nRouter from '@/mixins/new_router'
+import Router from '@/mixins/router'
+import Empty from '@/components/common/empty'
+import pagination from '@/mixins/pagination'
+import store from '@/api/store'
+export default class Commission extends wepy.page {
+  config = {
+    navigationBarTitleText: '托管记录'
+  }
+  mixins = [base, nRouter, pagination, Router]
+  data = {
+    isLately: 0, //  是否查询最近一个月
+    babyId: '',
+    typeMap: {
+      1: '已预约',
+      2: '托管中',
+      3: '已完成',
+      4: '已取消',
+      5: '已过期'
+    },
+    colorMap: {
+      1: '#1182A4',
+      2: '#096649',
+      3: '#004463',
+      4: '#999999',
+      5: '#999999'
+    },
+    dataList: [],
+    tableType: 'commission'
+  }
+  components = {
+    Empty
+  }
+  methods = {}
+
+  async onLoad(options) {
+    this.isLately = options.isLately || 0
+    this.babyId = options.babyId || ''
+    this.getDataList()
+    this.$apply()
+  }
+  onShow(options) {
+    this.getDataList()
+  }
+  init(){
+    this.isLately = 0
+    this.babyId = ''
+    this.$apply()
+  }
+  // onHide(){
+  //   console.log('页面隐藏了')
+  //   this.isLately = 0
+  //   this.babyId = ''
+  //   this.$apply()
+  // }
+  async getDataList() {
+    this.page = await store.trusteeshipList()
+    await this.next()
+    this.dataList = this.page.list
+    this.$apply()
+  }
+  // 列表传参
+  params() {
+    return {
+      isLately: this.isLately,
+      babyId: this.babyId
+    }
+  }
+  // 上拉加载
+  async onReachBottom() {
+    await this.next()
+    this.dataList = this.page.list
+    this.$apply()
+  }
+  // 下拉刷新
+  async onPullDownRefresh() {
+    await this.reload()
+    this.dataList = this.page.list
+    this.$apply()
+  }
+}
+</script>

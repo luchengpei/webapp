@@ -1,0 +1,84 @@
+<script>
+// 全局页面跳转各函数封装
+import wepy from 'wepy'
+export default class NewRouter extends wepy.mixin {
+  data = {
+    _getRouterQuery: '', // 路由参数
+    _routerSetTime: 10// 路由延迟时间
+  }
+  methods = {
+       // 图片浏览api
+    _toImgLook(data) {
+      let url = data
+      wx.previewImage({
+        urls: [url] // 需要预览的图片http链接列表
+      })
+    }
+  }
+  // 跳转新页面  val路径  query参数 参数为一个对象  type跳转类型 默认page
+  _goRouter(val, query = null, type = 'page') {
+    let url = ''
+    let newStr = ``
+    // 构造参数
+    if (query === null) {
+      url = val
+    }
+    if (query !== null) {
+      let str = ''
+      for (let v in query) {
+        str = str + `${v}=${query[v]}&`
+      }
+      newStr = `?${str.substring(0, str.length - 1)}` // 截取参数
+      url = val + newStr
+    }
+    if (type === 'page') { // 正常页面
+      setTimeout(() => {
+        wx.navigateTo({
+          url
+        })
+      }, this._routerSetTime)
+    }
+    if (type === 'tab') {  // 选项卡页面
+      setTimeout(() => {
+        wx.switchTab({
+          url: val
+        })
+      }, this._routerSetTime)
+    }
+  }
+  // 页面重定向
+  _redirectRouter(val, query = null) {
+    let url = ''
+    let newStr = ``
+    // 构造参数
+    if (query === null) {
+      url = val
+    }
+    if (query !== null) {
+      let str = ''
+      for (let v in query) {
+        str = str + `${v}=${query[v]}&`
+      }
+      newStr = `?${str.substring(0, str.length - 1)}` // 截取参数
+      url = val + newStr
+    }
+    setTimeout(() => {
+      wx.redirectTo({
+        url
+      })
+    }, this._routerSetTime)
+  }
+  // 页面返回
+  _routerBack(num = 1) {
+    setTimeout(() => {
+      wx.navigateBack({
+        delta: num
+      })
+    }, this._routerSetTime)
+  }
+  // 获取路由参数
+  onLoad(data) {
+    this._getRouterQuery = data
+  }
+}
+</script>

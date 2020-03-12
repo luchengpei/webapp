@@ -1,0 +1,103 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .orders-result-page-container {
+    width: 100%;
+    background: $mainColor;
+    padding: 20rpx 0 40rpx;
+    ;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .success {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    image {
+      width: 40rpx;
+      height: 40rpx;
+    }
+    text {
+      margin-left: 5rpx;
+      font-size: 48rpx;
+      color: #fff;
+    }
+  }
+  .price {
+    padding-top: 20rpx;
+    font-size: 28rpx;
+    color: #fff;
+  }
+  .btn-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 70rpx 130rpx 0;
+    .btn {
+      border: 1rpx solid #fff;
+      color: #fff;
+      font-size: 28rpx;
+      width: 200rpx;
+      height: 68rpx;
+      line-height: 68rpx;
+      border-radius: 34rpx;
+      text-align: center;
+    }
+  }
+</style>
+
+<template>
+  <view class="orders-result-page-container" style="{{configStyle}}">
+    <view class="success">
+      <image src="{{imageUrl}}/ic-pay-success.png" wx:if="{{imageUrl}}" />
+      <text>支付成功</text>
+    </view>
+    <view class="price">实付￥{{price}}</view>
+    <view class="btn-group">
+      <view class="btn" @tap="backIndex()">返回首页</view>
+      <view class="btn" @tap="redirect('/pages/order/list')" wx:if="{{mode === 'default'||mode === 'flash_sale'}}">查看订单</view>
+      <view class="btn" @tap="redirect('/pages/mine/cash_back')" wx:elif="{{mode === 'cash_back'}}">查看返现</view>
+      <view class="btn" @tap="redirect('/pages/mine/group')" wx:elif="{{mode === 'group_sale'}}">邀请拼团</view>
+      <view class="btn" @tap="back()" wx:elif="{{mode === 'member'}}">返回</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import pagination from '@/mixins/pagination'
+  import router from '@/mixins/router'
+  export default class OrderResult extends wepy.page {
+    config = {
+      navigationBarTitleText: '支付结果'
+    }
+    components = {};
+    data = {
+      price: '',
+      mode: 'default'
+    }
+    mixins = [base, router, pagination];
+    methods = {
+      backIndex() {
+        wepy.reLaunch({
+          url: '/pages/index?p=index'
+        })
+      },
+      redirect(page) {
+        wepy.redirectTo({ url: page })
+      },
+      back() {
+        wepy.navigateBack({delta: 1})
+      }
+    }
+    onLoad(options, data) {
+      this.price = options.price
+      this.mode = options.mode || 'default'
+      this.$apply()
+    }
+  }
+</script>

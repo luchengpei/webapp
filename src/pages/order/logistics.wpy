@@ -1,0 +1,53 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .order-logistics-page {
+    width: 100%;
+    display: flex;
+    background: $bgColor;
+  }
+  .step-list {
+    padding: 40rpx;
+    width: 100%;
+    background: #fff;
+  }
+</style>
+
+<template>
+  <view class="order-logistics-page" style="{{configStyle}}">
+    <view class="step-list" wx:if="{{steps}}">
+      <ZanSteps :steps.sync="steps" />
+    </view>
+    <Empty title="暂无物流信息" subtitle="" wx:else/>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import order from '@/api/order'
+  import Empty from '@/components/common/empty'
+  import ZanSteps from '@/components/zanui/steps'
+  import base from '@/mixins/base'
+  export default class OrderLogistics extends wepy.page {
+    config = {
+      navigationBarTitleText: '物流详情'
+    }
+    components = {
+      ZanSteps,
+      Empty
+    };
+    data = {
+      logistics: {},
+      steps: []
+    }
+    mixins = [base]
+    async onLoad(options) {
+      try {
+        this.logistics = await order.logistics(options.oid)
+        this.steps = this.logistics ? this.logistics : []
+      } catch (error) {
+        this.steps = false
+      }
+      this.$apply()
+    }
+  }
+</script>

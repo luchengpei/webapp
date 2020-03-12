@@ -1,0 +1,59 @@
+<style lang="scss" scoped>
+.page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+</style>
+<template>
+    <view class="page-container">
+        <CouponPage :list.sync="list" :type="type"></CouponPage>
+        <Empty wx:if="{{!list.length}}" title="你没有可领取的优惠券" subtitle="去其他页面看看吧"></Empty>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import pagination from '@/mixins/pagination'
+import Empty from '@/components/common/empty'
+import CouponPage from '@/components/coupon/coupon_item'
+import coupon from '@/api/coupon'
+export default class GetCoupons extends wepy.page {
+  config ={
+    navigationBarTitleText: '领取优惠券'
+  }
+  components ={
+    Empty,
+    CouponPage
+  }
+  mixins = [base, pagination]
+  data = {
+    list: [],
+    type: 'get'
+  }
+  methods = {
+
+  }
+  params() { // 获取issuedid的参数
+    return {
+      issuedId: wepy.getStorageSync('pid')
+    }
+  }
+  // 获取优惠券列表
+  async getCouponList() {
+    this.list = []
+    this.page = await coupon.getCouponLists()
+    await this.next()
+    this.list = this.page.list
+    this.$apply()
+  }
+  // 到达底部
+  async onReachBottom () {
+    await this.next()
+    this.list = this.page.list
+    this.$apply()
+  }
+  onShow() {
+    this.getCouponList()
+  }
+}
+</script>

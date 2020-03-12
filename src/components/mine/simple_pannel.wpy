@@ -1,0 +1,161 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .iconfont {
+    margin-right: 20rpx;
+    font-size: 44rpx;
+    color: #C8D2DA;
+  }
+  .simple-pannel {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 88rpx;
+    margin-left: 40rpx;
+    border-bottom: 1rpx solid $borderColor;
+    &.simple-pannel-hover {
+      opacity: 0.8;
+    }
+    &:last-child {
+      border: none;
+    }
+    text {
+      font-size: 32rpx;
+      &.title {
+        flex: 1;
+        color: $black;
+      }
+      &.subtitle {
+        color: $gray;
+      }
+    }
+    .cart-num {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 20rpx;
+      color: #fff;
+      font-size: 24rpx;
+      min-width: 40rpx;
+      min-height: 40rpx;
+      border-radius: 50%;
+      background: #ff5454;
+      line-height: 40rpx;
+      text-align: center;
+      text {}
+    }
+    .right-arrow {
+      margin-right: 40rpx;
+      height: 26rpx;
+      width: 14rpx;
+    }
+    button {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
+  }
+  .mine-section-wrap {
+    margin-top: 20rpx;
+    background: #fff;
+  }
+  .mine-list {
+      display: flex;
+      flex-wrap: wrap;
+      background-color: #fff;
+      padding: 20rpx 0px;
+      .list-content {
+        width: 25%;
+        height: 160rpx;
+        border-right: 1rpx solid #dadbdf;
+        border-bottom: 1rpx solid #dadbdf;
+        box-sizing: border-box;
+        &:nth-child(4n) {
+          border-right: none;
+        }
+        &.last-row {
+          border-bottom: none;
+        }
+        .cover {
+          width: 60rpx;
+          height: 60rpx;
+          display: block;
+          margin: 0 auto;
+          margin-top: 22rpx;
+          margin-bottom: 22rpx;
+        }
+        .content-title {
+          font-size: 24rpx;
+          color: #444;
+          display: block;
+          text-align: center;
+        }
+      }
+      .list-content__hover {
+        opacity: 0.7;
+      }
+    }
+</style>
+
+<template>
+<view>
+  <block wx:if="{{url !== 'contact'}}">
+    <view class="simple-pannel {{ !border ? 'no-border' : ''}}" hover-class="simple-pannel-hover" @tap="routerTo({{url}})">
+      <i class="iconfont {{icon}}" wx:if="icon"></i>
+      <text class="title">{{title}}</text>
+      <text class="subtitle">{{subtitle}}</text>
+      <block wx:if="{{mode === 'cart' && cartNum > 0}}">
+        <view class="cart-num" >
+          {{cartNum}}
+        </view>
+      </block>
+      <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}"/>
+    </view>
+  </block>
+  <block wx:if="{{url === 'contact'}}">
+    <view class="simple-pannel {{ !border ? 'no-border' : ''}}">
+      <text class="title">{{title}}</text>
+      <text class="subtitle">{{subtitle}}</text>
+      <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}"/>
+      <button open-type="contact" @contact="handleContact"></button>
+    </view>
+  </block>
+</view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  import {
+    connect
+  } from 'wepy-redux'
+  import {
+    cartInit
+  } from '@/store/actions'
+  @connect({
+    cartNum(state) {
+      return state.cart.num
+    }
+  }, {
+    cartInit
+  })
+  export default class SimplePannel extends wepy.component {
+    props = {
+      title: {},
+      url: {},
+      border: {
+        default: 1
+      },
+      mode: {}
+    }
+    mixins = [base, router]
+    methods = {
+      handleContact() {
+        console.log('handleContact')
+      }
+    }
+    onLoad() {}
+  }
+</script>

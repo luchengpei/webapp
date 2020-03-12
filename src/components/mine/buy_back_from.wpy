@@ -1,0 +1,145 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+   .buy_back_from{
+    margin-top: 20rpx;
+    background: #fff;
+    i{
+      font-size: 24rpx;
+    }
+  }
+  .see-all {
+    font-size: 28rpx;
+    color: #a5a5a5;
+    margin-right: 10rpx;
+  }
+  .buy-back-wrap {
+    height: 196rpx;
+    display: flex;
+    .content-btn {
+      position: relative;
+      .circle {
+        position: absolute;
+        right: 20rpx;
+        top: 20rpx;
+        height: 30rpx;
+        text-align: center;
+        line-height: 30rpx;
+        background: red;
+        color: $subMainColor;
+        font-size: $fontSize4;
+        padding: 0 10rpx;
+        border-radius: 15rpx;
+      }
+      .icon {
+        width: 94rpx;
+        height: 94rpx;
+        border-radius: 50%;
+        background: $mainColor;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i {
+          color: #fff;
+          font-size: 52rpx;
+        }
+      }
+      >button {
+        position: absolute;
+        opacity: 0;
+        height: 196rpx;
+        width: 100%;
+      }
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      image {
+        width: 92rpx;
+        height: 92rpx;
+      }
+      text {
+        margin-top: 16rpx;
+        font-size: 28rpx;
+        line-height: 36rpx;
+        color: $black;
+      }
+    }
+  }
+</style>
+
+<template>
+   <view class="buy_back_from">
+      <FamilyTitle title="回购订单">
+        <block slot="right">
+          <text class="see-all" @tap="skipEvaluateOrder(-1)">全部订单</text>
+          <i class="iconfont icon-arrow"></i>
+        </block>
+      </FamilyTitle>
+      <view class="buy-back-wrap" >
+        <view class="content-btn" @tap="skipEvaluateOrder(1)">
+          <view class="circle" wx:if="{{propertyInfoData.takeCheckCount>0}}">{{propertyInfoData.takeCheckCount>99?'99+':propertyInfoData.takeCheckCount}}</view>
+          <view class="icon">
+            <i class="iconfont icon-mine_order_ic"></i>
+          </view>
+          <text>待核实</text>
+        </view>
+        <view class="content-btn" @tap="skipEvaluateOrder(3)">
+          <view class="circle" wx:if="{{propertyInfoData.transportCount>0}}">{{propertyInfoData.transportCount>99?'99+':propertyInfoData.transportCount}}</view>
+          <view class="icon">
+            <i class="iconfont icon-mine_order_ic3"></i>
+          </view>
+          <text>运输中</text>
+        </view>
+        <view class="content-btn" @tap="skipEvaluateOrder(4)">
+          <view class="circle" wx:if="{{propertyInfoData.checkGoldCount>0}}">{{propertyInfoData.checkGoldCount>99?'99+':propertyInfoData.checkGoldCount}}</view>
+          <view class="icon">
+            <i class="iconfont icon-mine_order_ic2"></i>
+          </view>
+          <text>验金中</text>
+        </view>
+        <view class="content-btn" @tap="skipEvaluateOrder(5)" >
+          <view class="circle" wx:if="{{propertyInfoData.determinedCount>0}}">{{propertyInfoData.determinedCount>99?'99+':propertyInfoData.determinedCount}}</view>
+          <view class="icon">
+            <i class="iconfont icon-mine_order_ic1"></i>
+          </view>
+          <text>待确认</text>
+        </view>
+        <view class="content-btn" @tap="skipEvaluateOrder(13)">
+          <view class="circle" wx:if="{{propertyInfoData.tradingClosedCount>0}}">{{propertyInfoData.tradingClosedCount>99?'99+':propertyInfoData.tradingClosedCount}}</view>
+          <view class="icon">
+            <i class="iconfont icon-mine_order_ic4"></i>
+          </view>
+          <text>已完成</text>
+        </view>
+      </view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import SectionTitle from '@/components/common/title'
+  export default class SimplePannelList extends wepy.component {
+    components = {
+      FamilyTitle: SectionTitle,
+      
+    }
+    props = {
+      propertyInfoData: {
+        default:Object
+      }
+    }
+    mixins = [router]
+    methods = {
+     skipEvaluateOrder(num) {
+        wepy.navigateTo({
+          url: `/packageGold/pages/mine/evaluate-order?orderStatusIndex=${Number(num)}`
+        })
+      }
+    }
+    onLoad() {
+    }
+  }
+</script>

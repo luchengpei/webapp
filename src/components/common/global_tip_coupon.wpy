@@ -1,0 +1,99 @@
+<style lang='scss' scoped>
+@import '../../scss/common';
+.global-index{
+ width: 100%;
+ height: 0;
+ box-sizing: border-box;
+ position: relative;
+ .over{
+   width: 100%;
+   height: 100%;
+   position:fixed;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   background: rgba(43, 39, 39, 0.77);
+   z-index: 200000;
+   .coupon{
+     width: 545rpx;
+     height: 545rpx;
+     border-radius: 20rpx;
+     overflow: hidden;
+   }
+   .close{
+     margin-top: 60rpx;
+     width: 66rpx;
+     height: 66rpx;
+     padding: 5rpx;
+     box-sizing: border-box;
+   }
+ }
+}
+image{
+  width: 100%;
+  height: 100%;
+}
+</style>
+
+<template>
+  <view class='global-index'>
+    <view class="over" @tap="close" wx:if="{{display}}"> 
+          <view class="coupon" @tap.stop="getCoupon">
+            <image src="{{alertData.img}}"></image>
+          </view>
+          <view class="close" @tap="close">
+            <image src="/images/pop_close.png"></image>
+          </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import newRouter from '@/mixins/new_router'
+  import { connect } from 'wepy-redux'
+  import { richTextUpdate } from '@/store/actions'
+  @connect({
+    text(state) {
+      return state.richText.text
+    }
+  }, {
+    richTextUpdate
+  })
+  export default class globalTipCoupon extends wepy.component {
+    components = {}
+    props={
+      display: {
+        default: true,
+        twoWay: true
+      },
+      alertData: {}
+    }
+    mixins=[newRouter, base]
+    methods = {
+      getCoupon() {
+        let type = Number(this.alertData.type)
+        switch (type) {
+          case 1:// 外网
+            this._goRouter('/pages/web', {url: this.alertData.linkValue})
+            break
+          case 2:// 内页
+            this._goRouter(`/${this.alertData.linkValue}`)
+            break
+          case 3:// 富文本
+            this.methods.richTextUpdate(this.alertData.linkValue)
+            this._goRouter('/pages/rich_text')
+            break
+          default:
+            break
+        }
+      },
+      close() {
+        this.display = false
+        this.$apply()
+      }
+    }
+    onLoad() {}
+  }
+</script>

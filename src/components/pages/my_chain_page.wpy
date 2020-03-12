@@ -1,0 +1,157 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .my-group-page-container {
+    width: 100%;
+    background: $bgColor;
+    margin-top: 88rpx;
+  }
+</style>
+
+<template>
+  <view class="my-group-page-container">
+    <Tab :tab.sync="tab" @change.user="switchTab" />
+    <block wx:if="{{page.list.length > 0}}">
+      <repeat for="{{page.list}}" key="index" index="index" item="item">
+        <OrderItem :detail="item" mode="chain" @cancelOrder.user="cancelOrder" @confirmOrder.user="confirmOrder" @urgeShipment.user="urgeShipment" @deleteOrder.user="deleteOrder" @goLogistics.user="goLogistics" @refundOrder.user="refundOrder" @returnGoods.user="returnGoods"
+            @cancelRefundOrder.user="cancelRefundOrder"/>
+      </repeat>
+    </block>
+    <block wx:else>
+      <Empty title="暂无订单" subtitle="" />
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Tab from '@/components/common/tab'
+  import OrderItem from '@/components/order/order_item'
+  import Separator from '@/components/common/separator'
+  import Empty from '@/components/common/empty'
+  import chain from '@/api/chain'
+  import order from '@/api/order'
+  import base from '@/mixins/base'
+  import pagination from '@/mixins/pagination'
+  import Tips from '@/utils/Tips'
+  export default class MyChainPage extends wepy.component {
+    components = {
+      Tab: Tab,
+      OrderItem: OrderItem,
+      Separator: Separator,
+      Empty: Empty
+    }
+    data = {
+      firstLoading: true,
+      tab: { // -1全部 0待付款  1接龙中(待配送 ) 2配送中  3已完成  . 5取消订单
+        list: [{
+          id: '-1',
+          title: '全部'
+        },
+        {
+          id: '1',
+          title: '接龙中'
+        },
+        {
+          id: '2',
+          title: '配送中'
+        },
+        {
+          id: '3',
+          title: '已完成'
+        }
+        ],
+        selectedId: '-1'
+      },
+      page: {
+        list: []
+      },
+      list: []
+    }
+    mixins = [base, pagination];
+    methods = {
+      switchTab(tab) {
+        Tips.loading()
+        this.page = chain.getMineChainList()
+        this.reload()
+      },
+      cancelOrder(oid) {
+        order.cancel(oid).then(() => {
+          this.getList()
+        })
+      },
+      confirmOrder(oid) {
+        order.confirm(oid).then(() => {
+          this.getList()
+        })
+      },
+      urgeShipment(oid) {
+        order.urgeShipment(oid).then(() => {
+          Tips.toast('已经催促商家发货啦')
+          this.getList()
+        })
+      },
+      deleteOrder(oid) {
+        order.delete(oid).then(() => {
+          Tips.toast('删除成功', () => this.getList(), 'none')
+        })
+      },
+      goLogistics(oid) {
+        wepy.navigateTo({
+          url: `/pages/order/logistics?oid=${oid}`
+        })
+      },
+      refundOrder(oid, type) {
+        order.refund(oid, type).then(() => {
+          Tips.toast('申请成功', () => this.getList(), 'none')
+        })
+      },
+      returnGoods(oid, type) {
+        order.refund(oid, type).then(() => {
+          Tips.toast('申请成功', () => this.getList(), 'none')
+        })
+      },
+      cancelRefundOrder(oid) {
+        order.cancelRefund(oid).then(() => {
+          Tips.toast('取消成功', () => this.getList(), 'none')
+        })
+      }
+    }
+    async onLoad() {
+      await this.getList()
+    }
+    /**
+     * 获取订单列表
+     */
+    async getList() {
+      this.page = chain.getMineChainList()
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+    /**
+     * 列表请求参数
+     */
+    params() {
+      return {
+        orderStatus: this.tab.selectedId
+      }
+    }
+    /**
+     * 监听上拉加载事件
+     */
+    async handleReachBottom() {
+      await this.next()
+    }
+    /**
+     * 监听下拉刷新
+     */
+    async handlePullDownRefresh() {
+      await this.reload()
+    }
+    init() {
+      this.$emit('onSetTitle', '我的拼团')
+      if (!this.firstLoading) return
+      this.firstLoading = false
+    }
+  }
+</script>

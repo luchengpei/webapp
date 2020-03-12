@@ -1,0 +1,73 @@
+<style lang="scss">
+  @import '../../scss/common';
+  page{
+    background: #ffffff;
+  }
+  .message-details {
+    padding: 40rpx 30rpx 0 30rpx;
+    .title {
+      margin-top: 30rpx;
+      font-size: $fontSize2;
+      color: $black;
+      text-align: center;
+    }
+    .time {
+      text-align: center;
+      font-size: $fontSize4;
+      border-bottom: 1rpx solid #d7dbdf;
+      color: $gray;
+      margin: 20rpx 0;
+      padding-bottom: 40rpx;
+    }
+    .conent {
+      padding: 30rpx 30rpx 0 30rpx;
+      font-size:30rpx;
+      color: $black;
+      text-indent: 48rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="message-details">
+    <view class="title">{{messageData.title}}</view>
+    <view class="time">{{messageData.createTime}}</view>
+    <view class="conent">{{messageData.content}}
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import mine from '@/api/mine'
+  export default class MessageDetails extends wepy.page {
+    config = {
+      navigationBarTitleText: '消息详情'
+    }
+    data = {
+      messageData: [],
+      messageId: ''
+    }
+    components = {}
+    mixins = [base, router]
+    methods = {}
+    async getMessageDetails() {
+      try {
+        let res = await mine.getMessageDetails(this.messageId)
+        this.messageData = res
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onShow() {
+      this.getMessageDetails(this.messageId)
+    }
+    onLoad(option) {
+      this.messageId = option.messageId
+      this.$apply()
+    }
+  }
+</script>

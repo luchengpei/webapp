@@ -1,0 +1,172 @@
+<style lang='scss' scoped>
+@import '../../scss/common';
+.table {
+  width: 100%;
+  border: 1rpx solid $borderColor;
+  .tr {
+    display: flex;
+    border-bottom: 1rpx solid $borderColor;
+    font-size: $fontSize3;
+    color: $gray;
+    &.header {
+      background: #efeff4;
+    }
+    .th {
+      height: 88rpx;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      border-right: 1rpx solid $borderColor;
+      &:last-child {
+        border: none;
+      }
+    }
+    .td {
+      padding: 25rpx 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      border-right: 1rpx solid $borderColor;
+      color: $black;
+      &:last-child {
+        border: none;
+      }
+      &.commission {
+        justify-content: flex-start;
+        > image {
+          width: 66rpx;
+          height: 66rpx;
+          border-radius: 50%;
+          background: $imageBgColor;
+          margin: 0 15rpx 0 30rpx;
+        }
+        .content {
+          display: flex;
+          flex-direction: column;
+          .name {
+            font-size: $fontSize3;
+            color: $black;
+          }
+          .time {
+            font-size: $fontSize5;
+            color: $gray;
+          }
+        }
+      }
+      &.rank {
+        justify-content: flex-start;
+        > image {
+          width: 60rpx;
+          height: 60rpx;
+          border-radius: 50%;
+          background: $bgColor;
+          margin-left: 36rpx;
+          margin-right: 18rpx;
+        }
+        > text {
+          flex: 1;
+          font-size: $fontSize3;
+          color: $black;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          width: 100rpx;
+          margin-right: 5rpx;
+        }
+      }
+      .rank-index {
+        width: 49rpx;
+        height: 49rpx;
+      }
+    }
+    &:last-child {
+      border: none;
+    }
+  }
+}
+</style>
+
+<template>
+  <view class="table">
+    <view class="tr header">
+      <view
+        class="th"
+        wx:for="{{header}}"
+        wx:for-item="item"
+        wx:for-index="index"
+        wx:key="index"
+      >{{item}}</view>
+    </view>
+    <view class="tr" wx:for="{{list}}" wx:for-item="item" wx:for-index="index" wx:key="index">
+      <!-- 佣金明细 -->
+      <block wx:if="{{type === 'commission'}}">
+        <view class="td commission">
+          <image src="{{item.avatar}}" mode="scaleToFill"
+            lazy-load="false">
+          </image>
+          <view class="content">
+            <text class="name">{{item.nickname}}</text>
+            <text class="time">{{item.createTime}}</text>
+          </view>
+        </view>
+        <view class="td">{{item.rebateAmount}}</view>
+      </block>
+      <!-- 会员排行榜 -->
+      <block wx:elif="{{type === 'rank'}}">
+        <view class="td rank-index">
+          <image
+            class="rank-index"
+            wx:if="{{index === 0}}"
+            src="/images/team_rank01.png"
+            mode="scaleToFill"
+            lazy-load="false"
+          />
+          <image
+            class="rank-index"
+            wx:elif="{{index === 1}}"
+            src="/images/team_rank02.png"
+            mode="scaleToFill"
+            lazy-load="false"
+          />
+          <image
+            class="rank-index"
+            wx:elif="{{index === 2}}"
+            src="/images/team_rank03.png"
+            mode="scaleToFill"
+            lazy-load="false"
+          />
+          <text wx:else>{{index + 1}}</text>
+        </view>
+        <view class="td rank">
+          <image src="{{item.avatar}}" mode="scaleToFill"
+            lazy-load="false">
+          </image>
+          <text>{{item.nickname}}</text>
+        </view>
+        <view class="td">{{item.sortBasis}}</view>
+      </block>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Table extends wepy.component {
+  props = {
+    header: {
+      type: Array,
+      default: []
+    },
+    list: {
+      type: Array,
+      default: []
+    },
+    type: {
+      type: String,
+      default: 'commission'
+    }
+  };
+}
+</script>

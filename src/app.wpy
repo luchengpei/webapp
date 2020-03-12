@@ -1,0 +1,475 @@
+<style lang="scss">
+@import './scss/common';
+@import './scss/iconfont';
+@import './scss/form';
+page {
+  background: $bgColor;
+}
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.fix-ipx-btn {
+  bottom: 68rpx !important;
+  &::after {
+    content: '';
+    position: fixed;
+    bottom: 0 !important;
+    height: 68rpx !important;
+    width: 100%;
+    background: #fff;
+  }
+}
+.safe-area-bottom {
+  padding-bottom: constant(
+    safe-area-inset-bottom
+  ) !important; //  适配底部安全区域
+  padding-bottom: env(safe-area-inset-bottom) !important; //  适配底部安全区域
+}
+.page-container {
+  height: 100%;
+  margin-bottom: 98rpx;
+}
+.bdr-b {
+  border-bottom: 1rpx solid $borderColor;
+}
+.bdr-t {
+  border-top: 1rpx solid $borderColor;
+}
+.one-line {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.two-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.g-placeholder {
+  flex: 1;
+  font-size: $fontSize2;
+  color: #a5a5a5;
+}
+.g-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 690rpx;
+  height: 88rpx;
+  border-radius: 10rpx;
+  background: $mainColor;
+  font-size: $fontSize1;
+  margin-bottom: 30rpx;
+  color: #fff;
+  &.g-button__normal {
+    background: #fff;
+    color: $black;
+  }
+}
+.g-hover {
+  opacity: 0.7;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+import {
+  setStore
+} from 'wepy-redux'
+import configStore from './store'
+import agency from '@/api/agency'
+import Util from '@/utils/Util'
+import WxUtils from '@/utils/WxUtils'
+import {
+  COMPONENT_MAP
+} from '@/utils/Constants'
+const store = configStore()
+setStore(store)
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/classify', // 分类
+      'pages/activity', // 活动
+      'pages/cart', // 购物车
+      'pages/mine', // 我的
+      'pages/store-mine', // 时光里门店 我的
+      'pages/goods_list', // 商品列表
+      'pages/login', // 登录
+      'pages/enterprise', // 企业
+      'pages/news/list', // 资讯
+      'pages/news/detail', // 资讯详情
+      'pages/news/comment', // 评论
+      'pages/web', // webView
+      'pages/rich_text', // 富文本
+      'pages/share',
+      'pages/power_set', // 授权
+      'pages/appointment', // 预约
+      // 优惠券
+      'pages/coupon/mine', // 我的优惠券
+      'pages/coupon/get_coupons', // 领取优惠券
+      // 限时购
+      'pages/flash/flash_list', // 限时购列表
+      'pages/notice_details', // 限时购列表
+      'pages/family/family-management' // 家谱管理
+    ],
+    // 分包
+    subPackages: [{
+      name: 'dis', // 会员分销模块
+      root: 'pages/dis',
+      pages: [
+        'qr_code', // 会员二维码
+        'member', // 会员入口
+        'relationship', // 人脉
+        'commission', // 佣金
+        'rank', // 排行榜
+        'upgrade_member', // 升级会员
+        'introduce', // 介绍
+        'member_info', // 会员介绍
+        'finish', // 申请成功
+        'banner_text',
+        'member_welfare' // 会员福利
+      ]
+    },
+    {
+      name: 'goods',
+      root: 'pages/goods',
+      pages: [
+        'detail', // 商品详情
+        'chain_detail', // 接龙详情
+        'chain', // 接龙列表
+        'cash_back', // 返现活动列表
+        'cash_back_detail', // 返现详情
+        'cash_back_rule', // 返现规则
+        'poster',
+        'group' // 拼团
+      ]
+    },
+    {
+      name: 'mine',
+      root: 'pages/mine',
+      pages: [
+        'about', // 关于
+        'address_detail', // 地址详情
+        'address', // 地址列表
+        'agency', // 代理
+        'chain', // 社区团购
+        'favorite', // 收藏
+        'info', // 个人资料
+        'cash_back', // 返现
+        'group', // 拼团
+        'message', // 消息
+        'wallet', // 收益
+        'store', // 店铺
+        'feedback', // 意见反馈
+        'commonweal', // 公益
+        'activity', // 我的活动
+        'money_detial', // 收益明细
+        'withdrawal', // 收益提现
+        'message-details', // 消息详情
+        'protocol'  // 协会介绍 单页文档
+      ]
+    }, {
+      name: 'order',
+      root: 'pages/order',
+      pages: [
+        'detail', // 订单详情
+        'list', //  订单列表
+        'logistics', // 物流详情
+        'result', // 订单支付结果页
+        'submit' // 待付款订单
+      ]
+    }, {
+      name: 'activity',
+      root: 'pages/activity',
+      pages: [
+        'detail', // 活动详情
+        'join', // 参与活动（选择）
+        'submit', // 订单确认
+        'sign_up', // 表单报名
+        'sign_up_info', // 表单报名信息
+        'saying', // 留言
+        'success', // 报名成功
+        'join_user'
+      ]
+    }, {
+      name: 'family',
+      root: 'packageFamily',
+      pages: [
+        'pages/family/join-family', // 我的家谱成员新增加，编辑，查看
+        'pages/family/tree', // 家谱管理
+        'pages/family/index', // 徐氏家谱
+        'pages/family/genealogy', // 字辈谱
+        'pages/family/hall-culture', // 堂号文化
+        'pages/family/pedigree-chart', // 世系图
+        'pages/family/spectrum-book', // 谱书
+        'pages/family/hall-culture-details', // 堂号文化详情
+        'pages/family/genealogy-details', // 字辈谱详情
+        'pages/family/application-management', // 申请管理
+        'pages/family/family-member', // 申请管理
+        'pages/family/ask-them-list', // 寻根问祖列表
+        'pages/family/ask-them', // 寻根问祖
+        'pages/family/famliy-created', // 我的家谱创建
+        'pages/family/modify-family' // 修改家谱
+      ]
+    },
+    {
+      name: 'enterprise',
+      root: 'pages/enterprise',
+      pages: [
+        'details', // 企业详情
+        'list' // 企业搜索列表
+      ]
+    },
+    {
+      name: 'social',
+      root: 'packageSocial',
+      pages: [
+        'pages/contacts/contacts', // 人脉
+        'pages/contacts/contacts-details', // 企业详情
+        'pages/soclal/my-enterprise', // 我的企业
+        'pages/soclal/my-collect',  // 我的收藏
+        'pages/soclal/my-contacts', // 我的人脉
+        'pages/soclal/new-request', // 新的请求
+        'pages/soclal/my-home', // 新的请求
+        'pages/soclal/business', // 企业快捷入口
+        'pages/soclal/add-business', // 企业添加业务
+        'pages/soclal/add-enterprise', // 添加企业
+        'pages/soclal/background-imge', // 添加图片
+        'pages/soclal/label', // 添加标签
+        'pages/soclal/textarea' // 企业项目介绍
+      ]
+    }, {
+      name: 'bank',
+      root: 'pages/bank',
+      pages: [
+        'bind_prompt', // 会员申请后绑卡提示
+        'card',  // 银行卡
+        'bind_card', // 绑定银行卡
+        'edit_card',  // 修改银行卡
+        'identity',  // 身份认证
+        'identity_success'  // 认证成功
+      ]
+    },
+    {
+      name: 'store',
+      root: 'packageStore',
+      pages: [
+        'pages/select-baby',
+        'pages/hosted-service',
+        'pages/my-baby',
+        'pages/add-baby',
+        'pages/personal-infor',
+        'pages/trusteeship-record',
+        'pages/card-bag',
+        'pages/member-homepage',
+        'pages/coupon',
+        'pages/trusteeship-detail',
+        'pages/menbership',
+        'pages/field-appointment', // 场地预约
+        'pages/order-success', // 报名成功
+        'pages/my-collect',
+        'pages/company-introduction'
+      ]
+    }
+    ],
+    window: {
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: 'black'
+    },
+    tabBar: {
+      color: '#a5a5a5',
+      selectedColor: '#06a0ff',
+      list: [{
+        pagePath: 'pages/index',
+        text: '首页',
+        iconPath: '/images/tab-home.png',
+        selectedIconPath: '/images/tab-home-active.png'
+      },
+      {
+        pagePath: 'pages/enterprise',
+        text: '企业',
+        iconPath: '/images/tab-classify.png',
+        selectedIconPath: '/images/tab-classify-active.png'
+      },
+      // {
+      //   pagePath: 'pages/classify',
+      //   text: '分类',
+      //   iconPath: '/images/tab-classify.png',
+      //   selectedIconPath: '/images/tab-classify-active.png'
+      // },
+      {
+        // pagePath: 'pages/activity',
+        // text: '活动',
+        // iconPath: '/images/tab-activity.png',
+        // selectedIconPath: '/images/tab-activity-active.png'
+        pagePath: 'pages/appointment',
+        text: '预约',
+        iconPath: '/images/tab-activity.png',
+        selectedIconPath: '/images/tab-activity-active.png'
+      },
+      {
+        pagePath: 'pages/cart',
+        text: '购物车',
+        iconPath: '/images/tab-cart.png',
+        selectedIconPath: '/images/tab-cart-active.png'
+      },
+      {
+        pagePath: 'pages/mine',
+        text: '我的',
+        iconPath: '/images/tab-mine.png',
+        selectedIconPath: '/images/tab-mine-active.png'
+      }
+      ]
+    }
+  }
+  globalData = {
+    userInfo: null,
+    systemInfo: {},
+    projectId: '',
+    industryMark: '',
+    color: {
+      main: '', // 主色
+      sub: '' // 辅色
+    },
+    tabs: [{ pagePath: 'pages/index' }, { pagePath: 'pages/classify' }, { pagePath: 'pages/activity' }, { pagePath: 'pages/cart' }, { pagePath: 'pages/mine' }],  // 默认tab 等同于模板默认的tabs
+    isExt: false // 是否平台私有生成版本
+  }
+  constructor() {
+    super()
+    this.use('promisify')
+    this.use('requestfix')
+  }
+  async onLaunch(options) {
+    console.log('launch options', options)
+    WxUtils.checkUpdate()
+    this.globalData.systemInfo = wepy.getSystemInfoSync()
+    this.globalData.isIpx = this.globalData.systemInfo.statusBarHeight === 44
+    wepy.setStorageSync('isIpx', this.globalData.isIpx)
+    // 初始化代小程序配置
+    await this.initExtConfig()
+    // 初始化项目公司资料
+    await this.initProject(options.query)
+  }
+  // 初始化项目
+  async initProject(query) {
+    wepy.setStorageSync('useAlert', false)
+    console.log('app query', query, Util.analyseQrcodeScene(query))
+    // 小程序码传参scene
+    const scene = query.scene ? decodeURIComponent(query.scene) : ''
+    // 获取项目ID&邀请人ID
+    const pid = scene ? scene.split('_')[0] : null
+    const inviteUser = scene ? scene.split('_')[1] : null
+    const curPid = pid || wepy.getStorageSync('pid') || wepy.$appConfig.defaultPid
+    const curCid = wepy.getStorageSync('cid') || wepy.$appConfig.defaultCid
+    const curInviteUser = inviteUser || wepy.getStorageSync('inviteUser') || wepy.$appConfig.defaultInviteUser
+    let project = null
+    try {
+      project = await agency.project(curPid)
+    } catch (error) {
+      project = {}
+    }
+    wepy.setStorageSync('pid', (project && project.projId) || curPid)
+    wepy.setStorageSync('cid', (project && project.companyId) || curCid)
+    wepy.setStorageSync('inviteUser', curInviteUser)
+    this.globalData.projectId = (project && project.projId) || curPid
+    if (this.projectIdCallback) {
+      this.projectIdCallback(this.globalData.projectId)
+    }
+    store.dispatch({
+      type: 'PROJECT_INIT',
+      payload: project
+    })
+  }
+  // 初始化代小程序配置
+  async initExtConfig() {
+    let extConfig = wx.getExtConfigSync()
+    this.globalData.isExt = !!extConfig.projectId
+    this.globalData.industryMark = extConfig.industryMark || 'social'
+    // 项目ID 公司ID 平台APPID
+    if (extConfig.projectId) {
+      wepy.setStorageSync('pid', extConfig.projectId)
+      wepy.setStorageSync('cid', extConfig.companyId)
+      wepy.setStorageSync('platformAppId', extConfig.platformAppId)
+    }
+    // 色调
+    if (extConfig.color) {
+      this.globalData.color.main = extConfig.color.mainColor
+    }
+    // 底部Tab
+    if (extConfig.tabBar && extConfig.tabBar.list) {
+      wepy.setStorageSync('tabBar', extConfig.tabBar.list)
+      this.initExtTabs(extConfig.tabBar.list)
+      this.globalData.tabs = extConfig.tabBar.list
+      if (this.tabBarCallback) {
+        this.tabBarCallback(this.globalData.tabs.list)
+      }
+    } else {
+      wepy.removeStorageSync('tabBar')
+    }
+    // 首页店铺导航
+    if (extConfig.homeConfiguration && extConfig.homeConfiguration.list) {
+      this.initHomeConfig(extConfig.homeConfiguration.list)
+    } else {
+      wepy.setStorageSync('homeConfig', [])
+    }
+    if (extConfig.personalCenterConfig && extConfig.personalCenterConfig.list) {
+      wepy.setStorageSync('personalCenter', extConfig.personalCenterConfig)
+    } else {
+      wepy.setStorageSync('personalCenter', [])
+    }
+    console.log('extConfig=====', extConfig)
+  }
+  // 初始化代小程序底部Tabs
+  initExtTabs(tabs) {
+    // 更新TabBar网络图片
+    const len = tabs.length
+    this.updateTabs(0, tabs, len)
+  }
+  // 递归更新Tabs
+  updateTabs(index, tabs, len) {
+    let _this = this
+    wx.setTabBarItem({
+      index: index, // tabBar的哪一项，从左边算起,
+      text: tabs[index].text || '无', // tab 上按钮文字,
+      iconPath: tabs[index].iconPath, // 图片路径，icon 大小限制为40kb，建议尺寸为 81px * 81px，当 postion 为 top 时，此参数无效，不支持网络图片,
+      selectedIconPath: tabs[index].selectedIconPath, // 选中时的图片路径，icon 大小限制为40kb，建议尺寸为 81px * 81px ，当 postion 为 top 时，此参数无效,
+      success: function (res) {
+        console.log('setTabBarItem Success')
+        const next = index + 1
+        if (next < len) {
+          _this.updateTabs(next, tabs, len)
+        }
+      },
+      fail: function (res) {
+        console.log('setTabBarItem Fail')
+      },
+      complete: function (res) {
+        console.log('setTabBarItem Complete')
+      }
+    })
+  }
+  // 初始化首页导航栏
+  initHomeConfig(config) {
+    const myConfig = config.map(c => {
+      // 店铺导航配置
+      c.component = COMPONENT_MAP[c.controlName]
+      c.config = {
+        list: c.list ? c.list : []
+      }
+      return c
+    })
+    wepy.setStorageSync('homeConfig', myConfig)
+  }
+}
+</script>

@@ -1,0 +1,246 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .poster-index {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 90rpx;
+    box-sizing: border-box;
+    .main {
+      width: 100%;
+      height: 100%;
+      padding: 30rpx;
+      box-sizing: border-box;
+      .canvas-div {
+        overflow: hidden;
+        border-radius: 20rpx;
+        .img {
+          width: 100%;
+          height: 1030rpx;
+        }
+      }
+    }
+    .button-bottom {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 90rpx;
+      line-height: 90rpx;
+      font-size: 32rpx;
+      text-align: center;
+      background: $mainColor;
+      color: #fff;
+    }
+  }
+</style>
+
+<template>
+  <view class="poster-index" style="{{configStyle}}">
+    <view class="main">
+      <!-- 这里插入canvas -->
+      <view class="canvas-div">
+        <canvas class="img" canvas-id="canvasId" style="background:#ffffff"></canvas>
+      </view>
+    </view>
+    <view class="button-bottom" @tap="saveImg">保存海报到本地</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import goods from '@/api/goods'
+  import base from '@/mixins/base'
+  import Tips from '@/utils/Tips'
+  import nRouter from '@/mixins/new_router'
+  export default class Poster extends wepy.page {
+    config = {
+      navigationBarTitleText: '海报'
+    }
+    mixins = [base, nRouter]
+    data = {
+      e: 0, // 适配参数
+      canvasData: {},
+      res: {
+        shopImg: 'http://static.laoganbu.cn/7fc11dbdf95e8d190f69f76481352c669587c1e5.jpg?imageView2/0/w/200',
+        shopText: '意大利进口 - SIRONI磐石煎锅不粘锅26cm加深加厚',
+        price: 2000,
+        notPrice: 3000,
+        activeTip: '活动标签',
+        posterImg: 'http://static.laoganbu.cn/7fc11dbdf95e8d190f69f76481352c669587c1e5.jpg?imageView2/0/w/200',
+        codeImg: 'http://static.laoganbu.cn/7fc11dbdf95e8d190f69f76481352c669587c1e5.jpg?imageView2/0/w/200'
+      },
+      user: null
+    }
+    methods = {
+      // 保存相册
+      async saveImg() {
+        let path = await this.exportImgToCanvas()
+        let result = await this.saveAlbum(path.tempFilePath)
+        await Tips.success('保存成功', 1000)
+        this._routerBack()
+        return result
+      }
+    }
+    // 导出canvas图片
+    exportImgToCanvas(id = 'canvasId') {
+      return new Promise((resolve, reject) => {
+        wx.canvasToTempFilePath({
+          canvasId: id,
+          success(res) {
+            resolve(res)
+          },
+          fail(err) {
+            reject(err)
+          }
+        }, this)
+      })
+    }
+    // 保存到相册
+    saveAlbum(src) {
+      let _this = this
+      return new Promise((resolve, reject) => {
+        wx.saveImageToPhotosAlbum({
+          filePath: src,
+          success(res) {
+            resolve(res)
+          },
+          fail(err) {
+            if (err.errMsg === 'saveImageToPhotosAlbum:fail auth deny') {
+              _this._goRouter('/pages/power_set')// 重新授权
+            }
+            reject(err)
+          }
+        })
+      })
+    }
+    // 网络图片转本地图片
+    httpImgToImg(src) {
+      console.log('httpImgToImg', src)
+      return new Promise((resolve, reject) => {
+        wx.downloadFile({
+          url: src, // 仅为示例，并非真实的资源
+          success(res) {
+            resolve(res.tempFilePath)
+          },
+          fail(err) {
+            Tips.error('图片路径转换失败', err)
+            reject(err)
+          }
+        })
+      })
+    }
+    // 数据处理，图片处理
+    async dealData(obj) {
+      Tips.loading('正在下载图片')
+      // let src = '../../images/other/gem.jpg' // 本地测试图片
+      this.canvasData.shopImg = await this.httpImgToImg(obj.shopImg)// 商品图片
+      this.canvasData.avator = await this.httpImgToImg(this.user.avatar)// 头像
+      // this.canvasData.avator = src// 头像
+      this.canvasData.posterImg = await this.httpImgToImg(obj.posterImg) // 海报
+      this.canvasData.codeImg = await this.httpImgToImg(obj.codeImg)// 二维码
+      this.canvasData.nick = wepy.getStorageSync('user').username// 昵称
+      this.canvasData.shopText = obj.shopText.length > 20 ? obj.shopText.slice(0, 20) + '...' : obj.shopText
+      console.log('this.canvasData.shopText', this.canvasData.shopText)
+      this.canvasData.price = obj.price
+      this.canvasData.notPrice = obj.notPrice
+      this.canvasData.activeTip = obj.activeTip
+      await this.httpImgToImg(wepy.getStorageSync('user').avatar)
+      // console.log('-----------^^^^^------------邓紫棋avator', )
+      this.$apply()
+      await this.canvasDraw()
+      Tips.loaded()
+    }
+    // 自定义设备兼容
+    adaptation() {
+      let baseWidth = 375 // 默认为375
+      let currPhoneWidth = wx.getSystemInfoSync().windowWidth
+      this.e = currPhoneWidth / baseWidth
+      console.log('-----------^^^^^------------邓紫棋this.e', this.e)
+    }
+    // 画画
+    canvasDraw() {
+      this.adaptation()
+      let ctx = wx.createCanvasContext('canvasId')
+      let width = wx.getSystemInfoSync().windowWidth - 30 * this.e // 宽度
+      let udHeight = 10 // 上下间距
+      let paddingWidth = 20 / 2 // 左右边距
+      // 先画背景
+      ctx.setFillStyle('#ffffff')
+      ctx.fillRect(0, 0, width, 1030 * this.e)
+      // 生成圆角图片
+      function circleImg(img) {
+        let imgWidth = 60 / 2 * this.e // 画图宽度
+        let imgOrigin = [paddingWidth * this.e, paddingWidth * this.e]// 图片左上角坐标
+        ctx.arc(imgWidth / 2 + imgOrigin[0], imgWidth / 2 + imgOrigin[1], imgWidth / 2, Math.PI * 2, Math.PI * 2 * 2, false)// 坐标，半径，弧度
+        ctx.clip()
+        ctx.drawImage(img, imgOrigin[0], imgOrigin[1], imgWidth, imgWidth)
+      }
+      // 头像 昵称
+      function drawNickAndHead() {
+        // ctx.rect(0, 0, 690, 115 / 2) // 布局
+        // ctx.stroke()
+        ctx.setFontSize(24 / 2 * this.e)
+        ctx.font = '24px'
+        ctx.fillStyle = '#444444'
+        ctx.fillText(this.canvasData.nick, (90 / 2 * this.e), (60 / 2) * this.e)
+      }
+      // 海报图
+      function drawPoster() {
+        // ctx.rect(0, 115 / 2, 690, 250 / 2) // 布局
+        ctx.stroke()
+        ctx.drawImage(this.canvasData.posterImg, paddingWidth * this.e, 115 / 2 * this.e, 650 / 2 * this.e, 250 / 2 * this.e)
+      }
+      // 商品
+      function drawShop() {
+        ctx.rect(0, 115 / 2 + 250 / 2 + udHeight + udHeight, 690, 250 / 2) // 布局
+        ctx.drawImage(this.canvasData.shopImg, paddingWidth * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth) * this.e, 150 / 2 * this.e, 150 / 2 * this.e)
+        //
+        ctx.setFontSize(34 / 2 * this.e)
+        ctx.fillStyle = '#000'
+        ctx.fillText(this.canvasData.shopText.substr(0, 12), (paddingWidth + 150 / 2 + paddingWidth) * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth) * this.e)
+        ctx.fillText(this.canvasData.shopText.slice(12, 24), (paddingWidth + 150 / 2 + paddingWidth) * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth + (79 / 2 / 2)) * this.e)
+        // 当前金额
+        ctx.setFontSize(58 / 2 * this.e)
+        ctx.fillStyle = 'red'
+        ctx.fillText(`￥${this.canvasData.price.toFixed(2)}`, (paddingWidth + 136 / 2 + paddingWidth) * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth + (79 / 2) + udHeight * 2) * this.e)
+       // 划线价
+        ctx.setFontSize(24 / 2 * this.e)
+        ctx.fillStyle = '#999999'
+        ctx.fillText(`￥${this.canvasData.notPrice.toFixed(2)}`, (paddingWidth + 148 / 2 + paddingWidth) * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth + (79 / 2) + udHeight * 2 + udHeight * 2) * this.e)
+        ctx.beginPath()
+        ctx.strokeStyle = '#999999'
+        ctx.moveTo((paddingWidth + 150 / 2 + paddingWidth) * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth + (79 / 2) + udHeight * 2 + udHeight * 2 - 5) * this.e)
+        ctx.lineTo((paddingWidth + 150 / 2 + paddingWidth + 50) * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth + (79 / 2) + udHeight * 2 + udHeight * 2 - 5) * this.e)
+        // 标签
+        // ctx.setFillStyle('#FFA200')
+        // ctx.fillRect(200 * this.e, (115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth + (79 / 2) + udHeight * 2 + udHeight) * this.e, 110 / 2 * this.e, 32 / 2 * this.e)
+        // ctx.setFontSize(24 / 2 * this.e)
+        // ctx.fillStyle = '#fff'
+        // ctx.fillText(this.canvasData.activeTip, (200 + 5 / 2) * this.e, (5 / 2 + 115 / 2 + 250 / 2 + udHeight + udHeight + paddingWidth + paddingWidth + (79 / 2) + udHeight * 2 + udHeight * 2) * this.e)
+      }
+      // 二维码
+      function drawCode() {
+         // ctx.setFillStyle('#F6F6F6')
+         // ctx.fillRect(0, 115 / 2 + 250 / 2 + udHeight + 250 / 2 + udHeight + udHeight, 690, 400 / 2) // 布局
+        ctx.drawImage(this.canvasData.codeImg, width / 2 - 240 / 2 / 2, (115 / 2 + 250 / 2 + udHeight + 250 / 2 + udHeight + udHeight + paddingWidth) * this.e, 240 / 2, 240 / 2)
+        ctx.fillStyle = '#999999'
+        ctx.setFontSize(28 / 2)
+        ctx.fillText('长按识别二维码', width / 2 - 193 / 2 / 2, (115 / 2 + 250 / 2 + udHeight + 250 / 2 + udHeight + udHeight + paddingWidth) * this.e + 240 / 2 + 20 * this.e)
+      }
+      drawNickAndHead.bind(this)()
+      drawPoster.bind(this)()
+      drawShop.bind(this)()
+      drawCode.bind(this)()
+      circleImg.bind(this)(this.canvasData.avator)// 圆角图片一定要放在最后剪切,等所有图片画完之后执行
+      ctx.draw()
+    }
+    async getHttpData(id) {
+      this.res = await goods.getPoster(id)
+    }
+    async onLoad(option) {
+      this.user = wepy.getStorageSync('user')
+      this.$apply()
+      await this.getHttpData(option.id)
+      await this.dealData(this.res)
+    }
+  }
+</script>

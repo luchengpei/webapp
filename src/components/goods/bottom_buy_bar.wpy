@@ -1,0 +1,310 @@
+// 商品详情底部按钮组
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .bottom-buy-bar {
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    bottom: 0;
+    border-top: 1rpx solid $borderColor;
+    height: 92rpx;
+    width: 100%;
+    background: #fff;
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      min-width: 264rpx;
+      .btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-width: 100rpx;
+        &.cart {
+          position: relative;
+          .badge {
+            min-width: 10rpx;
+            position: absolute;
+            text-align: center;
+            top: 2rpx;
+            right: 20rpx;
+            border-radius: 18rpx;
+            background: #f12c20;
+            font-size: 18rpx;
+            color: #fff;
+            padding: 0 8rpx;
+            font-weight: 700;
+          }
+        }
+        image {
+          // margin-top: 12rpx;
+          width: 36rpx;
+          height: 36rpx;
+        }
+        text {
+          margin-top: 10rpx;
+          font-size: 20rpx;
+        }
+      }
+    }
+    .add-cart {
+      display: flex;
+      width: 220rpx;
+      font-size: 28rpx;
+      color: #fff;
+      height: 100%;
+      line-height: 100%;
+      background: #f7b94c;
+      justify-content: center;
+      align-items: center;
+    }
+    .buy {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      background: #f7564c;
+      .price {
+        font-size: 34rpx;
+        line-height: 36rpx;
+      }
+      .buy-text {
+        font-size: 24rpx;
+        line-height: 36rpx;
+      }
+    }
+    .off {
+      position: absolute;
+      top: -90rpx;
+      height: 90rpx;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      line-height: 90rpx;
+      text-align: center;
+      font-size: 30rpx;
+    } // 团购
+    &.group {
+      .contact {
+        width: 155rpx;
+      }
+    }
+    .put-off {
+      color: $gray;
+    }
+  }
+  #model-phonex{
+    padding-bottom: 100rpx;
+  }
+</style>
+
+<template>
+  <view>
+    <!-- 普通商品 -->
+    <block wx:if="{{mode === 'default'}}">
+      <view class="bottom-buy-bar {{isIpx ? 'fix-ipx-btn' : ''}}">
+        <view class="btn-group">
+          <view class="btn contact" @tap="backHome">
+            <i class="iconfont icon-tab_ic_home_s mainColor" style="font-size: 36rpx;"></i>
+            <text>首页</text>
+          </view>
+          <!-- <view class="btn collect" @tap="collect">
+            <i class="iconfont icon-shoucang mainColor" style="font-size: 36rpx;" wx:if="{{!isCollected}}"></i>
+            <i class="iconfont icon-shoucangxuanzhong mainColor" style="font-size: 36rpx;" wx:else></i>
+            <text>收藏</text>
+          </view> -->
+          <view class="btn cart" @tap="switchTab('/pages/cart')">
+            <i class="iconfont icon-Cart mainColor" style="font-size: 36rpx;"></i>
+            <text>购物车</text>
+            <view class="badge" wx:if="{{cartNum > 0}}">{{cartNum}}</view>
+          </view>
+        </view>
+        <view class="add-cart {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="handlePlusCart()">
+          <text>加入购物车</text>
+        </view>
+        <view class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="handleBuyGoods()">
+          <text class="price">¥{{minPrice}}</text>
+          <text class="buy-text">立即购买</text>
+        </view>
+        <!-- 下架 -->
+        <view class="off" wx:if="{{goods && !goods.isPutOn}}">
+          商品已下架
+        </view>
+        <view class="off" wx:elif="{{goods && goods.inventoryNum === 0}}">
+          商品已告罄
+        </view>
+      </view>
+    </block>
+    <!-- 限时购商品 -->
+    <block wx:if="{{mode === 'flash_sale'}}">
+      <view class="bottom-buy-bar {{isIpx ? 'fix-ipx-btn' : ''}}">
+        <view class="btn-group">
+          <view class="btn contact" @tap="backHome">
+            <i class="iconfont icon-tab_ic_home_s mainColor" style="font-size: 36rpx;"></i>
+            <text>首页</text>
+          </view>
+        </view>
+        <view class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="handleBuyGoods()">
+          <text class="price">¥{{flashSale.flashSalePrice}}</text>
+          <text class="buy-text">限时下单,立即购买</text>
+        </view>
+        <!-- 下架 -->
+        <view class="off" wx:if="{{goods && !goods.isPutOn}}">
+          商品已下架
+        </view>
+        <view class="off" wx:elif="{{goods && goods.inventoryNum === 0}}">
+          商品已告罄
+        </view>
+      </view>
+    </block>
+    <!-- 返现优品 -->
+    <block wx:if="{{mode === 'cash_back'}}">
+      <view class="bottom-buy-bar  {{isIpx ? 'fix-ipx-btn' : ''}}">
+        <view class="btn-group">
+          <view class="btn contact" @tap="backHome">
+            <i class="iconfont icon-tab_ic_home_s mainColor" style="font-size: 36rpx;"></i>
+            <text>首页</text>
+          </view>
+        </view>
+        <view class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="handleBuyGoods()">
+          <text class="price">¥{{cashBack.bargainPrice}}</text>
+          <text class="buy-text">立即购买</text>
+        </view>
+        <!-- 下架 -->
+        <view class="off" wx:if="{{goods && !goods.isPutOn}}">
+          商品已下架
+        </view>
+        <view class="off" wx:elif="{{goods && goods.inventoryNum === 0}}">
+          商品已告罄
+        </view>
+      </view>
+    </block>
+    <!-- 团购 -->
+    <block wx:if="{{mode === 'group_sale'}}">
+      <view class="bottom-buy-bar  {{isIpx ? 'fix-ipx-btn' : ''}}">
+        <view class="btn-group">
+          <view class="btn contact" @tap="backHome">
+            <i class="iconfont icon-tab_ic_home_s mainColor" style="font-size: 36rpx;"></i>
+            <text>首页</text>
+          </view>
+        </view>
+        <!-- 还未开团/已取消开团 groupStatus -1未开团. 0待成团 1已成团 2成团失败. 3取消拼团-->
+        <view wx:if="{{groupSale.groupStatus === -1 || groupSale.groupStatus === 3}}" class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="handleBuyGoods()">
+          <text class="price">¥{{groupSale.groupBuyingPrice}}</text>
+          <text class="buy-text">立即开团</text>
+        </view>
+         <!-- 已经开团 被邀请人看-->
+         <view wx:elif="{{groupSale.groupStatus === 0 && groupSale.isSelfJoin===0}}" class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="handleBuyGoods()">
+          <text class="price">¥{{groupSale.groupBuyingPrice}}</text>
+          <text class="buy-text">差{{groupSale.groupBuyingPersonNum-groupSale.joinCount}}人，参加拼团</text>
+        </view>
+        <!-- 已经开团 自己看-->
+        <view wx:elif="{{groupSale.groupStatus === 0 && groupSale.isSelfJoin===1}}" class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="goMinegroup">
+          <text class="price">¥{{groupSale.groupBuyingPrice}}</text>
+          <text class="buy-text">开团成功,邀请好友</text>
+        </view>
+        <!-- 已成团 -->
+        <view wx:elif="{{groupSale.groupStatus === 1}}" class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="goGroup">
+          <text class="price">¥{{groupSale.groupBuyingPrice}}</text>
+          <text class="buy-text">拼团成功，重新开团</text>
+        </view>
+        <!-- 成团失败 -->
+        <view wx:elif="{{groupSale.groupStatus === 2}}" class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="goGroup">
+          <text class="price">¥{{groupSale.groupBuyingPrice}}</text>
+          <text class="buy-text">拼团失败，重新开团</text>
+        </view>
+        <!-- 取消拼团（活动结束） -->
+        <view wx:elif="{{groupSale.groupStatus === 3}}" class="buy {{!goods.isPutOn || goods.inventoryNum === 0 ? 'put-off' : ''}}" @tap="goGroup">
+          <text class="price">¥{{groupSale.groupBuyingPrice}}</text>
+          <text class="buy-text">拼团结束，重新开团</text>
+        </view>
+                <!-- 下架 -->
+        <view class="off" wx:if="{{goods && !goods.isPutOn}}">
+          商品已下架
+        </view>
+        <view class="off" wx:elif="{{goods && goods.inventoryNum === 0}}">
+          商品已告罄
+        </view>
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import nRouter from '@/mixins/new_router'
+  import base from '@/mixins/base'
+  import cart from '@/api/cart'
+  export default class BottomBuyBar extends wepy.component {
+    data={
+      phoneModel: ''
+    }
+    mixins = [base, router]
+    props = {
+      mode: {
+        default: 'default'
+      },
+      goods: {
+        default: null
+      },
+      minPrice: {},
+      buyNum: {},
+      isCollected: {
+        type: Boolean,
+        default: false
+      },
+      cartNum: {},
+      kf: {},
+      cashBack: { //  返现
+        default: {}
+      },
+      flashSale: {  // 限时购
+        default: {}
+      },
+      groupSale: {  // 团购
+        default: {}
+      }
+    };
+    mixins=[base, router, nRouter]
+    methods = {
+      // 返回首页
+      backHome() {
+        this._redirectTo('/pages/index?p=index')
+      },
+      // 去我的团购
+      goMinegroup() {
+        this._goRouter('/pages/mine/group')
+      },
+      // 去团购列表
+      goGroup() {
+        this._redirectTo('/pages/goods/group')
+      },
+      // 处理加入购物车
+      handlePlusCart() {
+        if (!this.goods.isPutOn || this.goods.inventoryNum === 0) return
+        this.$emit('plusCart')
+      },
+      // 处理立即购买
+      handleBuyGoods() {
+        if (!this.goods.isPutOn || this.goods.inventoryNum === 0) return
+        this.$emit('buy', 'buy')
+      },
+      collect() {
+        this.$emit('collect', this.isCollected)
+      }
+    };
+    onLoad() {
+      console.log('botttttttttttt', this.isIpx)
+    }
+    async updateCartNum() {
+      const list = await cart.list()
+      wepy.setStorageSync('cartNum', list.length)
+      this.cartNum = list.length
+      this.$apply()
+    }
+  }
+</script>

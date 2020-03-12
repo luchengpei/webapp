@@ -1,0 +1,219 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .my-address-detail-page-container {
+    width: 100%;
+    background: $bgColor;
+    /*margin-top: 88rpx;*/
+  }
+  .bottom-box {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 45rpx;
+    width: 100%;
+    padding: 0 40rpx;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    .btn {
+      width: 100%;
+      flex: 1;
+      height: 88rpx;
+      line-height: 88rpx;
+      text-align: center;
+      color: #444;
+      background: #fff;
+      font-size: $fontSize1;
+      border-radius: 8rpx;
+      margin-top: 30rpx;
+      &.btn-color {
+        color: #fff;
+        background-color: $mainColor;
+      }
+    }
+  }
+  .addr-box {
+    font-size: $fontSize2;
+    color: #a5a5a5;
+    padding-left: 40rpx;
+    background: #fff;
+    .title {
+      color: #444;
+      width: 195rpx;
+    }
+    .addr-item {
+      display: flex;
+      padding-right: 40rpx;
+      align-items: center;
+      height: 88rpx;
+      border-bottom: 1rpx solid $borderColor;
+      &:last-child {
+        border-bottom: none;
+      }
+      .right-wrapper {
+        flex: 1;
+        input {
+          color: $black;
+        }
+      }
+    }
+    .region-picker {
+      position: relative;
+      text-align: left;
+      padding-right: 45rpx;
+      color: #a5a5a5;
+      .arrow {
+        position: absolute;
+        width: 14rpx;
+        height: 26rpx;
+        right: 0;
+        top: 50%;
+        margin-top: -13rpx;
+      }
+    }
+  }
+  .tips {
+    font-size: $fontSize4;
+    margin: 20rpx 40rpx;
+    color: #e04040;
+  }
+</style>
+
+<template>
+  <view class="my-address-detail-page-container" style="{{configStyle}}">
+    <form @submit="save">
+      <view class="addr-box">
+        <view class="addr-item">
+          <view class="title">收货人</view>
+          <view class="right-wrapper">
+            <input name="receiver" placeholder="名字" maxlength="10" value="{{addrInfo && addrInfo.receiver}}" />
+          </view>
+        </view>
+        <view class="addr-item">
+          <view class="title">联系电话</view>
+          <view class="right-wrapper">
+            <input name="phone" placeholder="手机号码或固定电话" type="number" maxlength="11" value="{{addrInfo && addrInfo.receiverPhone}}" />
+          </view>
+        </view>
+        <view class="addr-item">
+          <view class="title">收货地区</view>
+          <view class="right-wrapper">
+            <picker mode="region" @change="bindRegionChange" value="{{region}}">
+              <view class="picker region-picker">
+                {{region[0]}} {{region[1]}} {{region[2]}}
+                <image class="arrow" src="{{imageUrl}}/ic-right-arrow.png"></image>
+              </view>
+            </picker>
+          </view>
+        </view>
+        <view class="addr-item">
+          <view class="title">详细地址</view>
+          <view class="right-wrapper">
+            <input name="address" placeholder="街道门牌号" maxlength="48" value="{{addrInfo && addrInfo.address}}" />
+          </view>
+        </view>
+      </view>
+      <view class="bottom-box">
+        <button class="btn btn-color" form-type="submit">保 存</button>
+        <view class="btn" wx:if="{{type === 'edit'}}" @tap="deleteAddr">删除收货地址</view>
+        <view class="btn" @tap="back">取 消</view>
+      </view>
+    </form>
+    <view class="tips">*请填写正确的小区名称及楼栋、楼层、门牌号</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import address from '@/api/address'
+  import Event from '@/utils/Event'
+  import Tips from '@/utils/Tips'
+  import Validator from '@/utils/Validator'
+  export default class AddressDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '收货地址'
+    }
+    components = {};
+    data = {
+      firstLoading: true,
+      region: ['省份', '城市', '区县'],
+      type: 'add',
+      addrId: 0,
+      addrInfo: null,
+      from: ''
+    }
+    mixins = [base, router]
+    methods = {
+      switchTab(tab) {},
+      bindRegionChange(e) {
+        this.region = e.detail.value
+      },
+      save(e) {
+        if (e.detail.value.receiver === '') {
+          wx.showToast({
+            title: '收货人不能为空',
+            icon: 'none'
+          })
+          return false
+        }
+        if (!Validator.isMobile(e.detail.value.phone, {name: '联系电话'})) {
+          return
+        }
+        if (e.detail.value.address === '') {
+          wx.showToast({
+            title: '详细地址不能为空',
+            icon: 'none'
+          })
+          return false
+        }
+        let param = {
+          receiver: e.detail.value.receiver,
+          receiverPhone: e.detail.value.phone,
+          province: this.region[0],
+          city: this.region[1],
+          area: this.region[2],
+          address: e.detail.value.address,
+          zipCode: ''
+        }
+        Tips.loading()
+        if (this.type === 'add') {
+          param['userId'] = wepy.getStorageSync('user').userId
+          address.add(param).then((res) => {
+            if (this.from && this.from === 'order') {
+              Event.emit('TRADE_ADDRESS_UPDATE', res)
+            }
+            this.saveCallback()
+          })
+        } else {
+          param['addressId'] = this.addrInfo.addressId
+          address.update(param).then(this.saveCallback.bind(this))
+        }
+      },
+      deleteAddr() {
+        address.del(this.addrInfo.addressId).then(this.saveCallback.bind(this, 'del'))
+      },
+      back() {
+        wx.navigateBack()
+      }
+    }
+    onLoad(options) {
+      this.type = options.t || 'add'
+      this.from = options.f || ''
+      if (this.type === 'edit') {
+        this.addrInfo = wepy.getStorageSync('editAddr')
+        this.region = [this.addrInfo.province, this.addrInfo.city, this.addrInfo.area]
+      }
+      this.$apply()
+    }
+    saveCallback(type = 'save') {
+      this.loaded()
+      let toastStr = type === 'save' ? '保存成功' : '删除成功'
+      Tips.toast(toastStr, () => {
+        Event.emit('DELIVERY_LIST_UPDATE')
+        wx.navigateBack()
+      }, 'none')
+    }
+  }
+</script>

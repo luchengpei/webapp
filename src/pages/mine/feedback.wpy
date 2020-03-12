@@ -1,0 +1,88 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .content {
+    margin-top: 40rpx;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    padding-top: 5rpx;
+    background: #fff;
+    box-sizing: border-box;
+    .text-input {
+      margin: 20rpx 0;
+      height: 300rpx;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .dis {
+      color: $gray;
+      font-size: $fontSize3;
+      height: 60rpx;
+    }
+  }
+  .button {
+    margin-top: 50rpx;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    box-sizing: border-box;
+    button {
+      background: $mainColor;
+    }
+  }
+</style>
+
+<template>
+  <view class="feedback" style="{{configStyle}}">
+    <view class="content">
+      <textarea maxlength="200" value="{{strInput}}" class="text-input" @input="change" placeholder="请输入您的宝贵意见哦~（限200字）" auto-focus></textarea>
+      <view class="dis">{{strLength}}/200</view>
+    </view>
+    <view class="button">
+      <button type="primary" @tap="submit">提交</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import newRouter from '@/mixins/new_router'
+  import regForm from '@/mixins/reg_form'
+  import base from '@/mixins/base'
+  import mine from '@/api/mine'
+  import Tips from '@/utils/Tips'
+  export default class Store extends wepy.page {
+    config = {
+      navigationBarTitleText: '意见反馈'
+    }
+    components = {}
+    data = {
+      strInput: '',
+      strLength: 0
+    }
+    mixins=[base, newRouter, regForm]
+    methods = {
+      change(val) {
+        let data = val.detail.value
+        this.strInput = data
+        this.strLength = data.length
+        this.$apply()
+      },
+      // 提交
+      submit() {
+        this.httpSubmit()
+      }
+    }
+    // 提交请求
+    async httpSubmit() {
+      let query = {
+        content: this.strInput
+      }
+      let mapTip = new Map([['content', ['最少请输入5个字符', '意见']]])
+      await this._formIsOk(query, mapTip)
+      await mine.subFeedback(query)
+      await Tips.toast('反馈成功，感谢你的支持', () => {
+        wepy.navigateBack({delta: 1})
+      }, 'none', 1500)
+    }
+    onLoad() {}
+  }
+</script>

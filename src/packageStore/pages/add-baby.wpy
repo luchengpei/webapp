@@ -1,0 +1,621 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.add-enterprise {
+  padding: 30rpx 0 92rpx 0;
+}
+.basic-info {
+  padding-left: 30rpx;
+  background: #ffffff;
+  margin-bottom: 30rpx;
+  .the-input {
+    height: 88rpx;
+    padding-right: 30rpx;
+    border-bottom: 1rpx solid #e0e0e0;
+    display: flex;
+    justify-content: left;
+    font-size: $fontSize2;
+    align-items: center;
+    .required {
+      position: relative;
+      &::after {
+        position: absolute;
+        right: -14rpx;
+        top: 29rpx;
+        font-size: $fontSize4;
+        content: '*';
+        color: red;
+      }
+    }
+    .required-backgr {
+      position: relative;
+      .title__inline {
+        width: 165rpx !important;
+      }
+      &::after {
+        position: absolute;
+        right: -20rpx;
+        top: 29rpx;
+        font-size: $fontSize4;
+        content: '*';
+        color: red;
+      }
+    }
+    .title {
+      .title__inline {
+        height: 88rpx;
+        line-height: 88rpx;
+        width: 140rpx;
+        color: $black;
+        text-align: justify;
+        &::after {
+          width: 100%;
+          display: inline-block;
+          content: ''; //这三个都不可以少
+        }
+      }
+      .nowrap {
+        white-space: nowrap;
+      }
+    }
+    .select-avatar {
+      width: 72%;
+      margin-left: 50rpx;
+      height: 50rpx;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      > image {
+        height: 64rpx;
+        width: 64rpx;
+        border-radius: 50%;
+        margin-right: 30rpx;
+      }
+      > i {
+        color: #aaa;
+        font-size: $fontSize4;
+      }
+    }
+    .background-pop {
+      width: 72%;
+      margin-left: 50rpx;
+      height: 50rpx;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      > i {
+        color: #aaa;
+        font-size: $fontSize4;
+      }
+      > view {
+        width: 54rpx;
+        height: 32rpx;
+        border-radius: 16rpx;
+        background: #f7564c;
+        font-size: $fontSize4;
+        color: $subMainColor;
+        text-align: center;
+        line-height: 32rpx;
+        margin-left: 28rpx;
+      }
+    }
+    > input {
+      margin: 0 30rpx 0 50rpx;
+      color: #a5a5a5;
+      height: 46rpx;
+      flex: 1;
+    }
+  }
+  .the-input:nth-last-child(1) {
+    border-bottom: 0rpx;
+  }
+  .section-wrapper {
+    > picker {
+      width: 72%;
+      > .section {
+        margin-left: 0;
+      }
+    }
+    .section {
+      margin-left: 50rpx;
+      width: 100%;
+      font-size: $fontSize2;
+      color: #a5a5a5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      > i {
+        font-size: $fontSize4;
+        color: #aaa;
+      }
+      margin-right: 10rpx;
+    }
+  }
+}
+.isauth {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  color: #a5a5a5;
+  font-size: $fontSize8;
+}
+.contact-info {
+  padding-left: 30rpx;
+  background: #ffffff;
+  margin-bottom: 30rpx;
+  .the-input {
+    border-bottom: 1rpx solid #e0e0e0;
+    display: flex;
+    justify-content: left;
+    font-size: $fontSize2;
+    align-items: center;
+    .switch {
+      margin-left: 40rpx;
+      width: 72%;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .required {
+      position: relative;
+      &::after {
+        position: absolute;
+        right: -14rpx;
+        top: 29rpx;
+        font-size: $fontSize4;
+        content: '*';
+        color: red;
+      }
+    }
+    .title {
+      .title__inline {
+        height: 88rpx;
+        line-height: 88rpx;
+        width: 140rpx;
+        color: $black;
+        text-align: justify;
+        &::after {
+          width: 100%;
+          display: inline-block;
+          content: ''; //这三个都不可以少
+        }
+      }
+    }
+    > input {
+      margin: 0 30rpx 0 50rpx;
+      color: #a5a5a5;
+      height: 46rpx;
+      flex: 1;
+      font-size: $fontSize2;
+    }
+  }
+  .the-input:nth-last-child(1) {
+    border-bottom: 0rpx;
+  }
+}
+.save-wrap {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  right: 0;
+  .save {
+    height: 92rpx;
+    width: 100%;
+    line-height: 92rpx;
+    text-align: center;
+    font-size: $fontSize3;
+    background-color: $mainColor;
+    color: $subMainColor;
+  }
+}
+#iphone-x-pb {
+  padding-bottom: 66rpx;
+}
+.avatar-wrapper {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(43, 39, 39, 0.77);
+  top: 0;
+  left: 0;
+  z-index: 10;
+  .avatar {
+    position: relative;
+    width: 591rpx;
+    background: #fff;
+    border-radius: 10rpx;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .title {
+      height: 60rpx;
+      padding: 30rpx 30rpx;
+      font-size: $fontSize2;
+    }
+    .content {
+      height: 300rpx;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 0 30rpx;
+      .item {
+        width: 108rpx;
+        height: 108rpx;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        > image {
+          border: 2rpx;
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+        }
+      }
+    }
+    .btn {
+      border-top: 1rpx solid $borderColor;
+      display: flex;
+      > view {
+        flex: 1;
+        text-align: center;
+        line-height: 100rpx;
+        font-size: $fontSize2;
+        color: $mainColor;
+      }
+      width: 100%;
+      height: 100rpx;
+    }
+  }
+}
+.pop-location {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+  > van-area {
+    animation: animate 0.5s;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    overflow: hidden;
+  }
+  @keyframes animate {
+    from {
+      height: 0px;
+    }
+    to {
+      height: 528rpx;
+    }
+  }
+}
+</style>
+
+<template>
+  <view class="add-enterprise_wrapper" style="{{configStyle}}">
+    <view class="add-enterprise">
+      <view class="basic-info">
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">头像</view>
+          </view>
+          <view
+            class="select-avatar"
+            @tap="getAvatar"
+          >
+            <image
+              mode="aspectFill"
+              src="{{formData.babyPortrait ? formData.babyPortrait:'/images/avatar.png'}}"
+              class="avatar"
+            ></image>
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">宝贝姓名</view>
+          </view>
+          <input
+            placeholder="{{isEndit?'请填写宝贝姓名':''}}"
+            maxlength="5"
+            disabled="{{!isEndit}}"
+            value="{{formData.babyName}}"
+            @blur="nameFn('{{item}}')"
+            placeholder-class="g-placeholder"
+          />
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title required">
+            <view class="title__inline">宝贝性别</view>
+          </view>
+          <picker
+            mode="selector"
+            bindchange="typeFn"
+            disabled="{{!isEndit}}"
+            value="{{formData.babySex}}"
+            range="{{babySexMap}}"
+          >
+            <view class="section">
+              {{babySexMap[formData.babySex]?babySexMap[formData.babySex]:'请选择宝贝性别'}}
+              <i
+                class="iconfont icon-arrow"
+                wx:if="{{isEndit}}"
+              ></i>
+            </view>
+          </picker>
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title ">
+            <view class="title__inline">宝贝生日</view>
+          </view>
+          <picker
+            mode="date"
+            bindchange="birthdayFn"
+            value="{{formData.babyBirthday}}"
+            end='{{endTime}}'
+          >
+            <view class="section">
+              <view> {{formData.babyBirthday ? formData.babyBirthday : '请填写宝贝生日'}}</view>
+              <i
+                class="iconfont icon-arrow"
+                wx:if="{{isEndit}}"
+              ></i>
+            </view>
+          </picker>
+        </view>
+        <view class="the-input">
+          <view class="title ">
+            <view class="title__inline">就读学校</view>
+          </view>
+          <input
+            placeholder="{{isEndit?'请填写学校名称':''}}"
+            maxlength="10"
+            disabled="{{!isEndit}}"
+            value="{{formData.babySchool}}"
+            @blur="babySchoolFn('{{item}}')"
+            placeholder-class="g-placeholder"
+          />
+        </view>
+      </view>
+      <view
+        class="isauth"
+        wx:if='{{formData.authTime && formData.isAuth}}'
+      >认证时间：{{formData.authTime}}</view>
+      <view
+        class="save-wrap"
+        id="{{isIphoneX ? 'iphone-x-pb' : ''}}"
+      >
+        <view
+          class="save"
+          @tap="submit"
+        >
+          保存
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+ 
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+import WxApi from '@/utils/WxApi'
+import upload from '@/utils/FileHttp'
+import Tips from '@/utils/Tips'
+import Validator from '@/utils/Validator'
+import pagination from '@/mixins/pagination'
+import Empty from '@/components/common/empty'
+import Area from '@/utils/Area'
+import enterprise from '@/api/enterprise'
+import store from '@/api/store'
+
+export default class AddEnterprise extends wepy.page {
+  config = {
+    navigationBarTitleText: ''
+  }
+  constructor() {
+    super()
+    this.data.areaList = Area
+  }
+  config = {
+    navigationBarTitleText: '',
+    usingComponents: {
+      'van-area': '../../../components/vant/area/index'
+    }
+  }
+  components = {
+    Empty
+  }
+  data = {
+    isIphoneX: false,
+    babyId: '',
+    endTime:'',
+    isPopLocation: false,
+    isEndit: true,
+    formData: {
+      babyPortrait: '',
+      babyBirthday: '',
+      babySchool: '',
+      babyName: '',
+      babySex: '',
+      babyId: ''
+    },
+    babySexMap: ['男', '女'],
+    isSubmit: 0, // 提交时表单校验
+    industryData: [],
+    enterpriseImgList: [],
+    tagJsonList: [],
+    productImgList: [],
+    quickList: [],
+    from: ''
+  }
+  mixins = [base, router, pagination]
+  methods = {
+
+    // 宝贝性别
+    typeFn(e) {
+      this.formData.babySex = e.detail.value
+      this.$apply()
+    },
+    // 宝贝生日
+    birthdayFn(e) {
+      this.formData.babyBirthday = e.detail.value
+      console.log(e)
+      console.log(e.detail.value)
+      console.log(this.formData.babyBirthday)
+      this.$apply()
+    },
+
+    // 宝贝名称
+    nameFn(e) {
+      console.log('baobei', e)
+      Validator.isCharacter(e.detail.value, this, '宝贝姓名')
+      this.formData.babyName = e.detail.value
+    },
+    // 学校名称
+    babySchoolFn(e) {
+      Validator.isCharacter(e.detail.value, this, '学校名称', false)
+      this.formData.babySchool = e.detail.value
+    },
+    // 获取头像
+    async getAvatar() {
+      let resPath = await WxApi.wxChooseImg().catch(err => {
+        Tips.error('不支持当前图片')
+        return err
+      })
+      let res = await upload.uploadImg(resPath)
+      let uploadRes = res.map(v => {
+        return {
+          url: v
+        }
+      })
+      this.formData.babyPortrait = uploadRes[0].url
+      this.$apply()
+    },
+    submit() {
+      let params = Object.assign({}, this.formData)
+      this.submitValidation(params)
+      params.babySex = Number(this.formData.babySex) === 0 ? 1 : 2
+      if (!this.isSubmit) return false
+      if (!this.formData.babyId) {
+        this.addBabyApi(params)
+      } else {
+        this.updateBabyApi(params)
+      }
+    }
+  }
+  async getDownWebListApi() {
+    try {
+      let res = await enterprise.getDownWebList()
+      this.industryData = res
+      res.map((item) => {
+        // this.industryList.push(item.categoryName)
+      })
+      this.$apply()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async addBabyApi(params) {
+    try {
+      await store.addBaby(params)
+      Tips.toast('添加成功', () => {
+        if (this.from === 'lcp') {
+          wepy.switchTab({
+            url: `/pages/appointment`
+          })
+        } else {
+          wepy.navigateBack({
+            delta: 1
+          })
+        }
+      })
+    } catch (error) { }
+  }
+  async updateBabyApi(params) {
+    try {
+      await store.updateBaby(params)
+      Tips.toast('修改成功', () => {
+        wepy.navigateBack({
+          delta: 1
+        })
+      })
+    } catch (error) { }
+  }
+
+  onShow() {
+
+  }
+  // 数据处理
+  getData(data) {
+    this.formData.babyName = data.babyName
+    this.formData.babyPortrait = data.babyPortrait
+    this.formData.babySex = data.babySex === 1 ? 0 : 1
+    this.formData.babyBirthday = data.babyBirthday
+    this.formData.babySchool = data.babySchool
+    this.$apply()
+  }
+  // 提交时表单校验
+  submitValidation(params) {
+    console.log(params, 'replace')
+    this.isSubmit = 1
+    for (let item of Object.keys(params)) {
+      console.log(params)
+      switch (item) {
+        case 'babyName':
+          Validator.isCharacter(params[item], this, '宝贝姓名')
+          break
+        case 'babyPortrait':
+          Validator.isCharacter(params[item], this, '宝贝头像')
+          break
+        case 'babySex':
+          if (!Validator.isBlank(params[item], { name: '宝贝性别' })) this.isSubmit = 0
+          break
+        case 'babySchool':
+          Validator.isCharacter(params[item], this, '学校名称', false)
+          break
+        // case 'backgroundPicture':
+        //   Validator.isCharacter(params[item], this, '企业背景图')
+        //   break
+        // case 'userName':
+        //   Validator.isCharacter(params[item], this, '姓名')
+        //   break
+        // case 'phone':
+        //   Validator.isMobile(params[item], '手机号码', this)
+        //   break
+        // case 'wechat':
+        //   Validator.isCharacter(params[item], this, '微信号')
+        //   break
+      }
+      if (!this.isSubmit) return false
+    }
+  }
+  async onLoad(options) {
+    this.isIphoneX = wepy.getStorageSync('isIpx')
+    let date = new Date ()
+    this.endTime= date.getFullYear()+ '-' + (date.getMonth() + 1) + '-' + date.getDate()
+    this.from = options && options.from ? options.from : ''
+    this.formData.babyId = options.babyId || ''
+    if (this.formData.babyId) {
+      wx.setNavigationBarTitle({
+        title: '宝贝信息'
+      })
+      const res = await store.babyInfo({
+        babyId: options.babyId
+      })
+      this.getData(res)
+    } else {
+      wx.setNavigationBarTitle({
+        title: '添加宝贝'
+      })
+    }
+    this.$apply()
+  }
+}
+</script>

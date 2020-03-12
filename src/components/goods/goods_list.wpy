@@ -1,0 +1,38 @@
+<style type="scss" scoped>
+  .goods-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background: #fff;
+    /* padding-bottom: 20rpx; */
+  }
+</style>
+
+<template>
+  <view class="goods-list">
+    <repeat for="{{list}}" key="index" index="index" item="item">
+      <GoodsItem :item.sync="item" :mode.sync="mode" />
+    </repeat>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import GoodsItem from '@/components/goods/goods_item'
+  export default class GoodsList extends wepy.component {
+    props = {
+      list: {},
+      mode: {}
+    }
+    components = {
+      GoodsItem
+    }
+    methods = {
+      tap() {}
+    }
+    setVipLet() {
+      this.$invoke('GoodsItem', 'setVipLet')
+    }
+    onLoad() {}
+  }
+</script>

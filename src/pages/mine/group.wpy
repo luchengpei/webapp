@@ -1,0 +1,152 @@
+<style lang="scss">
+@import '../../scss/common';
+.page-container {
+  height: 100%;
+  margin-bottom: 98rpx;
+}
+.list-container {
+  width: 100%;
+  background: $bgColor;
+  margin-top: 88rpx;
+}
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <view class="list-container">
+      <Tab :tab="tab" @change.user="switchTab"/>
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <GroupOrder :item.sync="item" @share.user="share"></GroupOrder>
+      </repeat>
+      <Empty wx:if="{{list.length===0}}" title="暂无团购" subtitle="赶紧去团购吧"></Empty>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Tab from '@/components/common/tab'
+import group from '@/api/group'
+import pagination from '@/mixins/pagination'
+import base from '@/mixins/base'
+import Empty from '@/components/common/empty'
+import GroupOrder from '@/components/group/group_order'
+export default class MineGroup extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的拼团',
+    enablePullDownRefresh: true
+  };
+  components = {
+    Tab,
+    Empty,
+    GroupOrder
+  };
+  data = {
+    list: [],
+    tab: {
+      list: [
+        {
+          id: '-1',
+          title: '全部'
+        },
+        {
+          id: '0',
+          title: '进行中'
+        },
+        {
+          id: '1',
+          title: '已完成'
+        },
+        {
+          id: '2',
+          title: '失败'
+        }
+      ],
+      selectedId: '-1'
+    },
+    sharePath: '', // 分享路径
+    shareTitel: '' // 分享标题
+  };
+
+  mixins = [pagination, base];
+  methods = {
+    switchTab() {
+      this.getListData()
+      this.$apply()
+    },
+    // 分享按钮事件
+    share(val) {}
+  };
+  // 分享 转发
+  onShareAppMessage(e) {
+    const user = wepy.getStorageSync('user')
+    const pid = wepy.getStorageSync('pid')
+    const inviteUser = wepy.getStorageSync('inviteUser')
+    const productId = (e.target && e.target.dataset && e.target.dataset.productId)
+    const activityId = (e.target && e.target.dataset && e.target.dataset.activityId)
+    let val = e.target.dataset.wpyshareA
+    this.sharePath = `/pages/goods/detail?id=${
+      val.productList[0].productId
+    }&mode=group_sale&activityId=${
+      val.groupBuyingActivityId
+    }&shareType=inviter&userGroupBuyingGroupId=${val.userGroupBuyingGroupid}&scene=${pid}_${user.userId || inviteUser}_${productId}_3_${activityId}_`
+    this.shareTitle = '开团分享' // 分享标题
+    console.log('sharePath', this.sharePath)
+    return {
+      title: this.shareTitle,
+      path: this.sharePath,
+      success(res) {
+        console.log('成功', res)
+      }
+    }
+  }
+  // 获取团购订单
+  async getListData() {
+    this.page = await group.getMineGroupList()
+    await this.next()
+    this.list = this.page.list
+    this.dealList()
+    await this._timeDeal('endTimeStamp') // 倒计时
+    console.log('laoz的团购订单数据', this.list)
+    this.$apply()
+  }
+  // 列表传参
+  params() {
+    // 获取优惠券的参数
+    return {
+      groupStatus: this.tab.selectedId
+    }
+  }
+  // 到达底部
+  async onReachBottom() {
+    await this.next()
+    this.list = this.page.list
+    this.dealList()
+    this._timeDeal('endTimeStamp') // 倒计时
+    this.$apply()
+  }
+  // 下拉刷新
+  async onPullDownRefresh() {
+    await this.reload()
+    this.list = this.page.list
+    this.dealList()
+    this._timeDeal('endTimeStamp') // 倒计时
+    this.$apply()
+  }
+  // 团购订单处理
+  dealList() {
+    this.list.map((v, i) => {
+      v.productList.map((v1, i1) => {
+        v1.productThumbnail =
+          v1.productThumbnail.slice(0, 4) === 'http'
+            ? v1.productThumbnail
+            : this.imageUrl + v1.productThumbnail
+        v1.productPrice = v.groupBuyingPrice // 强制修改商品价格
+      })
+    })
+  }
+  onLoad() {
+    this.getListData()
+  }
+}
+</script>

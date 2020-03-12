@@ -1,0 +1,881 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  @import '../../../scss/iconfont';
+  $blockHeight: 270rpx;
+  $blockWidth: 96rpx;
+  page {
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+  }
+  .family-page {
+    // height: 100%;
+    // width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .family-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .family-title {
+      font-size: $fontSize1;
+      font-weight: bold;
+      padding-top: 100rpx;
+      padding-bottom: 20rpx;
+      height: 40rpx;
+      color: $mainColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      >image {
+        margin-left: 20rpx;
+        width: 34rpx;
+        height: 34rpx;
+      }
+    }
+    .family-total-num {
+      font-size: $fontSize4;
+      color: $gray;
+      padding-bottom: 20rpx;
+    }
+    .family-tree-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 120rpx;
+      .family-tree {
+        position: relative;
+        padding: 0 60rpx;
+      }
+      .family-age {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background: #eff2f4;
+        border-radius: 16rpx;
+        width: $blockWidth;
+        padding: 50rpx 10rpx;
+        font-size: 32rpx;
+        color: $black;
+        top: 0;
+        &.family-age-left {
+          left: -120rpx;
+        }
+        &.family-age-right {
+          right: -120rpx;
+        }
+        .family-age__box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: $blockHeight;
+          writing-mode: tb-rl;
+          -webkit-writing-mode: tb-rl;
+          -ms-writing-mode: tb-rl;
+        }
+      }
+    }
+  }
+  .family-info-modal {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(43, 39, 39, 0.77);
+    z-index: 200000;
+    .family-info-box {
+      position: relative;
+      width: 591rpx;
+      border-radius: 10rpx;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      .family-info-header-wrapper {
+        background: $subMainColor;
+        .family-info-header {
+          display: flex;
+          align-items: center;
+          margin: 0 40rpx;
+          padding: 36rpx 0;
+          border-bottom: 1rpx solid $borderColor;
+          .family-info-header-avatar {
+            width: 60rpx;
+            height: 60rpx;
+            border-radius: 30rpx;
+            margin-right: 24rpx;
+            overflow: hidden;
+            >image {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .family-info-header-content {
+            font-size: $fontSize4;
+            color: $black;
+          }
+        }
+        .family-info-btn-group {
+          background: $subMainColor;
+          display: flex;
+          flex-wrap: wrap;
+          padding: 40rpx 30rpx;
+          justify-content: space-around;
+          .family-info-btn {
+            width: 148rpx;
+            height: 54rpx;
+            line-height: 54rpx;
+            text-align: center;
+            border: 2rpx solid $mainColor;
+            border-radius: 6rpx;
+            font-size: $fontSize4;
+            color: $mainColor;
+            &:nth-child(n + 4) {
+              margin-top: 20rpx;
+            }
+          }
+        }
+      }
+      .family-info-options {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 88rpx;
+        background: $mainColor;
+        border-radius: 0 0 10rpx 10rpx;
+        >view {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex: 1;
+          height: 100%;
+          font-size: $fontSize3;
+          color: $subMainColor;
+          &::before {
+            content: '';
+            position: absolute;
+            top: 22rpx;
+            left: 0;
+            width: 1rpx;
+            background: $subMainColor;
+            height: 40rpx;
+          }
+          &:first-child {
+            &::before {
+              width: 0;
+            }
+          }
+        }
+      }
+    }
+    .family-info-close {
+      margin-top: 52rpx;
+      width: 66rpx;
+      height: 66rpx;
+    }
+  }
+  .top-tips {
+    display: flex;
+    align-items: center;
+    height: 68rpx;
+    background: #fefceb;
+    color: #ffa200;
+    padding: 0 30rpx;
+    width: 100%;
+    z-index: 999;
+    .iconfont {
+      margin-right: 18rpx;
+    }
+    >text {
+      font-size: $fontSize4;
+    }
+  }
+  .skip-index {
+    position: fixed;
+    bottom: 30rpx;
+    display: flex;
+    font-size: 24rpx;
+    color: #fff;
+    .home {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 114rpx;
+      height: 70rpx;
+      background: #159dfc;
+      border-radius: 35rpx;
+      margin-right: 20rpx;
+      >i {
+        font-size: 40rpx;
+      }
+    }
+    .call {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 252rpx;
+      height: 70rpx;
+      background: #159dfc;
+      border-radius: 35rpx;
+      >i {
+        margin-right: 16rpx;
+      }
+    }
+  }
+  .modify-sort-modal {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(43, 39, 39, 0.77);
+    z-index: 200000;
+    .modify-sort-box {
+      position: relative;
+      width: 591rpx;
+      border-radius: 10rpx;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      .modify-sort-header-wrapper {
+        background: $subMainColor;
+        .modify-sort-header {
+          display: flex;
+          align-items: center;
+          margin: 0 40rpx;
+          padding: 36rpx 0;
+          border-bottom: 1rpx solid $borderColor;
+          .modify-sort-header-avatar {
+            width: 60rpx;
+            height: 60rpx;
+            border-radius: 30rpx;
+            margin-right: 24rpx;
+            overflow: hidden;
+            >image {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .modify-sort-header-content {
+            font-size: $fontSize4;
+            color: $black;
+          }
+        }
+        .modify-sort-btn-group {
+          display: flex;
+          padding: 20rpx 25rpx;
+          justify-content: space-between;
+          align-items: center;
+          background: $subMainColor;
+          >image {
+            width: 66rpx;
+            height: 66rpx;
+            border-radius: 50%;
+          }
+          .scroll-view_w {
+            width: 400rpx;
+            height: 260rpx;
+            overflow-y: auto;
+            margin: 0 20rpx;
+            .member-info {
+              width: 100%;
+              height: 260rpx;
+              display: flex;
+              align-items: center;
+              .family-tree__li {
+                width: 74rpx;
+                height: 156rpx;
+                margin-left: 20rpx;
+                .family-tree__node {
+                  display: flex;
+                  width: 100%;
+                  height: 100%;
+                  border: 2rpx solid #159dfc;
+                  border-radius: 10rpx;
+                  background: #e4f3ff;
+                  flex-direction: column;
+                  overflow: hidden;
+                  text-decoration: none;
+                  display: inline-block;
+                  -webkit-border-radius: 10rpx;
+                  -moz-border-radius: 10rpx;
+                  -ms-border-radius: 10rpx;
+                  -o-border-radius: 10rpx;
+                  .family-tree__node-inner-avatar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    height: 60rpx;
+                    background: #159dfc;
+                    >image {
+                      width: 48rpx;
+                      height: 48rpx;
+                    }
+                  }
+                  .family-tree__node-inner-text {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 96rpx;
+                    color: #159dfc;
+                    width: 100%;
+                    font-size: 32rpx;
+                    writing-mode: tb-rl;
+                    -webkit-writing-mode: tb-rl;
+                    -ms-writing-mode: tb-rl;
+                  }
+                }
+              }
+              .family-tree__li:nth-child(1) {
+                margin-left: 0
+              }
+            }
+          }
+        }
+      }
+      .modify-sort-options {
+        width: 100%;
+        height: 88rpx;
+        line-height: 88rpx;
+        background: $mainColor;
+        border-radius: 0 0 10rpx 10rpx;
+        font-size: $fontSize2;
+        text-align: center;
+        color: $subMainColor;
+      }
+    }
+    .modify-sort-close {
+      margin-top: 52rpx;
+      width: 66rpx;
+      height: 66rpx;
+    }
+  }
+</style>
+
+<template>
+  <view>
+    <movable-area class="family-page" scale-area style="height: {{windowHeight}}px; width: {{windowWidth}}px;{{configStyle}}">
+      <movable-view class="top-tips" wx:if="{{treeStatus === 'binding'}}">
+        <i class="iconfont icon-info"></i>
+        <text>请点击具体成员申请绑定</text>
+      </movable-view>
+      <movable-view class="family-wrap" @change="handleChange" scale-value="{{scaleValue}}" damping="40" direction="all" x="{{offsetX}}" scale out-of-bounds animation="{{animation}}" style="height: {{treeHeight ? treeHeight : windowHeight}}px; width: {{treeWidth ? treeWidth : windowWidth}}px;">
+        <view class="family-title" id="family-title">{{treeData.genealogyName}}
+          <image wx:if="{{treeStatus === 'manager'}}" @tap="sikpModify" src="/images/family/icon-txt_edit.png" mode="aspectFill"></image>
+        </view>
+        <view class="family-total-num" id="family-total-num">{{treeData.province?'地区：'+treeData.province:''}} 共{{treeData.num}}人</view>
+        <view class="family-tree-wrap" id="family-tree-wrap" style="display: {{loading ? 'none' : ''}};">
+          <view class="family-tree" id="family-tree">
+            <view class="family-age family-age-left">
+              <view class="family-age__box" wx:for="{{treeInfo.treeList}}" wx:key="index">{{item}}世</view>
+            </view>
+            <tree type="test" list="{{treeData.memberTreeList}}" bindchoosenode="handleTapNode"></tree>
+            <view class="family-age family-age-right">
+              <view class="family-age__box" wx:for="{{treeInfo.treeList}}" wx:key="index">{{item}}世</view>
+            </view>
+          </view>
+        </view>
+      </movable-view>
+      <view class="family-info-modal" wx:if="{{showFamilyInfo}}" @touchmove.stop="() => {}">
+        <view class="family-info-box">
+          <view class="family-info-header-wrapper">
+            <view class="family-info-header">
+              <view class="family-info-header-avatar" style="background:{{currentNodeInfo.sex===2?'#fd8a96':'#159dfc'}}">
+                <image src="{{currentNodeInfo.memberAvatar?currentNodeInfo.memberAvatar:currentNodeInfo.sex===1?'/images/family/icon-male.png':'/images/family/icon-female.png'}}"></image>
+              </view>
+              <view class="family-info-header-content">
+                <view class="name">姓名：{{currentNodeInfo.name}}</view>
+                <view class="sex">性别：{{sexTextMap[currentNodeInfo.sex]}}</view>
+              </view>
+            </view>
+            <view class="family-info-btn-group">
+              <view class="family-info-btn" style="{{!currentNodeInfo.mate?'color: #999999;border: 2rpx solid #999999':'color: #06a0ff;border: 2rpx solid #06a0ff'}}" @tap="handleAdd(1)">添加父亲</view>
+              <view class="family-info-btn" style="{{!currentNodeInfo.mate?'color: #999999;border: 2rpx solid #999999':'color: #06a0ff;border: 2rpx solid #06a0ff'}}" @tap="handleAdd(2)">添加母亲</view>
+              <view class="family-info-btn" style="{{!currentNodeInfo.mate?'color: #999999;border: 2rpx solid #999999':'color: #06a0ff;border: 2rpx solid #06a0ff'}}" @tap="handleAdd(3)">添加兄妹</view>
+              <view class="family-info-btn" style="{{!currentNodeInfo.mate?'color: #999999;border: 2rpx solid #999999':'color: #06a0ff;border: 2rpx solid #06a0ff'}}" @tap="handleAdd(4)">添加夫妻</view>
+              <view class="family-info-btn" @tap="handleAdd(5)">添加儿子</view>
+              <view class="family-info-btn" @tap="handleAdd(6)">添加女儿</view>
+            </view>
+          </view>
+          <view class="family-info-options">
+            <view @tap="modifySort">修改排序</view>
+            <view @tap="handleDetail">查看</view>
+            <view @tap="handleEdit">编辑</view>
+            <view @tap="handleDelete">删除</view>
+          </view>
+        </view>
+        <image class="family-info-close" src="/images/pop_close.png" lazy-load="false" @tap="handleClose"></image>
+      </view>
+      <view class="modify-sort-modal" wx:if="{{modifySortPop}}" @touchmove.stop="() => {}">
+        <view class="modify-sort-box">
+          <view class="modify-sort-header-wrapper">
+            <view class="modify-sort-header">
+              <view class="modify-sort-header-avatar" style="background:{{currentNodeInfo.sex===2?'#fd8a96':'#159dfc'}}">
+                <image src="{{currentNodeInfo.memberAvatar?currentNodeInfo.memberAvatar:currentNodeInfo.sex===1?'/images/family/icon-male.png':'/images/family/icon-female.png'}}"></image>
+              </view>
+              <view class="modify-sort-header-content">
+                <view class="name">姓名：{{currentNodeInfo.name}}</view>
+                <view class="sex">性别：{{sexTextMap[currentNodeInfo.sex]}}</view>
+              </view>
+            </view>
+            <view class="modify-sort-btn-group">
+              <image src="/images/family/icon-arrow-left.png" @tap="moveFirst"></image>
+              <scroll-view class="scroll-view_w" scroll-x scroll-left="{{scrollLocation}}">
+                <view class="member-info">
+                  <view class="family-tree__li" wx:for="{{memberSortData}}" wx:key="{{index}}" style="width:{{item.memberId===selectMemberItem.memberId?74:60}}rpx; height:{{item.memberId===selectMemberItem.memberId?196:156}}rpx;" @tap="selectMember('{{item}}')">
+                    <view class="family-tree__node" data-item="{{item}}" style="border: 2rpx solid {{item.sex===2?'#fd8a96':'#159dfc'}};background:{{item.sex===2?'#fff1f3':'#e4f3ff'}};">
+                      <view class="family-tree__node-inner-avatar" style="height:{{item.memberId===selectMemberItem.memberId?74:60}}rpx;background:{{item.sex===2?'#fd8a96':'#159dfc'}}">
+                        <image class="family-tree__avatar-default family-tree__avatar-male" src="{{item.memberAvatar?item.memberAvatar:item.sex===1?'/images/family/icon-male.png':'/images/family/icon-female.png'}}" mode="scaleToFill" lazy-load="false"></image>
+                      </view>
+                      <view class="family-tree__node-inner-text" hover-class="family-tree__node-hover" style="height:{{item.memberId===selectMemberItem.memberId?123:96}}rpx;color:{{item.sex===2?'#fd8a96':'#159dfc'}}">{{item.name}}</view>
+                    </view>
+                  </view>
+                </view>
+              </scroll-view>
+              <image src="/images/family/icon-arrow-right.png" @tap="moveAfter"></image>
+            </view>
+          </view>
+          <view class="modify-sort-options" @tap="confirmMember">
+            确 定
+          </view>
+        </view>
+        <image class="modify-sort-close" src="/images/pop_close.png" lazy-load="false" @tap="modifySortClose"></image>
+      </view>
+      <view class="skip-index" wx:if="{{treeStatus === 'binding'}}">
+        <view class="home" wx:if="{{isInvite}}" @tap="switchTab('/pages/index')">
+          <i class="iconfont icon-Homehomepagemenu"></i>
+        </view>
+        <view class="call" @tap="phoneCall">
+          <i class="iconfont icon-call2"></i> 联系创建人
+        </view>
+      </view>
+    </movable-area>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Tips from '@/utils/Tips'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import router from '@/mixins/router'
+  import Util from '@/utils/Util'
+  import WxApi from '@/utils/WxApi'
+  export default class FamilyTree extends wepy.page {
+    config = {
+      navigationBarTitleText: '家谱管理',
+      usingComponents: {
+        tree: '../../components/tree/index'
+      }
+    }
+    data = {
+      treeStatus: 'manager', // binding 点击绑定 manager 管理者 info 点击查看
+      isInvite: false, // 判断是否是邀请进入的
+      showFamilyInfo: false,
+      loading: true,
+      animation: true,
+      windowHeight: 10, // 屏幕高
+      windowWidth: 10, // 屏幕宽
+      treeHeight: 0, // 家谱树高
+      treeWidth: 0, //  家谱树宽
+      scaleValue: 1, // 缩放比例
+      floorHeight: 110, // 树层高 单位px
+      floorMargin: 38, // 层间距
+      leafWidth: 52, // 子节点宽度
+      leafMargin: 24, // 子节点间距
+      leafMateWidth: 52, // 丈夫妻子节点宽度
+      treeMargin: 70, // 树间距
+      treeAge: 70, // 左右树宽度
+      treeWrapPadding: 60, // 树外边框
+      offsetY: 0,
+      area: '辽宁',
+      treeInfo: {
+        floor: 0,
+        leafCount: 0, // 叶子节点
+        leafMateCount: 0 // 丈夫妻子节点
+      },
+      treeData: [],
+      relationTypeMap: {
+        'father': 1, // 父亲
+        'mother': 2, // 母亲
+        'brother': 3, // 兄弟姐妹
+        'mate': 4, // 伴侣
+        'son': 5, // 儿子
+        'daughter': 6 // 女儿
+      },
+      sexTextMap: {
+        1: '男',
+        2: '女'
+      },
+      currentNodeInfo: {},
+      genealogyId: '1',
+      addOrEditData: {
+        fromMemberId: '',
+        relationType: '',
+        genealogyId: '',
+        type: 'add'
+      },
+      modifySortPop: false,
+      memberSortData: [],
+      selectMemberItem: {},
+      scrollLocation: 0
+    };
+    components = {}
+    mixins = [base, router]
+    methods = {
+      // 分享 转发
+      onShareAppMessage() {
+        return {
+          title: '家谱邀请',
+          path: `packageFamily/pages/family/tree?treeStatus=binding&genealogyId=${this.genealogyId}&isInvite=true&scene=${this.sceneData}`
+        }
+      },
+      sikpModify() {
+        wepy.navigateTo({
+          url: `/packageFamily/pages/family/modify-family?genealogyId=${this.genealogyId}`
+        })
+      },
+      selectMember(item) {
+        this.selectMemberItem = item
+        this.$apply()
+        console.log(item)
+      },
+      // 移动到前面
+      moveFirst() {
+        if (!this.selectMemberItem.memberId) return false
+        let selectIndex = this.memberSortData.findIndex((item) => {
+          return item.memberId === this.selectMemberItem.memberId
+        })
+        if (this.scrollLocation !== 0) {
+          if (selectIndex < 3) {
+            this.scrollLocation = 0
+          } else {
+            this.scrollLocation = this.scrollCompatibility(this.scrollLocation - 40)
+          }
+        }
+        this.leftGo(this.memberSortData, selectIndex)
+        this.$apply()
+      },
+      // 移动到后面
+      moveAfter() {
+        if (!this.selectMemberItem.memberId) return false
+        let selectIndex = this.memberSortData.findIndex((item) => {
+          return item.memberId === this.selectMemberItem.memberId
+        })
+        if (selectIndex > 2) {
+          this.scrollLocation = this.scrollCompatibility((selectIndex - 1) * 40)
+        } else {
+          this.scrollLocation = 0
+        }
+        this.rightGo(this.memberSortData, selectIndex)
+        this.$apply()
+      },
+      // 提交排序
+      confirmMember() {
+        let objectData
+        let params = []
+        this.memberSortData.map((item, index) => {
+          objectData = {}
+          objectData.relationshipId = item.relationshipId
+          objectData.genealogyId = item.genealogyId
+          objectData.orderNum = index
+          params.push(objectData)
+        })
+        this.modifyMemberSortApi(params)
+      },
+      // 打电话
+      phoneCall() {
+        WxApi.wxCall(this.treeData.phone).then(res => {
+          console.log(res)
+        })
+      },
+      // 查看详情
+      handleDetail() {
+        this.addOrEditData.fromMemberId = this.currentNodeInfo.memberId
+        this.addOrEditData.genealogyId = this.currentNodeInfo.genealogyId
+        this.addOrEditData.type = 'look'
+        this.$apply()
+        this.$preload('addOrEditData', this.addOrEditData)
+        wepy.navigateTo({
+          url: 'join-family'
+        })
+      },
+      // 关闭排序弹窗
+      modifySortClose() {
+        this.modifySortPop = false
+        this.$apply()
+      },
+      // 显示修改排序弹窗
+      modifySort() {
+        this.showFamilyInfo = false
+        this.modifySortPop = true
+        this.$apply()
+      },
+      // 编辑
+      handleEdit() {
+        this.addOrEditData.fromMemberId = this.currentNodeInfo.memberId
+        this.addOrEditData.genealogyId = this.currentNodeInfo.genealogyId
+        this.addOrEditData.type = 'edit'
+        this.$apply()
+        this.$preload('addOrEditData', this.addOrEditData)
+        wepy.navigateTo({
+          url: 'join-family'
+        })
+      },
+      // 删除
+      async handleDelete() {
+        try {
+          await family.deletedMember(this.currentNodeInfo.memberId)
+          Tips.success('删除成功')
+          this.showFamilyInfo = false
+          this.$apply()
+          setTimeout(() => {
+            this.initTree()
+          }, 800)
+        } catch (error) {
+          console.log(error)
+        }
+      },
+      // 添加
+      handleAdd(type) {
+        if (Number(type) !== 5 && Number(type) !== 6) {
+          if (!this.currentNodeInfo.mate) return false
+        }
+        this.addOrEditData.fromMemberId = this.currentNodeInfo.memberId
+        this.addOrEditData.relationType = type
+        this.addOrEditData.genealogyId = this.currentNodeInfo.genealogyId
+        this.addOrEditData.sex = this.currentNodeInfo.sex
+        this.addOrEditData.type = 'add'
+        this.$apply()
+        this.$preload('addOrEditData', this.addOrEditData)
+        wepy.navigateTo({
+          url: 'join-family'
+        })
+        this.showFamilyInfo = false
+      },
+      handleChange(e) {
+        // console.log(e)
+      },
+      // 点击树节点
+      handleTapNode(e) {
+        this.currentNodeInfo = e.detail.item
+        if (this.treeStatus === 'binding') { // 绑定
+          this.applyBindingNode(e.detail.item)
+        } else if (this.treeStatus === 'manager') { // 管理
+          this.getMemberListApi({
+            genealogyId: e.detail.item.genealogyId,
+            relationshipId: e.detail.item.relationshipId
+          })
+          this.showFamilyInfo = true
+          this.$apply()
+        }
+      },
+      handleClose() {
+        this.currentNodeInfo = {}
+        this.showFamilyInfo = false
+        this.$apply()
+      }
+    };
+    // 不同屏幕滚动条兼容处理
+    scrollCompatibility(num) {
+      return this.windowWidth / 375 * num
+    }
+    onShow() {
+      const sys = wepy.getSystemInfoSync()
+      this.windowHeight = sys.windowHeight
+      this.windowWidth = sys.windowWidth
+      this.showFamilyInfo = false
+      this.$apply()
+      this.initTree()
+    }
+    async onLoad(option) {
+      this.genealogyId = option.genealogyId
+      this.isInvite = option.isInvite || false
+      this.treeStatus = option.treeStatus ? option.treeStatus : false
+      this.$apply()
+    }
+    // 修改家谱成员排序
+    modifyMemberSortApi(params) {
+      family.modifyMemberSort(params).then(res => {
+        Tips.success('修改成功')
+        this.modifySortPop = false
+        this.$apply()
+        setTimeout(() => {
+          this.initTree()
+        }, 800)
+      })
+    }
+    // 左移动一格
+    leftGo(data, index) {
+      if (Number(index) !== 0) {
+        data[index] = data.splice(index - 1, 1, data[index])[0]
+      } else {
+        // data.push(data.shift())
+      }
+    }
+    // 右移动一格
+    rightGo(data, index) {
+      if (Number(index) !== Number(data.length - 1)) {
+        data[index] = data.splice(index + 1, 1, data[index])[0]
+      } else {
+        // data.unshift( data.splice(index,1)[0])
+      }
+    }
+    // 初始化树信息
+    async initTree() {
+      Tips.loading()
+      const treeData = await family.familyTree({
+        genealogyId: this.genealogyId
+      })
+      this.treeData = treeData
+      Promise.all([
+        this.getRect('.family-title'),
+        this.getRect('.family-total-num')
+      ]).then((rects) => {
+        const titleRect = rects[0]
+        const totalNumRect = rects[1]
+        const treeInfo = this.getMaxFloorAndLeaf(this.treeData.memberTreeList)
+        this.treeInfo = {
+          ...treeInfo,
+          treeList: [...Array(treeInfo.floor).keys()]
+        }
+        this.numDispose(this.treeInfo.treeList)
+        // 树实际高
+        this.treeHeight =
+          this.treeHeight +
+          titleRect.height +
+          totalNumRect.height +
+          treeInfo.floor * this.floorHeight +
+          treeInfo.floor * this.floorMargin +
+          this.treeWrapPadding * 2
+        // 树实际宽 子节点宽度+子节点
+        this.treeWidth =
+          treeInfo.leafCount * this.leafWidth +
+          (treeInfo.leafCount - 1) * this.leafMargin +
+          treeInfo.leafMateCount * this.leafMateWidth +
+          this.treeMargin * 2 +
+          this.treeAge
+        // console.log('treeInfo.leafCount * this.leafWidth', treeInfo.leafCount, this.leafWidth)
+        // console.log('(treeInfo.leafCount - 1) * this.leafMargin', (treeInfo.leafCount - 1), this.leafMargin)
+        // console.log('treeInfo.leafMateCount * this.leafMateWidth', treeInfo.leafMateCount, this.leafMateWidth)
+        // console.log(' this.treeMargin * 2', this.treeMargin)
+        // console.log('treeAge', this.treeAge)
+        // console.log('bftree', this.treeHeight, this.treeWidth)
+        // movable-view实际高度
+        if (this.treeHeight < this.windowHeight) {
+          this.treeHeight = this.windowHeight
+        }
+        // movable-view实际宽度
+        if (this.treeWidth < this.windowWidth) {
+          this.treeWidth = this.windowWidth
+        } else {
+          // 偏移量
+          const offsetX = this.treeWidth - this.windowWidth
+          // console.log('offsetX', offsetX)
+          this.offsetX = this.offsetX - offsetX
+          this.$apply()
+          setTimeout(() => {
+            // 缩放
+            this.scaleValue = (this.windowWidth / this.treeWidth).toFixed(2)
+            this.$apply()
+          }, 10)
+        }
+        // console.log('aftree', this.treeHeight, this.treeWidth)
+        // console.log('window', this.windowHeight, this.windowWidth)
+        this.loading = false
+        this.$apply()
+        Tips.loaded()
+      })
+    }
+    // 世系数字转中文处理
+    numDispose(data) {
+      let numList = []
+      data.map((item, index) => {
+        item = Util.numberToChinese(item + 1)
+        numList.push(item)
+      })
+      this.treeInfo.treeList = numList
+      this.$apply()
+    }
+    // 递归获取树层数&叶子节点数量
+    getMaxFloorAndLeaf(treeData) {
+      let max = 0
+      let leafCount = 0
+      let leafMateCount = 0
+      function mapList(list, floor) {
+        list.forEach(e => {
+          e.floor = floor
+          if (floor > max) {
+            max = floor
+          }
+          if (e.mate && e.mate.length > 0) {
+            leafMateCount += e.mate.length
+          }
+          if (e.child && e.child.length > 0) {
+            mapList(e.child, floor + 1)
+          } else {
+            leafCount += 1
+          }
+        })
+      }
+      mapList(treeData, 1)
+      console.log('树层', max, '最小子节点', leafCount, '夫妻节点', leafMateCount)
+      return {
+        floor: max,
+        leafCount,
+        leafMateCount
+      }
+    }
+    saveApplyMemberApi(params) {
+      family.saveApplyMember(params).then((res) => {
+        Tips.success(res)
+        setTimeout(() => {
+          this.initTree()
+        }, 800)
+      })
+    }
+    // 获取成员成员节点的所有成员列表
+    async getMemberListApi(params) {
+      try {
+        let res = await family.getMemberAll(params)
+        this.memberSortData = JSON.parse(JSON.stringify(res))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 申请绑定
+    applyBindingNode(data) {
+      let that = this
+      wx.showModal({
+        content: '确认申请绑定该成员吗？', // 提示的内容,
+        showCancel: true, // 是否显示取消按钮,
+        cancelText: '取消', // 取消按钮的文字，默认为取消，最多 4 个字符,
+        cancelColor: '#000000', // 取消按钮的文字颜色,
+        confirmText: '确定', // 确定按钮的文字，默认为取消，最多 4 个字符,
+        confirmColor: wepy.$instance.globalData.color.main || '#06a0ff', // 确定按钮的文字颜色,
+        success(res) {
+          if (res.confirm) {
+            that.saveApplyMemberApi({
+              memberId: data.memberId
+            })
+          }
+        }
+      })
+    }
+  }
+</script>

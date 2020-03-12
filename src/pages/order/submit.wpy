@@ -1,0 +1,557 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .order-submit-page {
+    display: flex;
+    flex-direction: column;
+    background: $bgColor;
+    margin-bottom: 98rpx;
+    .order-address {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 40rpx;
+      background: #fff;
+      margin-bottom: 20rpx;
+      overflow: hidden;
+      .address-add {
+        height: 56rpx;
+        width: 56rpx;
+      }
+      .address-add-text {
+        flex: 1;
+        margin-left: 20rpx;
+        font-size: 30rpx;
+        color: $black;
+      }
+      .left {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        .customer-info {
+          margin-left: 34rpx;
+          font-size: $fontSize2;
+          line-height: 36rpx;
+          color: $black;
+          .name {}
+          .mobile {
+            margin-left: 20rpx;
+          }
+        }
+        .address {
+          display: flex;
+          margin-top: 20rpx;
+          margin-right: 20rpx;
+          .location-icon {
+            width: 24rpx;
+            height: 24rpx;
+            margin-top: 5rpx;
+          }
+          .location {
+            flex: 1;
+            margin-left: 10rpx;
+            font-size: $fontSize4;
+            line-height: 36rpx;
+            color: $gray;
+            display: -webkit-box;
+            word-break: break-all;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+      .right-arrow {
+        height: 24rpx;
+        width: 14rpx;
+      }
+      .border-line {
+        position: absolute;
+        height: 6rpx;
+        width: 782rpx;
+        bottom: 0;
+        left: -16rpx;
+      }
+    }
+    .order-info {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      margin-bottom: 20rpx;
+      .order-header {
+        padding: 0 40rpx;
+        height: 88rpx;
+        line-height: 88rpx;
+        .shop-name {
+          font-size: $fontSize3;
+          color: $mainColor;
+          padding-left: 20rpx;
+          border-left: 6rpx solid $mainColor;
+          height: 30rpx;
+        }
+      }
+      .order-goods-container {
+        padding-left: 40rpx;
+      }
+      .order-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: $fontSize2;
+        height: 88rpx;
+        margin-left: 40rpx;
+        padding-right: 40rpx;
+        &.remark {
+          .title {
+            flex: inherit;
+          }
+        }
+        .title {
+          flex: 1;
+          color: $black;
+        }
+        .subtitle {
+          color: $gray;
+        }
+        .right-arrow {
+          height: 24rpx;
+          width: 14rpx;
+          margin-left: 30rpx;
+        }
+        input {
+          flex: 1;
+          margin-left: 40rpx;
+          text-align: right;
+        }
+      }
+      .order-price {
+        height: 88rpx;
+        line-height: 88rpx;
+        margin-left: 40rpx;
+        padding-right: 40rpx;
+        justify-content: space-between;
+        &.order-count {
+          height: 60rpx;
+          line-height: 60rpx;
+          text {
+            font-size: $fontSize3;
+            color: $gray;
+          }
+        }
+        text {
+          font-size: $fontSize2;
+          .price {
+            color: $priceRed;
+          }
+        }
+      }
+    }
+    .pay-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: $fontSize2;
+      height: 88rpx;
+      padding: 0 40rpx;
+      background: #fff;
+      .title {
+        flex: 1;
+        color: $black;
+      }
+      .subtitle {
+        color: $gray;
+      }
+      .right-arrow {
+        height: 24rpx;
+        width: 14rpx;
+        margin-left: 30rpx;
+      }
+    }
+    .bottom-submit-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 92rpx;
+      line-height: 92rpx;
+      width: 100%;
+      display: flex;
+      background: #fff;
+      z-index: 100;
+      .total-price {
+        display: flex;
+        margin: 0 40rpx;
+        align-items: center;
+        flex: 1;
+        font-size: 28rpx;
+        width: 400rpx;
+        .price {
+          flex: 1;
+          line-height: 28rpx;
+          color: $priceRed;
+          display: inline-block;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      .submit {
+        width: 350rpx;
+        background: #f7564c;
+        color: #fff;
+        font-size: $fontSize2;
+        text-align: center;
+      }
+    }
+    .order-price .subtitle {
+      padding-right: 30rpx;
+    }
+  }
+</style>
+
+<template>
+  <!-- <view class="page-container"> -->
+  <!-- <OrdersSubmitPage :routeOptions.sync="routeOptions" /> -->
+  <!-- </view> -->
+  <view class="order-submit-page" style="{{configStyle}}">
+    <!-- 选择地址 -->
+    <view class="order-address" wx:if="{{address}}" @tap="routerTo('/pages/mine/address?f=order')">
+      <view class="left">
+        <view class="customer-info">
+          <text class="name">{{address.receiver}}</text>
+          <text class="mobile">{{address.receiverPhone}}</text>
+        </view>
+        <view class="address">
+          <image class="location-icon" src="{{imageUrl}}/ic-location.png" wx:if="{{imageUrl}}" />
+          <text class="location">{{address.province}}{{address.city}}{{address.area}}{{address.address}}</text>
+        </view>
+        <view>
+        </view>
+      </view>
+      <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" />
+      <image class="border-line" src="{{imageUrl}}/line.png" mode="widthFix" />
+    </view>
+    <!-- 添加地址 -->
+    <view class="order-address" wx:else @tap="routerTo('/pages/mine/address_detail?t=add&f=order')">
+      <image class="address-add" src="{{imageUrl}}/address-add.png" wx:if="{{imageUrl}}" />
+      <text class="address-add-text">添加收货地址</text>
+      <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}" />
+      <image class="border-line" src="{{imageUrl}}/line.png" mode="widthFix" wx:if="{{imageUrl}}" />
+    </view>
+    <!-- 订单详情 -->
+    <view class="order-info">
+      <view class="order-header bdr-b">
+        <text class="shop-name">商品明细</text>
+      </view>
+      <view class="order-goods-container">
+        <repeat for="{{products}}" key="index" index="index" item="item">
+          <OrderGoods :detail.sync="item.product" :detailExtend.sync="item.productTpExtend" />
+        </repeat>
+      </view>
+      <!-- 配送方式 -->
+      <view class="order-row delivery bdr-b">
+        <text class="title">配送方式</text>
+        <text class="subtitle">普通快递</text>
+      </view>
+      <!-- 优惠券 -->
+      <view class="order-row coupon bdr-b" @tap="selectCoupon">
+      <text class="title">优惠券</text>
+      <text class="subtitle">{{selectShwoText}}</text>
+      <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" />
+      </view>
+      <!-- 买家留言 -->
+      <view class="order-row remark bdr-b">
+        <text class="title">买家留言</text>
+        <input value="" type="text" placeholder="选填，给商家留言协商" placeholder-class="placeholder" maxlength="140" @input="messageChange" />
+      </view>
+      <!-- 订单合计 -->
+       <!-- 是会员且开启了会员价显示 -->
+      <view class="order-row order-price order-count" wx:if="{{orderInfo.dataList[0].product.isShowMemberPrice && isMember === 0 && mode === 'default'}}">
+        <text class="title">商品金额</text>
+        <text>¥{{orderInfo.productTotalMemberPrice}}</text>
+      </view>
+       <view class="order-row order-price order-count" wx:else>
+        <text class="title">商品金额</text>
+        <text>¥{{orderInfo.productTotalPrice}}</text>
+      </view>
+      <view class="order-row order-price order-count">
+        <text class="title">运费</text>
+        <text>{{orderInfo.postage === 0 ? '包邮' : '+￥' + postage}}</text>
+      </view>
+      <view class="order-row order-price total">
+        <text class="title">合计</text>
+        <view>
+          <text class="subtitle">共{{sumNum}}件商品</text>
+          <text>小计：<text class="price">¥{{orderInfo.dataList[0].product.isShowMemberPrice && isMember === 0 && mode === "default"  ? orderInfo.totalMemberPrice : orderInfo.totalPriceNew||orderInfo.totalPrice }}</text></text>
+        </view>
+      </view>
+    </view>
+    <!--  付款方式 -->
+    <view class="pay-row bdr-t bdr-b">
+      <text class="title">付款方式</text>
+      <text class="subtitle">微信支付</text>
+      <!-- <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" /> -->
+    </view>
+    <!-- 弹起优惠券选择 -->
+    <CouponSelect :display.sync="selectCouponHtml" :list.sync="couponList" @select.user='selectCouponTap'></CouponSelect>
+    <!-- 底部操作按钮 -->
+    <view class="bottom-submit-bar {{isIpx ? 'fix-ipx-btn' : ''}}">
+      <view class="total-price">
+        <view>合计：</view>
+        <text class="price">¥{{orderInfo.dataList[0].product.isShowMemberPrice && isMember === 0 && mode === "default" ? orderInfo.totalMemberPrice:orderInfo.totalPriceNew||orderInfo.totalPrice}}</text>
+      </view>
+      <view class="submit" @tap="submit">提交订单</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import order from '@/api/order'
+  import coupon from '@/api/coupon'
+  import router from '@/mixins/router'
+  import OrderGoods from '@/components/order/order_goods'
+  import CouponSelect from '@/components/coupon/bottom_select_coupon'
+  import Event from '@/utils/Event'
+  import Tips from '@/utils/Tips'
+  import dis from '@/api/dis'
+  import { EC_ORDER_TYPE } from '@/utils/Constants'
+
+  const orderType = new Map([
+    ['default', 1],
+    ['group_sale', 2],
+    ['flash_sale', 3],
+    ['chain', 4],
+    ['cash_back', 5],
+    ['member', 6]
+  ])
+
+  export default class GoodsSubmit extends wepy.page {
+    config = {
+      navigationBarTitleText: '待付款订单'
+    }
+    components = {
+      OrderGoods,
+      CouponSelect
+    };
+    data = {
+      mode: 'default', // 订单类型
+      from: '', // 来源
+      address: null, // 当前地址
+      addressId: 0, // 地址ID
+      goodsId: 0, // 商品ID
+      buyNum: 0, // 购买数量
+      tpId: 0, // 商品规格（SKU）ID
+      orderInfo: null, // 订单详情
+      products: null, // 商品详情
+      message: '',
+      sumNum: 0,
+      orderToken: '',
+      shoppingCartIds: '',
+      checkIds: '', // 购物车选中Ids
+      activityId: '', // 活动ID
+      isMember: '',
+      userGroupBuyingGroupId: false, // 拼团组件，团ID
+      postage: '',
+      selectCouponHtml: '', // 是否底部弹起选择优惠券
+      selectCouponData: {}, // 选择的优惠券数据
+      selectShwoText: '', // 选择优惠券后的提示文字
+      couponList: []// 优惠券列表
+    }
+    mixins = [base, router]
+    methods = {
+      selectCouponTap(val) { // 选择优惠券
+        this.selectCouponData = val
+        this.selectShwoText = val.couponsName
+        this.selectCouponData.id = val.couponsId// 优惠券ID
+        this.selectCouponData.money = val.faceValue // 优惠券价格
+        if (val.useThreshold === 1) { // 如果选择有邮费的优惠券 邮费-邮费优惠券小于0 为0 大于0为抵扣多少邮费
+          this.postage = Number(this.orderInfo.postage) - Number(this.selectCouponData.money) < 0 ? 0 : Number(this.orderInfo.postage) - Number(this.selectCouponData.money)
+          this.orderInfo.totalPriceNew = (Number(this.orderInfo.productTotalPrice) + Number(this.postage)).toFixed(2)
+        } else {
+          this.postage = this.orderInfo.postage
+          this.orderInfo.totalPriceNew = (Number(this.orderInfo.totalPrice - this.selectCouponData.money)).toFixed(2)
+        }
+        this.selectCouponHtml = false
+        this.$apply()
+      },
+      messageChange(e) {
+        this.message = e.detail.value
+      },
+      submit() {
+        // 检查是否选择收货地址
+        if (!(this.address && this.address.addressId)) {
+          Tips.toast('未选择收货地址', null, 'none')
+          return false
+        }
+        let user = wepy.getStorageSync('user')
+        let param = {
+          orderPrice: this.orderInfo.totalPrice,
+          type: orderType.get(this.mode),
+          userId: user.userId,
+          orderPostageType: this.orderInfo.postageType,
+          payType: 1,
+          addressId: this.address.addressId,
+          leaveAMessage: this.message,
+          userName: user.username || '',
+          headImg: user.avatar || '',
+          phone: user.telephone || '',
+          token: this.orderToken,
+          shoppingCartIds: this.shoppingCartIds,
+          objectId: this.activityId, // 活动ID
+          userGroupBuyingGroupId: this.userGroupBuyingGroupId, // 拼团组件活动id
+          couponIds: this.selectCouponData.couponsUserId, // 优惠券ID
+          couponMoney: this.postage ? this.selectCouponData.money : this.orderInfo.postage // 优惠券价格 如果优惠券-邮费优惠券<0 传邮费 小于0传优惠券实际金额
+        }
+        if (!Object.keys(this.selectCouponData).length) param.couponMoney = 0
+        // 先单个商品
+        param.orderProductList = []
+        this.products.map((item) => {
+          param.orderProductList.push({
+            'buyingNum': item.product.buyNum,
+            'productTpExtendId': item.productTpExtend.productTpExtendId
+          })
+        })
+        // 下单
+        order.submit(param).then(async(res) => {
+          try {
+            let _this = this
+            let oid = res.productOrderId
+            let orderNo = res.productOrderNo
+            // let wxdata = await order.pay(oid, orderNo, user.openId)
+            // 获取调起支付的微信参数
+            let payInfo = await order.thirdPay({
+              orderNo: orderNo,
+              orderType: EC_ORDER_TYPE
+            })
+            wx.requestPayment({
+              timeStamp: payInfo.timeStamp,
+              nonceStr: payInfo.nonceStr,
+              package: payInfo.wxPackage,
+              signType: payInfo.signType,
+              paySign: payInfo.paySign,
+              success: function(res) {
+                wx.redirectTo({
+                  url: `/pages/order/result?price=${_this.orderInfo.dataList[0].product.isShowMemberPrice && _this.isMember === 0 ? _this.orderInfo.totalMemberPrice : _this.orderInfo.totalPriceNew || _this.orderInfo.totalPrice}&mode=${_this.mode}`
+                })
+              },
+              fail: function(res) {
+                if (_this.mode === 'group_sale') {
+                  order.cancel(oid).then(() => {
+                  })
+                }
+                wx.redirectTo({
+                  url: `/pages/order/detail?oid=${oid}&mode=${_this.mode}`
+                })
+              }
+            })
+          } catch (error) {
+            console.log('error', error)
+          }
+        })
+      },
+      async selectCoupon() { // 选择优惠券
+        this.selectCouponHtml = 'yangmi'
+        this.$apply()
+      }
+    }
+    // 处理获取可用优惠券列表参数
+    dealOrderInfo() {
+      let json = {}
+      this.products.forEach(row => {
+        json[row.product.productId] = row.product.productPrice * row.product.buyNum
+      })
+      return JSON.stringify(json)
+    }
+    async onLoad(options) {
+            // 检测是否是会员
+      await dis.getMemberInfo().then((res) => {
+        this.isMember = res.applyStatus
+      })
+      this.userGroupBuyingGroupId = options.userGroupBuyingGroupId || ''// 团ID
+      this.tpId = options.t || 0
+      this.goodsId = options.g
+      this.buyNum = options.n
+      this.checkIds = options.cs && options.cs.split(',')
+      this.mode = options.mode || 'default'
+      this.from = options.f || ''
+      this.activityId = options.activityId || ''
+      this.orderToken = new Date().getTime()
+      Event.listen('TRADE_ADDRESS_UPDATE', this.updateAddress.bind(this), this)
+      this.initData()
+    }
+    // 初始化数据
+    initData() {
+      if (this.from === 'cart') {
+        this.getOrderInfofromCart()
+      } else {
+        this.getOrderInfo()
+      }
+    }
+    // 获取可用的优惠券列表
+    async getIsUsefullList(money) {
+      this.couponList = await coupon.myCouponUseful({money})
+      this.selectShwoText = `${this.couponList.length === 0 ? '没有' : this.couponList.length + '张'}优惠券可用`
+      this.$apply()
+    }
+    // 获取可用的优惠券
+    async getCanUseCoupon() {
+      let params = {
+        issuedId: wepy.getStorageSync('pid'),
+        postAge: this.orderInfo.postage ? this.orderInfo.totalPrice : 0,
+        orderInfo: this.dealOrderInfo()
+      }
+      let data = await order.orderCoupon(params)
+      this.couponList = data
+      this.selectShwoText = data.length ? `可用(${data.length})` : `(无优惠券)`
+      this.$apply()
+    }
+    // 从购物车结算
+    getOrderInfofromCart() {
+      let param = {
+        shoppingCartIds: this.checkIds
+      }
+      this.loginCatch(async() => {
+        this.orderInfo = await order.preOrderfromCart(param)
+        this.address = this.orderInfo.address
+        this.products = this.orderInfo.dataList
+        this.sumNum = this.orderInfo.sumNum
+        this.postage = this.orderInfo.postage
+        this.shoppingCartIds = this.checkIds.join(',')
+        this.getCanUseCoupon()// 获取订单信息 调用改订单可使用的优惠券列表
+            // 获取可用的优惠券 -->不要邮费
+        // this.getIsUsefullList(Number(this.orderInfo.totalPrice - (this.orderInfo.postage || 0)).toFixed(2))
+        this.$apply()
+      }, () => {
+        this.getOrderInfofromCart()
+      })
+    }
+    // 从立即购买结算
+    async getOrderInfo() {
+      this.orderInfo = await order.preOrder({
+        productId: this.goodsId,
+        productTpExtendId: this.tpId,
+        num: this.buyNum,
+        objectId: this.activityId,
+        type: orderType.get(this.mode)})
+      this.address = this.orderInfo.address
+      this.products = this.orderInfo.dataList
+      this.sumNum = this.orderInfo.sumNum
+      this.postage = this.orderInfo.postage
+      this.$apply()
+      this.getCanUseCoupon()
+      // 获取可用的优惠券 -->不要邮费
+      // this.getIsUsefullList(Number(this.orderInfo.totalPrice - (this.orderInfo.postage || 0)).toFixed(2))
+    }
+    // 更新收货地址信息
+    updateAddress(address) {
+      console.log('address', address)
+      this.address = address
+      this.$apply()
+    }
+    clearAddress() {
+      this.address = null
+      this.$apply()
+    }
+  }
+</script>

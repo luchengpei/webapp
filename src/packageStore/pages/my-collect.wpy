@@ -1,0 +1,82 @@
+<style lang="scss" scoped>
+  .news-page {
+    .news-list {
+      // background: #fff;
+    }
+  }
+</style>
+
+<template>
+  <view class="news-page" style="{{configStyle}}">
+    <view class="news-list">
+      <repeat for="{{newsData}}" key="index" index="index" item="item">
+        <NewsCard :mode.sync="item" ></NewsCard>
+      </repeat>
+      <Empty wx:if="{{newsData.length===0}}" title="暂无收藏喔" subtitle="赶紧去收藏吧"></Empty>
+    </view> 
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import NewsCard from './news_card'
+  import pagination from '@/mixins/pagination'
+  import base from '@/mixins/base'
+  import store from '@/api/store'
+  import Empty from '@/components/common/empty'
+  export default class NewsPage extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的收藏',
+      enablePullDownRefresh: true
+    }
+    components = {
+      NewsCard,
+      Empty
+    }
+    data = {
+      newsData: []// 资讯数据
+    }
+    mixins = [base, pagination]
+    methods = {
+    }
+    // // 获取资讯分类 选项卡
+    // async getNewsType() {
+    //   let data = await news.newsTypelist()
+    //   // await this.next()
+    //   this.tab.list = data
+    //   this.tab.selectedId = this.tab.list[0].id
+    //   this.getNewsList()
+    //   this.$apply()
+    // }
+    // 获取收藏资讯
+    async getNewsList() {
+      this.page = await store.collectList()
+      await this.next()
+      this.newsData = this.page.list
+      this.$apply()
+      console.log('laoz的数据', this.newsData)
+    }
+    // 列表传参
+    params() { // 获取收藏资讯的参数
+      return {
+        type: 1
+      }
+    }
+    // 到达底部
+    async onReachBottom () {
+      await this.next()
+      this.newsData = this.page.list
+      this.$apply()
+    }
+     // 下拉刷新
+    async onPullDownRefresh () {
+      await this.reload()
+      this.newsData = this.page.list
+      this.$apply()
+    }
+    onShow () {
+      // this.getNewsType()
+      this.getNewsList()
+    }
+}
+</script>

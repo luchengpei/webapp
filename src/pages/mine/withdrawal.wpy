@@ -1,0 +1,330 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.withdrawal-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  .withdrawal-content {
+    background: #fff;
+    padding: 0 30rpx;
+    margin-bottom: 30rpx;
+    .title {
+      font-size: $fontSize3;
+      color: $gray;
+      margin-top: 26rpx;
+    }
+    .money-wrap {
+      display: flex;
+      align-items: center;
+      padding: 70rpx 0 50rpx 0;
+      color: $black;
+      .money-text {
+        font-size: 50rpx;
+        align-self: flex-end;
+      }
+      .money-input {
+        flex: 1;
+        font-size: 80rpx;
+        height: 80rpx;
+        line-height: 80rpx;
+      }
+      .money-placeholder {
+        font-size: $fontSize4;
+      }
+      .money-all {
+        font-size: $fontSize3;
+        color: $mainColor;
+      }
+    }
+    .real-money {
+      margin-bottom: 36rpx;
+      font-size: $fontSize4;
+      color: #f7564c;
+    }
+  }
+  .tips {
+    color: $gray;
+    font-size: $fontSize4;
+    margin: 30rpx;
+  }
+
+  .func-wrap {
+    background: #fff;
+    margin-bottom: 30rpx;
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      padding: 0 30rpx;
+      .radio {
+        position: relative;
+        &:last-child {
+          &:after {
+            display: none;
+          }
+        }
+        &:after {
+          position: absolute;
+          content: '';
+          bottom: 0;
+          left: 30rpx;
+          height: 1rpx;
+          width: 720rpx;
+          background: $borderColor;
+        }
+        .radio-inner {
+          margin: 30rpx 24rpx;
+          .radio-title {
+            color: $black;
+            font-size: $fontSize1;
+          }
+          .radio-desc {
+            margin-top: 6rpx;
+            font-size: $fontSize4;
+            color: $gray;
+            >view {
+              width: 600rpx;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .card-wrap {
+    background: #fff;
+    margin-bottom: 30rpx;
+    .bank-wrap {
+      display: flex;
+      height: 100rpx;
+      align-items: center;
+      position: relative;
+      padding: 0 30rpx;
+      box-sizing: border-box;
+      // &::after {
+      //   position: absolute;
+      //   content: '';
+      //   top: 0;
+      //   width: 720rpx;
+      //   height: 1rpx;
+      //   background: $borderColor;
+      // }
+      .bank-logo {
+        width: 44rpx;
+        height: 44rpx;
+        margin-right: 30rpx;
+      }
+      .bank-name {
+        flex: 1;
+        font-size: 26rpx;
+        color: $black;
+        text-align: left;
+      }
+      .icon-arrow  {
+        color: $gray;
+      }
+    }
+  }
+}
+.bottom {
+  position: fixed;
+  bottom: 100rpx;
+  left: 30rpx;
+}
+</style>
+
+<template>
+  <view class="withdrawal-wrap" style="{{configStyle}}">
+    <view class="withdrawal-content">
+      <view class="title">提现金额(元)</view>
+      <view class="money-wrap">
+        <view class="money-text">￥</view>
+        <input class="money-input" type="digit" value="{{money}}" @input="onInput"/>
+        <view class="money-all" @tap="setMaxMoney">全部</view>
+      </view>
+      <view class="real-money" wx:if="{{!validateResult}}">请输入正确的金额</view>
+      <view class="real-money" wx:elif="{{!money}}">本次最多可转出{{maxAccount}}元</view>
+      <view class="real-money" wx:elif="{{realMoney >= 0}}">实际到账金额：￥{{realMoney}} </view>
+      <view class="real-money" wx:elif="{{realMoney < 0}}">可提现金额不足</view>
+      <view class="real-money" wx:else>本次最多可转出{{maxAccount}}元</view>
+    </view>
+    <view class="func-wrap">
+      <FuncTitle title="提现方式"></FuncTitle>
+      <radio-group class="radio-group" @change="onRadioChange">
+          <radio class="radio" value="{{item.withdrawMethod}}" checked="{{currentWithdrawMethod === (item.withdrawMethod + '')}}" color="{{color.main}}" wx:for="{{withdrawSetting}}" wx:if="{{item.isEnabled}}" wx:key="{{index}}" >
+            <view class="radio-inner">
+              <view class="radio-title">{{withdrawMethodMap[item.withdrawMethod]}}</view>
+               <view class="radio-desc">
+                 <view>{{item.remark}}</view>
+                </view>
+            </view>
+          </radio>
+      </radio-group>
+      
+    </view>
+    <view class="card-wrap">
+      <CardTitle title="提现卡号"></CardTitle>
+      <view class="bank-wrap">
+        <image class="bank-logo" src="/images/ic-bank.png" mode="aspectFill"></image>
+        <view class="bank-name">{{wallet.cardText}}</view>
+        <i class="iconfont icon-arrow"></i>
+      </view>
+    </view>
+    <!-- <view class="tips">单次、单日最多可转出5000元</view> -->
+    <button class="g-button" @tap="onSubmit">提交</button>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import wallet from '@/api/wallet'
+import base from '@/mixins/base'
+import Tips from '@/utils/Tips'
+import Title from '@/components/common/title'
+
+export default class Withdrawal extends wepy.page {
+  config = {
+    navigationBarTitleText: '提现'
+  };
+  components = {
+    FuncTitle: Title,
+    CardTitle: Title
+  };
+  data = {
+    user: '',
+    account: '',
+    money: '',
+    tel: '',
+    code: '',
+    wallet: {},
+    radioOptions: [
+      {title: '快速到账', value: '美国', desc: '预计两小时内到账，手续费：1.5 元/笔\n最低提现金额 100 元，单日限额  5000 元'},
+      {title: '普通转账', value: '美国', desc: '人工审核后线下转账，到账时间长，手续费：0.5 元/笔\n最低提现金额 100 元，单日限额  5000 元'}
+    ],
+    inputPlaceholder: '',
+    currentWithdrawMethod: '1',
+    withdrawSetting: [],
+    withdrawMethodMap: {
+      '1': '普通转账',
+      '2': '快速到账'
+    },
+    maxAccount: '0.00',  // 最多可提现余额
+    realMoney: '', // 实际到账金额
+    validateResult: true  // 校验成功
+  };
+  mixins = [base];
+  methods = {
+    // 设置可提现最高金额
+    setMaxMoney() {
+      this.money = this.maxAccount
+      this.getRealMoney()
+      this.$apply()
+    },
+    // 提交
+    async onSubmit() {
+      if (this.money === '' || `${this.money}` === '0' || `${this.money}` === '0.00') {
+        Tips.toast('请输入提现金额', null, 'none')
+        return
+      }
+      // 校验输入金额小于最大可提现金额
+      if (Number(this.money) > Number(this.maxAccount)) {
+        Tips.toast('提现金额超出最大可提现金额', null, 'none')
+        return
+      }
+      // 校验输入金额大于最低提现金额
+      if (Number(this.money) < Number(this.currentSetting.minAmount)) {
+        Tips.toast(`最小提现金额是${this.currentSetting.minAmount}元`, null, 'none')
+        return
+      }
+       // 校验实际到账金额大于0
+      if (Number(this.realMoney) < 0) {
+        Tips.toast('请输入正确的提现金额', null, 'none')
+        return
+      }
+      await wallet.applyWithdraw({
+        amount: this.money,
+        withdrawMethod: this.currentWithdrawMethod
+      })
+      await Tips.success('提现申请成功')
+      wepy.navigateBack({ delta: 1 })
+    },
+    // 输入监听
+    onInput(e) {
+      const value = e.detail.value
+      this.money = value
+      this.getRealMoney()
+      console.log('1111', 222)
+
+      this.validateWithdraw()
+      this.$apply()
+    },
+    // 选择提现方式
+    async onRadioChange(e) {
+      this.currentWithdrawMethod = e.detail.value
+      this.currentSetting = this.withdrawSetting.filter(v => {
+        return v.withdrawMethod === +this.currentWithdrawMethod
+      })[0]
+      this.$apply()
+      await this.getWalletAmount()
+      this.getRealMoney()
+    }
+  };
+  async onLoad() {
+    await this.getWithdrawSetting()
+    await this.getWalletNum()
+    await this.getWalletAmount()
+  }
+  // 获取钱包金额
+  async getWalletNum() {
+    this.wallet = await wallet.walletNum()
+    this.$apply()
+  }
+  // 提现配置
+  async getWithdrawSetting() {
+    this.withdrawSetting = await wallet.withdrawSetting()
+    this.currentSetting = this.withdrawSetting.filter(v => {
+      return v.withdrawMethod === +this.currentWithdrawMethod
+    })[0]
+    this.$apply()
+  }
+  // 可提现余额
+  async getWalletAmount() {
+    if (this.currentWithdrawMethod === 1) {   // 普通转账
+      this.walletAmount = -1  // 单日无限制
+    } else {
+      this.walletAmount = await wallet.walletAmount({
+        withdrawMethod: this.currentWithdrawMethod
+      })
+    }
+    // 最大可提现余额
+    let maxAccount = ''
+    // 钱包余额
+    const walletAccount = this.wallet.walletAccountEntity && this.wallet.walletAccountEntity.notPresented ? this.wallet.walletAccountEntity.notPresented : 0.00
+    if (this.walletAmount === -1) {  // 单日无限额，直接使用钱包余额
+      maxAccount = walletAccount
+    } else if (walletAccount && walletAccount > this.walletAmount) {  // 钱包余额存在并且大于可提现余额，使用可提现余额
+      maxAccount = this.walletAmount
+    } else if (walletAccount && walletAccount <= this.walletAmount) { // 钱包余额存在并且小于可提现余额，使用钱包余额
+      maxAccount = walletAccount
+    } else {
+      maxAccount = '0.00'
+    }
+    // 钱包余额
+    this.inputPlaceholder = `本次最多可转出${maxAccount}元`
+    this.maxAccount = maxAccount
+    this.$apply()
+  }
+  // 计算实际到账金额
+  getRealMoney() {
+    // 计算实际到账金额,普通到账无手续费
+    const realMoney = this.currentSetting.commission ? (Number(this.money) - Number(this.currentSetting.commission || 0)).toFixed(2) : Number(this.money)
+    this.realMoney = realMoney
+    this.$apply()
+  }
+  // 校验提现金额
+  validateWithdraw() {
+    const rule = /^\d+(\.\d+)?$/
+    this.validateResult = this.money === '' ? true : !!(rule.exec(this.money))
+    this.$apply()
+  }
+}
+</script>

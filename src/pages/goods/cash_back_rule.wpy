@@ -1,0 +1,58 @@
+<style lang="scss">
+  @import '../../scss/common';
+  page {
+    height: 100%;
+    .goods-cash-back-rule {
+      height: 100%;
+      background: #fff;
+      .rule {
+        display: flex;
+        flex-direction: column;
+        padding: 30rpx 40rpx;
+        >text {
+          font-size: 34rpx;
+          color: #111111;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="goods-cash-back-rule" style="{{configStyle}}">
+    <Title title="返现规则" />
+    <view class="rule">
+      <text>1.邀请好友帮您一起来返现，多帮多返，返现有最大额度；\n
+    2.对于同一次返现活动，您只能帮助返现一次；\n
+    3.每次返现金额随机，在规定时间内，参与的好友越多，返现总金额越多；\n
+    4.您每天最多可以帮助3个好友返现；\n
+    5.商品下单成功后可分享返现；\n
+    6.等交易结束（售后服务期结束）后通过微信零钱返现；\n
+    7.中途取消订单或者退货则返现活动关闭</text>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import Title from '@/components/common/title'
+  export default class CashBackRule extends wepy.page {
+    config = {
+      navigationBarTitleText: '好友返现'
+    }
+    components = {
+      Title
+    };
+    data = {
+      firstLoading: true,
+      list: [],
+      page: {
+        list: []
+      },
+      fixed: false
+    }
+    mixins = [base]
+    onLoad(options) {}
+  }
+</script>

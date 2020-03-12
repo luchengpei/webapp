@@ -1,0 +1,386 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .news-detail-page {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    padding-bottom: 200rpx;
+    .title { 
+      padding: 40rpx 40rpx 33rpx 40rpx;
+      font-size: 34rpx;
+      line-height: 48rpx;
+      color: $black;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .news-info {
+      display: flex;
+      padding-left: 40rpx;
+      padding-right: 40rpx;
+        margin-bottom:20rpx;
+        box-sizing: border-box;
+      .news-time {
+        flex: 1;
+        font-size: 24rpx;
+        color: $gray;
+      }
+      .news-tag {
+        display: flex;
+        text {
+          // width: 68rpx;
+          height: 28rpx;
+          font-size: 20rpx;
+          color: #fff;
+          background: $mainColor;
+          padding: 2rpx 10rpx;
+          margin-left: 20rpx;
+          border-radius: 5rpx;
+          text-align: center;
+          line-height: 28rpx;
+        }
+      }
+    }
+    .news-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      //justify-content: space-between;
+      align-items: center;
+      height: 100rpx;
+      width: 100%;
+      background: #fff;
+      z-index: 100;
+      padding: 0 40rpx;
+      border-top: 1rpx solid $borderColor;
+      .comment-box{
+        width: 337rpx;
+        height: 56rpx;
+        line-height: 56rpx;
+        border: 1rpx solid $borderColor;
+        border-radius: 4rpx;
+        color: #b2b2b2;
+        text-indent: 16rpx;
+        font-size: $fontSize4
+        }
+      .bottom-item {
+        position: relative;
+        // width:36rpx;
+        // display: flex;
+        // flex-direction: column;
+        // justify-content: center;
+        // align-items: center;
+        margin-left: 60rpx;
+        image {
+          width: 60rpx;
+          height: 60rpx;
+        }
+        .iconfont{
+         color: #aaaaaa;
+         font-size:48rpx
+        }
+        .i-like{
+          color: $mainColor
+        }
+        text {
+          margin-top: 5rpx;
+          font-size: 24rpx;
+          color: $black;
+        }
+        button{
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            border: none;
+            top:0
+        }
+
+        .badge {
+          top: -5rpx;
+          left:12px;
+          position: absolute;
+          border-radius: 20rpx;
+          background: #f12c20;
+          font-size: 24rpx;
+          color: #fff;
+          width:100%;
+          //min-width: 36rpx;
+          height:35rpx;
+          padding-left: 10rpx;
+          padding-right: 10rpx;
+          text-align:center;
+        }
+      }
+    }
+  }
+  // 
+  .news-content{
+    padding-bottom: 30rpx;
+    box-sizing: border-box;
+  }
+</style>
+
+<template>
+  <view class="news-detail-page" style="{{configStyle}}">
+    <!-- 引入富文本样式 -->
+    <import src="../../components/wxparse/wxParse.wxml" />
+    <text class="title">{{newInfo.informationMainEntity.infoTitle}}</text>
+    <view class="news-info">
+      <text class="news-time">{{newInfo.informationMainEntity.createTime}}</text>
+      <view class="news-tag">
+        <text>{{newInfo.informationMainEntity.sourceFrom?'转载':'原创'}}</text>
+        <!-- <text>原创</text> -->
+      </view>
+    </view>
+    <view class="news-content">
+        <Html2wxml :parserContent.sync="productDesc"></Html2wxml>
+    </view>
+    <!-- 底部 -->
+    <view>
+      <officalComment :list.sync="commentList" @getCommentList.user="moreComment" @addCommentLike.user="addCommentLike"></officalComment>
+    </view>
+    <view class="news-bottom-bar safe-area-bottom">
+        <view class="comment-box" @tap='goComment'>
+          我来说两句
+        </view>
+        <view class="bottom-item" @tap="like">
+          <i class="iconfont icon-ic_like {{newInfo.praise?'i-like':''}}"></i>
+          <view class="badge" wx:if="{{newInfo.informationMainEntity.praisePointsNum+newInfo.informationMainEntity.virtualPraisePoints<999&&newInfo.informationMainEntity.praisePointsNum+newInfo.informationMainEntity.virtualPraisePoints>0}}">
+           {{newInfo.informationMainEntity.praisePointsNum+newInfo.informationMainEntity.virtualPraisePoints}}
+          </view>
+          <view class="badge" wx:if="{{newInfo.informationMainEntity.praisePointsNum+newInfo.informationMainEntity.virtualPraisePoints>999}}">999+</view>
+        </view>
+        <view class="bottom-item" @tap="collection">
+          <i class="iconfont icon-ic_collect {{newInfo.collection?'i-like':''}}"></i>
+          <view class="badge" wx:if="{{newInfo.informationMainEntity.collectionNum>0&&newInfo.informationMainEntity.collectionNum<999}}">
+            {{newInfo.informationMainEntity.collectionNum}}
+          </view>
+          <view class="badge" wx:if="{{newInfo.informationMainEntity.collectionNum>999}}">
+            999+
+          </view>
+        </view>
+        <view class="bottom-item">
+          <i class="iconfont icon-ic_share "></i>
+          <view class="badge" wx:if="{{newInfo.informationMainEntity.shareNum>0&&newInfo.informationMainEntity.shareNum<999}}">
+            {{newInfo.informationMainEntity.shareNum}}
+          </view>
+          <view class="badge" wx:if="{{newInfo.informationMainEntity.shareNum>999}}">
+            999+
+          </view>
+          <button plain open-type="share"   class="share-button"></button>
+        </view>
+    </view>
+    <CommInput :show.sync="showTrue" @commSub.user="subComment"></CommInput>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import newRouter from '@/mixins/new_router'
+  import Html2wxml from '@/components/common/html2wxml'
+  import CommInput from '@/components/common/comment_input'
+  import officalComment from '@/components/common/comment_list'
+  import pagination from '@/mixins/pagination'
+  import news from '@/api/news'
+  import Tips from '@/utils/Tips'
+  export default class NewsDetailPage extends wepy.page {
+    config = {
+      navigationBarTitleText: '资讯详情',
+      enablePullDownRefresh: true
+    }
+    components={
+      Html2wxml,
+      CommInput,
+      officalComment
+    }
+    mixins = [base, newRouter, pagination]
+    data = {
+      newInfo: '',
+      productDesc: '',
+      andLike: 'no', // 检测点赞
+      showTrue: false,
+      content: '',
+      commentList: [],
+      isLike: false
+    }
+    methods = {
+      // 更多评论
+      async moreComment() {
+        await this.next()
+        this.commentList = this.page.list
+        this.$apply()
+      },
+    // 评论点赞
+      async addCommentLike(val) {
+        const query = {
+          isPraise: val.isPraise,
+          objectId: val.commentId
+        }
+        await news.addCommentLike(query)
+        this.commentList.forEach(row => {
+          if (row.commentId === val.commentId) {
+            row.isPraise = Number(!row.isPraise)
+            if (row.isPraise) {
+              row.praise_points_num = row.praise_points_num + 1
+              Tips.toast('已点赞', null, 'none')
+            } else {
+              row.praise_points_num = row.praise_points_num - 1
+              Tips.toast('取消点赞', null, 'none')
+            }
+          }
+        })
+        this.$apply()
+      },
+      // 点赞
+      like() {
+        this.addLikeHttp()
+      },
+      // 收藏
+      collection() {
+        this.addCollectionHttp()
+      },
+      // 评论
+      goComment() {
+        // setTimeout(() => {
+        //   this.showTrue = true
+        // }, 300)
+        this.showTrue = true
+        this.$apply()
+      },
+      // 分享
+      share() {
+      },
+      async readyComment() {
+        await this.getSaying()
+        this.$apply()
+      },
+      // 发表评论
+      async subComment(value) {
+        this.content = value
+        const query = {
+          activityId: this._getRouterQuery.id,
+          content: this.content,
+          sourceType: 0,
+          answerId: 0
+        }
+        await news.addCommentmian(query)
+        this.getCommentList()
+        this.$apply()
+      }
+    }
+     // 分享 转发
+    onShareAppMessage(res) {
+      let title = '资讯' // 标题
+      // let path = `/pages/news/detail?id=${this._getRouterQuery.id}&scene=${wepy.getStorageSync('pid')}_${wepy.getStorageSync('user').userId}` // 路径与参数
+      let path = `/pages/news/detail?id=${this._getRouterQuery.id}&scene=${this.sceneData}` // 路径与参数
+      const query = {
+        id: this._getRouterQuery.id
+      }
+      return {
+        title,
+        path,
+        success(res) {
+          news.addShareNum(query)
+         // this.newInfo.informationMainEntity.shareNum
+        }
+      }
+    }
+    // 点赞
+    async addLikeHttp() {
+      let query = {
+        informationId: this._getRouterQuery.id,
+        objectType: 1,
+        isPraise: this.newInfo.praise
+      }
+      await news.addLike(query)
+      this.newInfo.praise = Number(!this.newInfo.praise)
+      if (!this.newInfo.praise) {
+        this.newInfo.informationMainEntity.praisePointsNum = this.newInfo.informationMainEntity.praisePointsNum - 1
+        Tips.toast('取消点赞', null, 'none')
+      } else {
+        this.newInfo.informationMainEntity.praisePointsNum = this.newInfo.informationMainEntity.praisePointsNum + 1
+        Tips.toast('已点赞', null, 'none')
+      }
+      this.$apply()
+    }
+    // 收藏
+    async addCollectionHttp() {
+      let query = {
+        informationId: this._getRouterQuery.id,
+        objectType: 1,
+        isCollection: this.newInfo.collection
+      }
+      await news.addCollection(query)
+      this.newInfo.collection = Number(!this.newInfo.collection)
+      if (!this.newInfo.collection) {
+        this.newInfo.informationMainEntity.collectionNum = this.newInfo.informationMainEntity.collectionNum - 1
+        Tips.toast('取消收藏', null, 'none')
+      } else {
+        this.newInfo.informationMainEntity.collectionNum = this.newInfo.informationMainEntity.collectionNum + 1
+        Tips.toast('已收藏', null, 'none')
+      }
+      this.$apply()
+    }
+    // 获取资讯详情
+    async getNewsInfo(id = null) {
+      if (!id) { this._routerBack() } // 没有ID 页面返回
+      this.newInfo = await news.newsInfo(id)
+      this.productDesc = this.newInfo.informationMainEntity.infoContent
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    async getSaying() {
+      // this.commentList = await comment.myCommentList({
+      //   activityId: wepy.getStorageSync('activeId')
+      // })
+      this.$apply()
+    }
+    // 获取评论列表
+    async getCommentList() {
+      try {
+        this.page = await news.commentList()
+        await this.next()
+        this.commentList = this.page.list
+        this.$apply()
+      } catch (error) {
+        console.log(error, 'error')
+      }
+    }
+    params() {
+      const userId = wepy.getStorageSync('user').userId
+      const params = {
+        activityId: this._getRouterQuery.id,
+        sourceType: 0,
+        objectType: 2
+      }
+      const query = userId ? {...params, userId} : {...params}
+      return query
+    }
+    // 上拉加载
+    async handleReachBottom() {
+      await this.next()
+    }
+     // 下拉刷新
+    async onPullDownRefresh () {
+      await this.reload()
+      this.commentList = this.page.list
+      this.$apply()
+    }
+    // 添加阅读量
+    async addReadNum () {
+      const query = {
+        id: this._getRouterQuery.id
+      }
+      news.addReadNum(query)
+    }
+    onLoad(options) {
+      this.getNewsInfo(this._getRouterQuery.id)
+      this.getCommentList()
+      this.addReadNum()
+    }
+  }
+</script>

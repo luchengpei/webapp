@@ -1,0 +1,577 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.mine-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  .top-section {
+    width: 100%;
+    height: 370rpx;
+    background: rgba(9, 102, 73, 1);
+    .bg {
+      position: absolute;
+      width: 100%;
+      height: 370rpx;
+    }
+    .head-wrap {
+      padding: 83rpx 0 0 63rpx;
+      display: flex;
+      position: relative;
+      .head-img {
+        position: relative;
+        .cover {
+          width: 200rpx;
+          height: 200rpx;
+          box-sizing: border-box;
+          border: 6rpx solid #fff;
+          border-radius: 50%;
+        }
+      }
+      .head-text {
+        margin: 24rpx 0 0 56rpx;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        .text-name {
+          color: #fff;
+          font-size: $fontSize2;
+        }
+        .text-tel {
+          margin-top: 10rpx;
+          font-weight: 500;
+          // width: 70rpx;
+          padding: 0 20rpx;
+          height: 28rpx;
+          background-color: #fff;
+          border-radius: 5rpx;
+          font-size: 20rpx;
+          color: rgba(9, 102, 73, 1);
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+  }
+  .center-section {
+    padding: 0 30rpx;
+    position: absolute;
+    width: 100%;
+    top: 320rpx;
+    left: 0;
+    margin-bottom: 30rpx;
+    box-sizing: border-box;
+    // 中间主体
+    .item-wel-wrap {
+      margin-bottom: 30rpx;
+      background-color: #fff;
+      width: 100%;
+      display: flex;
+      padding: 0 30rpx;
+      box-sizing: border-box;
+      flex-direction: column;
+      .wel-item-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .item {
+          margin: $margin 0rpx;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+          flex-basis: 25%;
+          height: 102rpx;
+          .img {
+            width: 58rpx;
+            height: 58rpx;
+          }
+          .text {
+            font-size: $fontSize4;
+            color: $black;
+          }
+        }
+      }
+    }
+  }
+  .condition-wrap {
+    display: flex;
+    flex-direction: row;
+    height: 23rpx;
+    padding: 33rpx 0rpx 0rpx 0rpx;
+    align-items: center;
+    justify-content: center;
+    .line {
+      width: 98rpx;
+      height: 2rpx;
+      background-color: $gray;
+      opacity: 0.5;
+    }
+    .gray {
+      font-size: $fontSize4;
+      color: $gray;
+      margin: 0rpx 20rpx;
+    }
+  }
+  .width-line {
+    width: 100%;
+    height: 2rpx;
+    background-color: $gray;
+    opacity: 0.2;
+  }
+  .monthly-card {
+    .monthly-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20rpx 0;
+      .item-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .member {
+          color: #212121;
+          font-size: $fontSize4;
+        }
+        .price {
+          font-size: 28rpx;
+          font-weight: 500;
+          color: #f7564c;
+          display: flex;
+          align-items: center;
+          margin-top: 10rpx;
+          .marking-price {
+            font-size: $fontSize4;
+            font-weight: 500;
+            color: #999;
+            margin-left: 20rpx;
+            text-decoration: line-through;
+          }
+        }
+      }
+    }
+  }
+  .hour-card-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 30rpx;
+    // 小时卡
+    .card-item {
+      position: relative;
+      width: 300rpx;
+      height: 166rpx;
+      margin-top: 30rpx;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 1px solid #ffffff;
+      .card-bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        border-radius: 10px;
+      }
+      .card-inner {
+        position: relative;
+        padding: 20rpx 50rpx;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: flex-start;
+        .hour-num {
+          font-size: $fontSize3;
+          font-weight: 800;
+          color: $mainColor;
+        }
+        .price {
+          font-size: $fontSize3;
+          font-weight: 500;
+          color: #f7564c;
+        }
+        .marking-price {
+          font-size: $fontSize4;
+          font-weight: 500;
+          margin-left: 6rpx;
+          color: #999;
+          text-decoration: line-through;
+        }
+      }
+    }
+    .card-item-active {
+      border: 1px solid $mainColor;
+    }
+  }
+  .payment-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20rpx 0;
+    .text {
+      font-size: $fontSize3;
+      color: #444;
+      display: flex;
+      .price {
+        color: #f7564c;
+      }
+    }
+  }
+  .payment-btn {
+    height: 60rpx;
+    padding: 0 30rpx;
+    background-color: $mainColor;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $fontSize4;
+    border-radius: 6rpx;
+  }
+  .the-input {
+    margin: 20rpx 0;
+    font-size: $fontSize3;
+    color: #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .input-inner {
+      display: flex;
+      align-items: center;
+      > input {
+        width: 150rpx;
+        text-align: right;
+        margin-right: 20rpx;
+      }
+    }
+  }
+}
+</style>
+
+<template>
+  <view class="mine-page" style="{{configStyle}}">
+    <view class="top-section">
+      <image
+        class="bg"
+        src="../../images/store/members_bg.png"
+      />
+      <view class="head-wrap">
+        <view class="head-img">
+          <image
+            class="cover"
+            src="{{formData.avatar}}"
+            mode="aspectFill"
+          />
+        </view>
+        <view class="head-text">
+          <view class="text-name">{{formData.nickname}}</view>
+          <text
+            class="text-tel"
+            wx:if='{{formData.nickname}}'
+          >{{formData.levelName || 'vip'}}</text>
+        </view>
+      </view>
+    </view>
+    <!-- 定位主体 -->
+    <view class="center-section">
+      <view
+        class="item-wel-wrap"
+        wx:if="{{formData.welfareList.length}}"
+      >
+        <view class="condition-wrap">
+          <view class="line" />
+          <view class="gray">会员专属权益</view>
+          <view class="line" />
+        </view>
+        <view class="wel-item-content">
+          <block
+            wx:for="{{formData.welfareList}}"
+            wx:for-item="item"
+            wx:key="{{memberWelfareId}}"
+            wx:for-index="index"
+          >
+            <view
+              class="item"
+              style="flex-basis: {{100/list.length}}%"
+              @tap="routerTo('/packageStore/pages/menbership?id={{item.memberWelfareId}}')"
+            >
+              <image
+                class="img"
+                src="{{item.welfareIcon}}"
+              />
+              <text class="text">{{item.welfareName}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+      <!-- 小时卡服务 -->
+      <view class="item-wel-wrap">
+        <view class="condition-wrap">
+          <view class="line" />
+          <view class="gray">小时卡服务</view>
+          <view class="line" />
+        </view>
+        <view class="the-input">
+          <view class="title__inline">购买服务</view>
+          <view class="input-inner">
+            <input
+              type="digit"
+              placeholder="{{0}}"
+              maxlength="20"
+              value="{{dataForm.hourNum}}"
+              @focus="hourNumHandle"
+              @blur="hourHanlde('{{item}}')"
+              placeholder-class="g-placeholder"
+            />
+            <view class="hour">小时</view>
+          </view>
+        </view>
+        <view class="width-line"></view>
+        <!-- 小时卡 -->
+        <view class="hour-card-wrap">
+          <view
+            wx:for="{{formData.list}}"
+            wx:for-item="item"
+            wx:for-index="index"
+            wx:key="{{index}}"
+            class="card-item {{item.active ? 'card-item-active' : ''}}"
+            @tap="selectPrice({{item}},{{index}})"
+          >
+            <image
+              class="card-bg"
+              src="../../images/store/members_service_bg_n.png"
+            />
+            <view class="card-inner">
+              <view class="hour-num">{{item.service}}小时</view>
+              <view class="
+            price">￥{{item.newPrice}}</view>
+              <view class="marking-price">￥{{item.price}}</view>
+            </view>
+
+          </view>
+        </view>
+        <view class="width-line"></view>
+        <view class="payment-price">
+          <view class="text">实付：
+            <view class="price">￥ {{dataForm.price}}</view>
+          </view>
+          <view
+            class="payment-btn"
+            @tap='sumbit'
+          >立即购买</view>
+        </view>
+      </view>
+
+      <!-- 月卡服务 -->
+      <!-- 小时卡服务 -->
+      <view class="item-wel-wrap">
+        <view class="condition-wrap">
+          <view class="line" />
+          <view class="gray">月卡服务</view>
+          <view class="line" />
+        </view>
+        <view class="monthly-card">
+          <view class="monthly-item">
+            <view class="item-left">
+              <view class="member">1个月会员</view>
+              <view class="price">￥{{formData.newMonthlyCardPrice}}
+                <view class="marking-price">￥{{formData.monthlyCardPrice}}</view>
+              </view>
+            </view>
+            <view
+              class="payment-btn"
+              @tap='monthlyPay'
+            >购买</view>
+          </view>
+        </view>
+      </view>
+
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import Router from '@/mixins/router'
+import MemberHeader from '@/components/dis/member_header'
+import AvatarBar from '@/components/mine/avatar_bar'
+import MyOrderPannel from '@/components/mine/my_order_pannel'
+import SectionTitle from '@/components/common/title'
+import SimplePannel from '@/components/mine/simple_pannel'
+import SimplePannelList from '@/components/mine/simple_pannel_list'
+// import {
+//   connect
+// } from 'wepy-redux'
+// import {
+//   cartInit
+// } from '@/store/actions'
+import order from '@/api/order'
+import store from '@/api/store'
+// import pay from '@/api/pay'
+import Tips from '@/utils/Tips'
+import WxApi from '@/utils/WxApi'
+import pagination from '@/mixins/pagination'
+// @connect({
+//   isInit(state) {
+//     return state.cart.init
+//   }
+// }, {
+//     cartInit
+//   })
+export default class MinePage extends wepy.page {
+  config = {
+    navigationBarTitleText: '会员主页'
+  };
+  mixins = [base, Router, pagination];
+  components = {
+    AvatarBar: AvatarBar,
+    MemberHeader: MemberHeader,
+    MyOrderPannel: MyOrderPannel,
+    SimplePannel: SimplePannel,
+    SimplePannelList: SimplePannelList,
+    FamilyTitle: SectionTitle,
+    FamilyTitleB: SectionTitle
+  };
+  data = {
+    formData: {
+    },
+    isSumbit: 0,
+    dataForm: {
+      // 设置小时数
+      hourNum: '',
+      price: 0
+    },
+    type: '',
+    num: '',
+    disMemberWelfareList: [
+      {
+        welfareName: '会员亲子课',
+        welfareIcon: '../../images/store/members_ic_class.png'
+      },
+      {
+        welfareName: '送好友VIP',
+        welfareIcon: '../../images/store/members_ic_vip.png'
+      },
+      {
+        welfareName: '外卖',
+        welfareIcon: '../../images/store/members_ic_takeout.png'
+      }
+    ]
+  };
+  methods = {
+    hourNumHandle() {
+      this.isSumbit = 0
+      this.dataForm.price = 0
+      this.dataForm.hourNum = ''
+      this.formData.list.forEach((item, index) => {
+        item.active = false
+      })
+    },
+    hourHanlde(e) {
+      let hoursVaildator = /^[1-9][0-9]*$/
+      console.log(e.detail.value, '0000')
+        if (e.detail.value == '0'){
+        console.log(e.detail.value, '0000')
+        Tips.error(`最少购买${this.formData.minShopping}小时`)
+        this.isSumbit = 2
+        return
+       }
+      if (hoursVaildator.test(e.detail.value)) {
+
+        if (Number(e.detail.value)  < Number(this.formData.minShopping)) {
+          Tips.error(`最少购买${this.formData.minShopping}小时`)
+          this.isSumbit = 2
+          this.dataForm.hourNum = ''
+        } else {
+          this.dataForm.hourNum = e.detail.value
+          this.num = e.detail.value
+          // this.dataForm.price = Number(this.dataForm.hourNum) * Number(this.formData.price)
+          this.dataForm.price = Math.floor((Number(this.dataForm.hourNum) * Number(this.formData.price)) * 100) / 100
+          if (isNaN(this.dataForm.price)) return
+          this.isSumbit = 1
+        }
+      } else {
+        Tips.error('只能输入正整数,请重新输入')
+        this.dataForm.hourNum = ''
+        this.isSumbit = 3
+      }
+      this.type = 1
+    },
+    // 选中推荐小时卡
+    selectPrice(item, index) {
+      this.formData.list.forEach((item, index) => {
+        item.active = false
+      })
+      this.formData.list[index].active = true
+      console.log(this.formData.list)
+      this.dataForm.price = item.newPrice
+      this.dataForm.hourNum = ''
+      this.num = item.service
+      this.isSumbit = 1
+      this.type = 2
+    },
+    // 月卡
+    monthlyPay() {
+      this.type = 3
+      this.num = 1
+      this.sumbitApi()
+    },
+    async  sumbit() {
+      if (this.isSumbit === 2 || !this.type) {
+        Tips.error(`不可购买低于${this.formData.minShopping}小时的服务`)
+        return false
+      }else if(this.isSumbit ===3 || !this.type){
+        Tips.error('只能输入正整数,请重新输入')
+        return false
+      }   
+      await this.sumbitApi()
+    }
+  }
+
+  async sumbitApi() {
+    try {
+      const data = await store.payTime({
+        type: this.type,
+        num: this.num,
+        cardId: ''
+      })
+      const res = await order.thirdPay({
+        orderType: 25,
+        orderNo: data
+      })
+      const payData = {
+        timeStamp: res.timeStamp,
+        nonceStr: res.nonceStr,
+        package: res.wxPackage,
+        signType: res.signType,
+        paySign: res.paySign
+      }
+      WxApi.wxPayFun(payData).then(res => {
+        Tips.toast('购买成功', () => {
+          wepy.navigateBack({
+            delta: 1
+          })
+        }, 'none')
+      }).catch(() => {
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async onLoad() {
+    await this.getData()
+  }
+  // 获取会员主页
+  async getData() {
+    let res = await store.dishouCard()
+    this.dataProcessing(res)
+  }
+  dataProcessing(data) {
+    // 推荐小时卡列表
+    this.formData = data
+    console.log(this.formData, '信息')
+    this.$apply()
+  }
+}
+</script>

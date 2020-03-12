@@ -1,0 +1,26 @@
+<view class="family-tree__ul {{list && list.length === 1 ? 'family-tree__ul-only' : ''}}">
+  <view class="family-tree__li" wx:for="{{list}}"  wx:key="{{index}}">
+    <view class="family-tree__node {{item.isMine ? 'family-tree-mine__node' : ''}}" style="border:2rpx solid {{item.isCreator===1?'#159dfc':item.sex===2?'#ffd7d7':'#c5d7e8'}}" data-item="{{item}}"
+      bindtap="handleClickNode">
+      <view class="family-tree__node-inner-avatar" style="background:{{item.isCreator===1?'#159dfc':item.sex===2?'#ffd7d7':'#c5d7e8'}}">
+        <image class="family-tree__avatar-default family-tree__avatar-male" src="{{item.memberAvatar?item.memberAvatar:item.sex===1?'/images/family/icon-male.png':'/images/family/icon-female.png'}}"
+          mode="scaleToFill" lazy-load="false"></image>
+      </view>
+      <view class="family-tree__node-inner-text" style="font-size: {{item.name.length < 4 ? '32' : item.name.length < 8 ? '28' : '24'}}rpx; line-height: {{item.name.length < 4 ? '32' : item.name.length < 8 ? '28' : '24'}}rpx; color:{{item.isCreator===1?'#159dfc':'#999999'}}" hover-class="family-tree__node-hover">{{item.name}}</view>
+    </view>
+
+    <!-- 妻子丈夫节点 -->
+    <view class="family-tree__mate" style="border:2rpx solid {{mate.isCreator===1?'#159dfc':mate.sex===2?'#ffd7d7':'#c5d7e8'}}" wx:for="{{item.mate}}" wx:for-item="mate" wx:key="index" data-item="{{mate}}"
+      bindtap="handleClickMateNode">
+      <view class="family-tree__mate-inner-avatar" style="background:{{mate.isCreator===1?'#159dfc':mate.sex===2?'#ffd7d7':'#c5d7e8'}}">
+        <image class="family-tree__avatar-default family-tree__avatar-male" src="{{mate.memberAvatar?mate.memberAvatar:mate.sex===2?'/images/family/icon-male.png':'/images/family/icon-female.png'}}"
+          mode="scaleToFill" lazy-load="false"></image>
+      </view>
+      <view class="family-tree__mate-inner-text {{mate.name.length}}" style="font-size: {{mate.name.length < 4 ? '32' : mate.name.length < 8 ? '28' : '24'}}rpx;  line-height: {{mate.name.length < 4 ? '32' : mate.name.length < 8 ? '28' : '24'}}rpx; color:{{mate.isCreator===1?'#159dfc':'#999999'}}" hover-class="family-tree__node-hover" hover-class="family-tree__node-hover">{{mate.name}}</view>
+    </view>
+    <!-- 儿子女儿节点 -->
+    <block wx:if="{{item.child && item.child.length > 0}}">
+      <tree list="{{item.child}}"></tree>
+    </block>
+  </view>
+</view>

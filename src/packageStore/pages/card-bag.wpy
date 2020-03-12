@@ -1,0 +1,196 @@
+<style lang='scss' scoped>
+@import '../../scss/common';
+.mod-baby {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 120rpx;
+  .baby-wrap {
+    margin-top: 26rpx;
+    padding: 0 24rpx;
+    .baby-info {
+      border-radius: 10rpx;
+      box-sizing: border-box;
+      overflow: hidden;
+      height: 200rpx;
+      padding: 0 30rpx;
+      background-color: #1182a4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .bg {
+        height: 200rpx;
+        position: absolute;
+      }
+      .baby-text {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: flex-start;
+        .baby-name {
+          position: relative;
+
+          font-size: $fontSize2;
+          color: #fff;
+        }
+        .baby-authentication {
+          color: rgba(255, 255, 255, 0.5);
+          font-size: $fontSize4;
+          margin-top: 6rpx;
+        }
+        .baby-age {
+          color: $gray;
+          font-size: $fontSize4;
+        }
+      }
+      .end-time {
+        position: relative;
+
+        font-size: $fontSize4;
+        color: rgba(255, 255, 255, 0.5);
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-start;
+        height: 100%;
+        margin-top: 88rpx;
+      }
+    }
+  }
+  .add-baby-wrap {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    .add-baby {
+      width: 100%;
+      height: 92rpx;
+      background-color: $mainColor;
+      font-size: $fontSize3;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  #iphone-x-pb {
+    padding-bottom: 66rpx;
+  }
+}
+</style>
+
+<template>
+  <view
+    class="mod-baby"
+    style="{{configStyle}}"
+  >
+    <view
+      class="baby-wrap"
+      wx:for="{{dataList}}"
+      wx:for-item="item"
+      wx:key="{{index}}"
+      wx:if='{{dataList.length}}'
+      @tap="routerTo('/packageStore/pages/member-homepage')"
+    >
+      <view class="baby-info">
+        <image
+          class="bg"
+          src="../../images/store/card_bg.png"
+        />
+        <view class="baby-text">
+          <view class="baby-name">{{item.type === 1 ? '小时卡' : '月卡'}}</view>
+          <view class="baby-authentication">卡号:{{item.cardNumber }}</view>
+          <view class="baby-authentication">{{item.type === 1 ? '可用范围：全天可用' : '可用范围：16：30 ~ 21：30 内可用'}}</view>
+        </view>
+        <view
+          wx:if='{{item.type === 1}}'
+          class="end-time"
+        >
+          剩余{{item.surplusTime/60}}个小时
+        </view>
+        <view
+          wx:if='{{item.type === 2}}'
+          class="end-time"
+        >
+          <view wx:if='{{item.isExpire === 0}}'>{{item.surplusTime}}到期</view>
+          <view wx:if="{{item.isExpire}}">已过期</view>
+        </view>
+      </view>
+    </view>
+    <Empty
+      fixed="true"
+      title="暂无时光卡"
+      subtitle=""
+      wx:if="{{dataList.length===0}}"
+    ></Empty>
+    <view
+      class="add-baby-wrap"
+      id="{{isIphoneX ? 'iphone-x-pb' : ''}}"
+    >
+      <view
+        class="add-baby"
+        @tap="routerTo('/packageStore/pages/member-homepage')"
+      >
+        购 买
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import nRouter from '@/mixins/new_router'
+import pagination from '@/mixins/pagination'
+import Empty from '@/components/common/empty'
+import Router from '@/mixins/router'
+import store from '@/api/store'
+export default class Commission extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的时光卡'
+  }
+  mixins = [base, nRouter, pagination, Router]
+  data = {
+    isIphoneX: false,
+    tableType: 'commission',
+    header: ['返佣人', '返佣金额'],
+    withdrawableAmount: 0,
+    cumulativeAmount: 0,
+    accountingAmount: 0,
+    yesterDayAmount: 0,
+    dataList: []
+  }
+  components = {
+    Empty
+  }
+  methods = {}
+
+  // async onLoad(options) {
+  //   this.getDataList()
+  //   this.$apply()
+  // }
+  async onShow() {
+    this.isIphoneX = wepy.getStorageSync('isIpx')
+    await this.getDataList()
+    this.$apply()
+  }
+
+  async getDataList() {
+    const data = await store.cardList()
+    this.dataList = data
+    this.$apply()
+  }
+  // 列表传参
+  params() {
+    return {}
+  }
+  // 上拉加载
+  async onReachBottom() {
+    this.dataList()
+  }
+  // 下拉刷新
+  async onPullDownRefresh() {
+    this.dataList()
+  }
+}
+</script>

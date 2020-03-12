@@ -1,0 +1,125 @@
+<style lang='scss' scoped>
+  @import "../../scss/common";
+  .upgrade-header-container {
+    .top-wrap {
+      background-color: #ffffff;
+      margin-bottom: $margin;
+      padding: $margin;
+      .img {
+        width: 200rpx;
+        height: 167rpx;
+        display: block;
+        margin: 0 auto;
+      }
+      .title {
+        font-size: $fontSize3;
+        color: $mainColor;
+        padding-top: 15rpx;
+        text-align: center;
+      }
+      .item-wel-wrap {
+        background-color: $subColor;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        .wel-item-content {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          .item {
+            margin: $margin 0rpx;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            flex-basis: 25%;
+            height: 102rpx;
+            .img {
+              width: 58rpx;
+              height: 58rpx;
+            }
+            .text {
+              font-size: $fontSize4;
+              color: $black;
+            }
+          }
+        }
+      }
+    }
+  }
+  .condition-wrap {
+    display: flex;
+    flex-direction: row;
+    height: 23rpx;
+    padding: 33rpx 0rpx 0rpx 0rpx;
+    align-items: center;
+    justify-content: center;
+    .line {
+      width: 98rpx;
+      height: 0.5rpx;
+      background-color: $gray;
+      opacity: 0.5;
+    }
+    .gray {
+      font-size: $fontSize4;
+      color: $gray;
+      margin: 0rpx 20rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="upgrade-header-container">
+    <view class="column top-wrap">
+      <image wx:if="{{obj.levelIcon}}" class="img" src="{{obj.levelIcon}}" />
+      <image wx:else class="img" src="../../images/mine_page/icon_huiyuan.png" />
+      <view class="title">{{obj.levelName}}</view>
+      <view class="item-wel-wrap" wx:if="{{obj.disMemberWelfareList.length>0}}">
+        <view class="condition-wrap">
+          <view class="line" />
+          <view class="gray">会员专属权益</view>
+          <view class="line" />
+        </view>
+        <view class="wel-item-content">
+          <block wx:for="{{obj.disMemberWelfareList}}" wx:for-item="item" wx:key="{{memberWelfareId}}" wx:for-index="index">
+            <view class="item" style="flex-basis: {{100/list.length}}%" @tap="onClickWel" >
+              <image class="img" src="{{item.welfareIcon}}" />
+              <text class="text">{{item.welfareName}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Item from './item'
+  export default class MemberHeader extends wepy.component {
+    props = {
+      obj: {
+        default: {} // 这个组件的数据对象
+      }
+    }
+    components = {
+      Item
+    }
+    data = {
+      list: [
+        {
+          name: '会员亲子课',
+          img: '../../images/mine_page/dis/mine_ic19.png'
+        },
+        {
+          name: '送好友VIP',
+          img: '../../images/mine_page/dis/mine_ic20.png'
+        },
+        {
+          name: '外卖',
+          img: '../../images/mine_page/dis/mine_ic21.png'
+        }
+      ]
+    }
+  }
+</script>

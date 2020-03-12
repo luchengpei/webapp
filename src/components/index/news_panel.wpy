@@ -1,0 +1,85 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .news-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 30rpx;
+    box-sizing: border-box;
+    &:last-child {
+      &::after {
+        height: 0;
+      }
+    }
+    &::after {
+      position: absolute;
+      content: '';
+      bottom: 0;
+      right: 0;
+      height: 1rpx;
+      width: 720rpx;
+      background: $borderColor;
+    }
+    .news-title {
+      font-size: $fontSize3;
+      color: $black;
+    }
+    >image {
+      margin-top: 16rpx;
+      width: 690rpx;
+      height: 240rpx;
+      border-radius: $borderRadius;
+      background: gray;
+    }
+  }
+</style>
+
+<template>
+  <Panel :title.sync="title">
+    <view slot="content">
+      <view class="news-card" wx:for="{{list}}" wx:key="index" @tap="routerTo('/pages/news/detail?id={{item.id}}')">
+        <view class="news-title two-line">{{item.infoTitle}}</view>
+        <image src="{{item.infoImg}}" mode="aspectFill"></image>
+      </view>
+    </view>
+  </Panel>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import news from '@/api/news'
+  import Panel from '@/components/index/panel'
+  
+  export default class NewsPanel extends wepy.component {
+    mixins = [base, pagination, router]
+    props = {
+    };
+    data = {
+      title: '推荐资讯',
+      list: []  // 资讯列表
+    }
+    components = {
+      Panel
+    }
+    methods = {
+      // 初始化
+      init(data) {
+        console.log('news init', data)
+        this.title = data.title
+        this.initNews()
+      }
+    };
+    onLoad() {}
+    // 获取商品列表
+    async initNews() {
+      try {
+        this.list = await news.recommendList()
+        this.$apply()
+      } catch (error) {}
+    }
+  }
+</script>

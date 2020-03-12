@@ -1,0 +1,44 @@
+<style lang="scss" scoped>
+  @import "../../scss/common";
+  .list-title {
+    width: 100%;
+    height: 87rpx;
+    box-sizing: border-box;
+    line-height: 87rpx;
+    background-color: #ffffff;
+    border-bottom: 1rpx solid $borderColor;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: $margin;
+    .tag {
+      width: 6rpx;
+      height: 30rpx;
+      line-height: 30rpx;
+      background-color: $mainColor;
+      margin-right: 20rpx;
+    }
+    .text {
+      font-size: $fontSize3;
+      color: $black;
+    }
+  }
+</style>
+
+<template>
+  <view class="list-title">
+    <view class="tag"></view>
+    <text class="text">{{title}}</text>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class ListTitle extends wepy.component {
+    props = {
+      title: {
+        default: 'title'
+      }
+    }
+  }
+</script>

@@ -1,0 +1,187 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.edit-card-wrap {
+  display: flex;
+  flex-direction: column;
+  .tips {
+    display: flex;
+    align-items: center;
+    margin: 30rpx;
+    font-size: $fontSize4;
+    color: $gray;
+    .tips__inner {
+      margin: 0 16rpx;
+      color: $black;
+    }
+    .icon-info {
+      margin-left: 20rpx;
+      color: #FFA200;
+    }
+  }
+  .bottom-button {
+    position: fixed;
+    bottom: 100rpx;
+    left: 30rpx;
+  }
+}
+</style>
+
+<template>
+  <view class="edit-card-wrap" style="{{configStyle}}">
+    <view class="tips">
+      请添加<text class="tips__inner">{{form.starName}}</text> 的银行卡
+      <i class="iconfont icon-info"></i>
+    </view>
+    <view class="g-form">
+      <view class="g-form-item">
+        <view class="g-form-label">
+          <view class="g-form-label__inner">卡号</view>
+        </view>
+        <view class="g-form-content">
+          <input class="g-form-input" style="width: 500rpx;" maxlength="23" type="number" placeholder-class="g-placeholder" placeholder="请输入银行卡号" value="{{cardNo}}" @input="onInput('cardNo')"></input>
+        </view>
+      </view>
+      <view class="g-form-item">
+        <view class="g-form-label">
+          <view class="g-form-label__inner">卡类型</view>
+        </view>
+         <view class="g-form-content">
+          <view class="g-form-content__inner">{{cardText}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="g-button bottom-button" hover-class="g-hover" @tap="onSubmit">提交</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+import Validator from '@/utils/Validator'
+import Tips from '@/utils/Tips'
+import wallet from '@/api/wallet'
+const cardTypeMap = {
+  1: '储蓄卡',
+  2: '信用卡'
+}
+export default class EditCard extends wepy.page {
+  config = {
+    navigationBarTitleText: '修改银行卡'
+  };
+  data = {
+    form: {},
+    cardText: '',
+    cardType: '',
+    bankName: '',
+    cardNo: '',
+    bankCard: {}
+  };
+  mixins = [base, router];
+  methods = {
+    onInput(key, e) {
+      const value = e.detail.value
+      if (key === 'cardNo') {
+        this[key] = value.replace(/(\d{4})(?=\d)/g, '$1 ')
+        this.setData({
+          [key]: value.replace(/(\d{4})(?=\d)/g, '$1 ')
+        })
+        this.matchBank()
+      } else {
+        this[key] = value
+      }
+      this.$apply()
+    },
+    onSubmit() {
+      const {name, idCard, phone, subMerchantId} = this.form
+      const {cardNo, bankName, cardType} = this
+      const cardNoStr = cardNo.replace(/\s/g, '')
+      if (!Validator.isBlank(name, {name: '姓名'})) return false
+      if (!Validator.isMobile(phone, {name: '手机号'})) return false
+      if (!Validator.isBlank(idCard, {name: '身份证号'})) return false
+      if (!Validator.isBlank(cardNo, {name: '卡号'})) return false
+      // 银行卡号长度判断、类型判断
+      if (!this.bankCard.cardLength) {
+        Tips.toast('请填写正确的银行卡号', null, 'none')
+        return false
+      }
+      if (this.bankCard.cardLength !== cardNoStr.length) {
+        Tips.toast('请输入完整的银行卡号', null, 'none')
+        return false
+      }
+      if (cardType !== 1) {
+        Tips.toast('仅支持绑定储蓄卡，请换卡重试', null, 'none')
+        return false
+      }
+
+      const form = {
+        name,
+        idCard,
+        phone,
+        cardNo: cardNoStr,
+        bankName,
+        cardType: this.cardType,
+        subMerchantId: subMerchantId
+      }
+      this.toChangeCard(form)
+    }
+  };
+  onLoad(options, data) {
+    // 获取姓名、身份证、手机号
+    const form = options.form ? JSON.parse(options.form) : {}
+    this.form = {
+      ...form
+    }
+  }
+  // 匹配银行信息
+  matchBank() {
+    const cardNo = this.cardNo.replace(/\s/g, '')
+    const cardLen = cardNo.length
+    if (cardLen > 13) {
+      wallet.matchBank({
+        bankNo: cardNo
+      }).then(res => {
+        this.bankName = res.bankName
+        this.cardType = res.cardType
+        this.bankCard = res
+        this.cardText = `${this.bankName} | ${cardTypeMap[res.cardType]}`
+
+        this.$apply()
+      }).catch(err => {
+        this.bankName = ''
+        this.cardText = ''
+        this.bankCard = {}
+        this.cardType = ''
+      })
+    } else {
+      this.bankName = ''
+      this.cardText = ''
+      this.bankCard = {}
+      this.cardType = ''
+      this.$apply()
+    }
+  }
+  // 认证提交
+  toChangeCard(form) {
+    // 使用微信绑定的手机号，不需要验证码流程
+    const {name, idCard, phone, bankName, bankCard} = form
+    const cardNo = this.cardNo.replace(/\s/g, '')
+    const param = {
+      userId: wepy.getStorageSync('user').userId,
+      subMerchantPhone: phone,
+      subMerchantIdCard: idCard,
+      subMerchantBankNo: cardNo,
+      openBank: bankName,
+      userName: name,
+      code: '',
+      isEq: 1 // 是否校验验证码 1不校验 0 校验
+    }
+    const postData = {
+      ...param
+    }
+    wallet.changeCard(postData).then(res => {
+      this._redirectTo('/pages/bank/identity_success')
+    })
+  }
+}
+</script>

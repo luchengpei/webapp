@@ -1,0 +1,373 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+  .image-box {
+    height: 380rpx;
+    width: 100%;
+    background: #444444;
+    image {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .cash-back-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 35rpx 40rpx;
+    background: #fff;
+    .title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .circle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 46rpx;
+        height: 46rpx;
+        border-radius: 50%;
+        line-height: 46rpx;
+        text-align: center;
+        background: #ffe44d;
+        text {
+          font-size: 40rpx;
+          color: #fff;
+        }
+      }
+      .text {
+        margin-left: 15rpx;
+        font-size: 34rpx;
+        line-height: 46rpx;
+        color: $mainColor;
+      }
+    }
+    .remain-time {
+      padding: 24rpx 0;
+      font-size: 24rpx;
+      color: $gray;
+    }
+    .progress-bar {
+      display: flex;
+      flex-direction: column;
+      .progress-title {
+        display: flex;
+        justify-content: space-between;
+        padding: 30rpx 0;
+        font-size: 28rpx;
+        color: $black;
+      }
+      .progress-total {
+        position: relative;
+        width: 670rpx;
+        height: 8rpx;
+        margin-bottom: 30rpx;
+        border-radius: 4rpx;
+        background: #d2d7dc;
+        .progress-success {
+          position: absolute;
+          top: 0;
+          left: 0; // width: 100rpx;
+          height: 8rpx;
+          border-radius: 4rpx;
+          background: $mainColor;
+        }
+      }
+    }
+    .help-btn {
+      position: relative;
+      width: 670rpx;
+      height: 88rpx;
+      padding: 0;
+      margin: 0;
+      line-height: 88rpx;
+      font-size: 36rpx;
+      text-align: center;
+      color: #fff;
+      border-radius: 10rpx;
+      background: $mainColor;
+      border: none;
+      &.finish {
+        color: #999999;
+        background: #fff;
+      }
+      >button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+      }
+    }
+  }
+  .cash-back-list-container {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    margin-top: 30rpx;
+    .pannel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40rpx;
+      height: 88rpx;
+      border-bottom: 1rpx solid $borderColor;
+      .left {
+        display: flex;
+        align-items: center;
+        padding-left: 15rpx;
+        height: 30rpx;
+        font-size: 28rpx;
+        color: $mainColor;
+        border-left: 6rpx solid $mainColor;
+      }
+      .right {
+        font-size: 28rpx;
+        color: $gray;
+        text {
+          color: $mainColor;
+        }
+      }
+    }
+    .log {
+      display: flex;
+      flex-wrap: wrap;
+      padding-bottom: 20rpx;
+      .log-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 20%;
+        .avatar-box {
+          width: 72rpx;
+          height: 72rpx;
+          margin-top: 54rpx;
+          border-radius: 50%;
+          overflow: hidden;
+          image {
+            width: 100%;
+            height: 100%;
+            background: #444444;
+          }
+        }
+        .name {
+          margin-top: 10rpx;
+          font-size: 24rpx;
+          line-height: 36rpx;
+          color: $gray;
+          overflow:hidden;
+          white-space:nowrap;
+          text-overflow:ellipsis;
+          width:90%;
+          text-align:center;
+        }
+        .money {
+          margin-top: 10rpx;
+          font-size: 24rpx;
+          line-height: 36rpx;
+          color: $mainColor;
+        }
+      }
+    }
+    .log-empty {
+      padding: 10rpx 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+      >image {
+        width: 250rpx;
+        height: 240rpx;
+      }
+      >text {
+        font-size: 28rpx;
+        color: $gray;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <view class="image-box">
+      <image src="/images/cash_back_banner.png" mode="aspectFill" />
+    </view>
+    <!-- 返现详情 -->
+    <view class="cash-back-container">
+      <view class="title">
+        <i class="iconfont icon-ic_cash_back" style="font-size: 46rpx;color: #ffe44d;"></i>
+        <text class="text" wx:if="{{detail.timeStatus === 2 && isMine}}">获得返现{{detail.bargainingPrice}}元</text>
+        <text class="text" wx:elif="{{detail.timeStatus === 2 && !isMine}}">{{detail.userName}}获得返现{{detail.bargainingPrice}}元</text>
+        <text class="text" wx:elif="{{detail.timeStatus !== 2 && isMine && !detail.isBargain}}">获得返现{{detail.bargainingPrice}}元</text>
+        <text class="text" wx:elif="{{detail.timeStatus !== 2 && isMine && detail.isBargain}}">获得返现{{detail.bargainingPrice}}元</text>
+        <text class="text" wx:elif="{{detail.timeStatus !== 2 && !isMine && !detail.isBargain}}">{{detail.userName}}获得返现{{detail.bargainingPrice}}元</text>
+        <text class="text" wx:elif="{{detail.timeStatus !== 2 && !isMine && detail.isBargain}}">{{detail.userName}}已收到你的帮助</text>
+      </view>
+      <view class="remain-time" wx:if="{{detail.timeStatus === 1 && detail.bargainingPrice !== detail.totalAmount}}">剩余时间 {{detail.remainFormat}}</view>
+      <view class="remain-time" wx:if="{{detail.timeStatus === 2 || detail.bargainingPrice === detail.totalAmount}}">已结束</view>
+      <view class="progress-bar">
+        <view class="progress-title">
+          <text>￥0</text>
+          <text>返现进度</text>
+          <text>￥{{detail.totalAmount}}</text>
+        </view>
+        <view class="progress-total">
+          <view class="progress-success" style="width: {{progress}}"></view>
+        </view>
+        <view class="help-btn finish" wx:if="{{(detail.timeStatus === 2 || detail.bargainingPrice === detail.totalAmount) && isMine}}">返现已结束</view>
+        <view class="help-btn" wx:elif="{{(detail.timeStatus === 2 || detail.bargainingPrice === detail.totalAmount) && !isMine}}" @tap="routerTo('/pages/goods/cash_back')">我也要购物返现</view>
+        <view class="help-btn" wx:elif="{{detail.timeStatus !== 2 && isMine && !detail.isBargain && detail.bargainingPrice !== detail.totalAmount}}" @tap="doBargain">先试试手气</view>
+        <view class="help-btn" wx:elif="{{detail.timeStatus !== 2 && isMine && detail.isBargain && detail.bargainingPrice !== detail.totalAmount}}">邀请好友帮忙<button open-type="share"></button></view>
+        <view class="help-btn" wx:elif="{{detail.timeStatus !== 2 && !isMine && !detail.isBargain && detail.bargainingPrice !== detail.totalAmount}}" @tap="doBargain">帮TA返现</view>
+        <view class="help-btn" wx:elif="{{detail.timeStatus !== 2 && !isMine && detail.isBargain && detail.bargainingPrice !== detail.totalAmount}}" @tap="routerTo('/pages/goods/cash_back')">我也要购物返现</view>
+      </view>
+    </view>
+    <!-- 返现记录 -->
+    <view class="cash-back-list-container">
+      <view class="pannel">
+        <text class="left">返现记录</text>
+        <text class="right">已有<text>{{userList.length}}人</text>帮砍</text>
+      </view>
+      <view class="log" wx:if="{{userList.length > 0}}">
+        <repeat for="{{userList}}" key="index" index="index" item="item" >
+          <view class="log-item">
+            <view class="avatar-box">
+              <image src="{{item.headImg}}" mode="aspectFill" />
+            </view>
+            <view class="name">{{item.userName}}</view>
+            <view class="money">{{item.bargainPrice}}元</view>
+          </view>
+        </repeat>
+      </view>
+      <view class="log-empty" wx:else>
+        <image src="/images/cash_back_empty.png" mode="aspectFill"/>
+        <text>暂无返现 寂寞如雪</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import cashBack from '@/api/cashBack'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import Util from '@/utils/Util'
+  import Tips from '@/utils/Tips'
+  export default class CashBackDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '返现',
+      enablePullDownRefresh: true
+    }
+    components = {};
+    data = {
+      firstLoading: true,
+      detail: {}, // 砍价详情
+      userBargainId: '', // 砍价活动Id
+      userList: [], // 砍价返现记录
+      timer: null, // 计时器
+      progress: '0%', // 进度
+      user: {},
+      isMine: false, // 是否自己发起
+      btnDisabled: false,
+      sceneData: null
+    }
+    mixins = [base, router]
+    async onLoad(options) {
+      // 从分享进来 带scene 需要初始化项目
+      if (options.scene) {
+        await this.initProject(options)
+      }
+      const scene = options && Util.analyseQrcodeScene(options)
+      this.userBargainId = options.id || scene.activityId
+      this.getCashBackDetail()
+    }
+    // 获取返现详情
+    async getCashBackDetail() {
+      try {
+        this.detail = await cashBack.mineDetail(this.userBargainId)
+        this.userList = this.detail.userBargainRecordList || []
+        this.isMine = parseInt(this.detail.userId) === parseInt(wepy.getStorageSync('user').userId)
+        this.timer = setInterval(Util.counterDown.bind(
+          this,
+          this.detail.bargainEndTimeStamp * 1000,
+          (format) => this.counterCallBack(format), true), 1000)
+        this.getProgress()
+        this.loaded()
+      } catch (error) {
+        this.detail = {}
+      }
+      this.firstLoading = false
+      this.$apply()
+    }
+    // 获取当前进度
+    getProgress() {
+      this.progress = Util.getPercent(this.detail.bargainingPrice, this.detail.totalAmount)
+    }
+    // 倒计时回调
+    counterCallBack(format) {
+      this.detail.remainFormat = format
+      if (!format) {
+        this.detail.timeStatus = 2
+        Util.clearCounter(this.timer)
+      }
+      this.$apply()
+    }
+    // 砍价
+    async doBargain() {
+      if (this.btnDisabled) return
+      const params = {
+        userBargainId: this.userBargainId,
+        headImg: wepy.getStorageSync('user').avatar,
+        userName: wepy.getStorageSync('user').username || ''
+      }
+      this.btnDisabled = true
+      cashBack.bargain(params).then(res => {
+        this.btnDisabled = false
+        Tips.toast('砍价成功', () => {
+          this.getCashBackDetail()
+        }, 'none', 1500)
+      }).catch(error => {
+        this.btnDisabled = false
+        console.log('error', error)
+      })
+    }
+    onUnload() {
+      Util.clearCounter(this.timer)
+    }
+    onHide() {
+      Util.clearCounter(this.timer)
+    }
+    onRoute() {
+      if (this.firstLoading) return
+      this.getCashBackDetail()
+    }
+    onPullDownRefresh() {
+      this.getCashBackDetail()
+    }
+    onShareAppMessage() {
+      // const path = `/pages/goods/cash_back_detail?scene=${pid}_${user.userId}__5_${this.detail.userBargainId}`
+      const sceneData = Util.generateScene({
+        projectId: wepy.getStorageSync('pid'),
+        inviteUser: wepy.getStorageSync('user'),
+        productId: '',
+        type: 5,
+        activityId: this.detail.userBargainId,
+        headId: ''
+      })
+      const path = `/pages/goods/cash_back_detail?scene=${sceneData}`
+      return {
+        path,
+        title: '好友帮挺，返现不停！'
+        // imageUrl: 'url',
+      }
+    }
+  }
+</script>

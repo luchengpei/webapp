@@ -1,0 +1,279 @@
+<style lang='scss' scoped>
+@import '../../scss/common';
+.mod-baby {
+  width: 100%;
+  height: 100%;
+  .head-wrap {
+    height: 260rpx;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    .head-inner {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      font-size: $fontSize2;
+      color: #444;
+      .cover {
+        width: 100rpx;
+        height: 100rpx;
+        border-radius: 50%;
+        margin-bottom: 14rpx;
+      }
+    }
+  }
+  .center-section {
+    margin-top: 30rpx;
+    background-color: #fff;
+    .trusteeship-wrap {
+      padding: 20rpx 30rpx;
+      .trusteeship-item {
+        display: flex;
+        align-items: center;
+        font-size: $fontSize3;
+        line-height: 56rpx;
+        .trusteeship-text {
+          color: #444;
+        }
+        .trusteeship-time {
+          color: #a5a5a5;
+          margin-left: 70rpx;
+        }
+        .adjustment {
+          margin-left: 42rpx;
+        }
+      }
+    }
+  }
+  .time-tip {
+    color: #a5a5a5;
+    font-size: $fontSize4;
+    padding: 20rpx 30rpx 0;
+  }
+  .lately {
+    color: $mainColor;
+    font-size: $fontSize3;
+    padding: 30rpx 0 170rpx 0;
+    display: flex;
+    justify-content: center;
+    font-weight: 500;
+    text-decoration: underline;
+  }
+  .cancel-wrap {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    .cancel {
+      width: 100%;
+      height: 92rpx;
+      background-color: $mainColor;
+      font-size: $fontSize3;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  #iphone-x-pb {
+    padding-bottom: 66rpx;
+  }
+}
+</style>
+
+<template>
+  <view
+    class="mod-baby"
+    style="{{configStyle}}"
+  >
+    <view class="head-wrap">
+      <view class="head-inner">
+        <image
+          class="cover"
+          src="{{dataForm.babyPortrait}}"
+          mode="aspectFill"
+        />
+        <view class="name">{{dataForm.babyName}}</view>
+      </view>
+    </view>
+    <view class="center-section">
+      <TrusteeshipTitle title="托管信息"></TrusteeshipTitle>
+      <view class="trusteeship-wrap">
+        <view class="trusteeship-item">
+          <view class="trusteeship-text">预约时间</view>
+          <view class="trusteeship-time">{{dataForm.bookTimeSlot}}</view>
+        </view>
+        <view class="trusteeship-item">
+          <view class="trusteeship-text">托管时间</view>
+          <view class="trusteeship-time">{{dataForm.depositTimeSlot}}</view>
+        </view>
+        <view class="trusteeship-item">
+          <view class="trusteeship-text">托管时长</view>
+          <view class="trusteeship-time">{{dataForm.depositTime}}</view>
+        </view>
+        <view class="trusteeship-item">
+          <view class="trusteeship-text">消费时长</view>
+          <view class="trusteeship-time">{{dataForm.spendTime}}</view>
+        </view>
+        <view class="trusteeship-item">
+          <view class="trusteeship-text">是否就餐</view>
+          <view class="trusteeship-time">{{dataForm.isEat}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="time-tip">
+      计时按整点和半小时计算，0~29分钟不计时，30~59计半小时
+    </view>
+    <view class="center-section">
+      <MemberTitle title="会员卡信息"></MemberTitle>
+      <view class="trusteeship-wrap">
+        <view class="trusteeship-item">
+          <view class="trusteeship-text">会员卡类型</view>
+          <view class="trusteeship-time adjustment">{{dataForm.spendType}}</view>
+        </view>
+        <view class="trusteeship-item">
+          <view class="trusteeship-text">剩余时长</view>
+          <view
+            class="trusteeship-time"
+            wx:if='{{dataForm.spendTypes === 1}}'
+          >{{dataForm.surplusTime/60}}小时</view>
+          <view
+            class="trusteeship-time"
+            wx:if='{{dataForm.spendTypes === 2}}'
+          >{{dataForm.surplusTime}}到期</view>
+        </view>
+      </view>
+    </view>
+    <view
+      wx:if='{{currPage<5}}'
+      class="lately"
+      @tap="routerTo('/packageStore/pages/trusteeship-record?isLately=1&babyId={{dataForm.babyId}}')"
+    >
+      最近一个月托管记录
+    </view>
+    <view
+      class="cancel-wrap"
+      id="{{isIphoneX ? 'iphone-x-pb' : ''}}"
+    >
+      <view
+        class="cancel"
+        bindtap='confirm'
+        wx:if='{{dataForm.type ===1 }}'
+      >
+        取消预约
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import nRouter from '@/mixins/new_router'
+import Tips from '@/utils/Tips'
+import router from '@/mixins/router'
+import pagination from '@/mixins/pagination'
+import ListTitle from '@/components/common/list_title'
+import store from '@/api/store'
+export default class Commission extends wepy.page {
+  config = {
+    navigationBarTitleText: '托管详情'
+  }
+  mixins = [base, nRouter, pagination, router]
+  data = {
+    isIphoneX: false,
+    dataForm: {},
+    depositId: '',
+    currPage:''
+  }
+  components = {
+    TrusteeshipTitle: ListTitle,
+    MemberTitle: ListTitle
+  }
+  methods = {
+    confirm() {
+      Tips.confirm('确定要取消预约吗？').then(() => {
+        this.deleteHandle()
+      })
+    }
+  }
+  async onLoad(options) {
+    console.log(options.depositId)
+    this.isIphoneX = wepy.getStorageSync('isIpx')
+    this.depositId = options.depositId
+    this.getData(options.depositId)
+    this.$apply()
+  }
+  onShow(){
+    let pages = getCurrentPages()
+    this.currPage = pages.length
+    let  prevPage = pages[pages.length-2]
+    if(this.currPage === 3){
+     prevPage.init() //初始化上个列表的查询字段；
+    }
+    this.$apply()
+  }
+  // 获取数据
+  async getData(depositId) {
+    const res = await store.trusteeshipDetail(depositId)
+    let {
+      depositType,
+      spendType,
+      isEat,
+      surplusTime,
+      depositTimeSlot,
+      bookTimeSlot,
+      depositTime,
+      spendTime
+    } = res
+    let hours = Math.floor(depositTime / 60)
+    let min = depositTime % 60
+    const depositTypeMap = {
+      1: '已预约',
+      2: '托管中',
+      3: '已完成',
+      4: '已取消',
+      5: '已过期'
+    }
+    const spendTypeMap = {
+      1: '小时卡',
+      2: '月卡'
+    }
+    const isEatMap = {
+      1: '是',
+      0: '否'
+    }
+    this.dataForm = {
+      ...res,
+      surplusTime: surplusTime || '',
+      type: depositType,
+      depositType: depositTypeMap[depositType],
+      spendTypes: spendType,
+      spendType: spendTypeMap[spendType],
+      isEatStatus: isEat,
+      isEat: isEatMap[isEat],
+      depositTimeSlot: depositTimeSlot || '--',
+      depositTime: depositTime ? `${hours}小时${min}分钟` : '--',
+      spendTime: spendTime ? `${spendTime / 60}小时` : '--',
+      bookTimeSlot: bookTimeSlot || '--'
+    }
+    this.$apply()
+  }
+  // 取消预约
+  async deleteHandle() {
+    let tipsText = this.dataForm.isEatStatus ? '预约取消成功，退还餐费请联系管理员' : '预约取消成功'
+    await store.cancelBook(this.depositId)
+    Tips.toast(tipsText, () => {
+      wepy.navigateBack({
+        delta: 1
+      })
+    }, 'none', 1500)
+  }
+}
+</script>

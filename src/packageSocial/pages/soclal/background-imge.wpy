@@ -1,0 +1,111 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .background_imge {
+    padding-top: 68rpx;
+    padding-bottom: 92rpx;
+  }
+  .top-tips {
+    display: flex;
+    align-items: center;
+    height: 68rpx;
+    background: #fefceb;
+    color: #ffa200;
+    padding: 0 30rpx;
+    width: 100%;
+    z-index: 999;
+    .iconfont {
+      margin-right: 18rpx;
+    }
+    >text {
+      font-size: $fontSize4;
+    }
+  }
+  .save {
+    height: 92rpx;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    flex: 1;
+    text-align: center;
+    background: #159dfc;
+    color: #ffffff;
+    line-height: 92rpx;
+    font-size: $fontSize3;
+  }
+</style>
+
+<template>
+  <view class="background_imge">
+    <movable-view class="top-tips">
+      <i class="iconfont icon-info"></i>
+      <text>最多可以上传{{upLoadNum}}张图片，每张图片大小2M</text>
+    </movable-view>
+    <view class="upload-wrap">
+      <SelectImg :uploadList.sync="proofMaterial" @uploadFile.user='uploadFile' :upLoadNum.sync="upLoadNum" :isClose.sync='isAdd'></SelectImg>
+    </view>
+    <view class="save" @tap="save">
+      保存
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import SelectImg from '@/components/activity/upload'
+  export default class BackgroundImge extends wepy.page {
+    config = {
+      navigationBarTitleText: '企业背景图'
+    }
+    mixins = [base]
+    components = {
+      SelectImg
+    }
+    data = {
+      proofMaterial: [],
+      isAdd: true,
+      typeSkip: '',
+      imageData: [],
+      upLoadNum: 9
+    }
+    onLoad(option) {
+      this.typeSkip = option.typeSkip
+      if (this.typeSkip === 'enterpriseBgd') {
+        wx.setNavigationBarTitle({
+          title: '企业背景图'
+        })
+      } else if (this.typeSkip === 'homeBgd') {
+        wx.setNavigationBarTitle({
+          title: '背景图'
+        })
+      } else if (this.typeSkip === 'productCatalogue') {
+        wx.setNavigationBarTitle({
+          title: '产品图册'
+        })
+      } else if (this.typeSkip === 'companyProfile') {
+        wx.setNavigationBarTitle({
+          title: '企业项目介绍'
+        })
+      }
+      this.upLoadNum = Number(option.upLoadNum) || 9
+      this.proofMaterial = wepy.getStorageSync(this.typeSkip) || []
+      this.imageData = wepy.getStorageSync(this.typeSkip) || []
+      this.$apply()
+      console.log(this.typeSkip, this.upLoadNum)
+    }
+    onShow() {}
+    methods = {
+      uploadFile(data) {
+        this.imageData = data
+        this.$apply()
+      },
+      save() {
+        wepy.setStorageSync(this.typeSkip, this.imageData)
+        wepy.navigateBack({
+          delta: 1
+        })
+      }
+    }
+  }
+</script>

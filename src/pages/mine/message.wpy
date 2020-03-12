@@ -1,0 +1,244 @@
+<style lang="scss">
+  @import '../../scss/common';
+  $borderBottom: #d7dbdf;
+  $titleColor:#212121;
+  .message {
+    .message-list {
+      padding-top: 88rpx;
+      background: $subMainColor;
+      overflow: hidden;
+      .item {
+        border-bottom: 1rpx solid $borderBottom;
+        position: relative;
+        padding: 30rpx 30rpx 30rpx 0;
+        margin-left: 30rpx;
+        display: flex;
+        justify-content: center;
+        justify-content: space-between;
+        align-items: center;
+        >image {
+          height: 100rpx;
+          width: 100rpx;
+        }
+        .content {
+          width: 470rpx;
+          .content-title {
+            color: $titleColor;
+            font-size: $fontSize2;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 470rpx;
+          }
+          .content-introduce {
+            margin: 6rpx 0 10rpx 0;
+            color: $gray;
+            font-size: $fontSize4;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2; //需要控制的文本行数
+            overflow: hidden;
+            max-width: 470rpx;
+          }
+          .content-time {
+            color: $gray;
+            font-size: $fontSize4;
+          }
+        }
+        .right {
+          display: flex;
+          align-items: center;
+          .point {
+            width: 16rpx;
+            height: 16rpx;
+            background-color: $priceRed;
+            border-radius: 50%;
+          }
+          >image {
+            width: 27rpx;
+            height: 29rpx;
+            margin-left: 10rpx;
+          }
+        }
+      }
+      .item:nth-last-child(1) {
+        border-bottom: 0rpx;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="message">
+    <Tab :tab.sync="tab" @change.user="switchTab" />
+    <view class="message-list" wx:if="{{listData.length}}">
+      <repeat for="{{listData}}" key="index" index="index" item="item">
+        <SwiperDelete :swipeData.sync="item" :index="index" :stopAnimate.sync="editBtnStatus" @delItem.user="deletedMessage">
+          <view class="item" @tap="skipDetails('{{item}}')">
+            <image src="{{item.icon?item.icon:'/images/icon_message.png'}}" />
+            <view class="content">
+              <view class="content-title">{{item.title}}</view>
+              <view class="content-introduce">{{item.content}}</view>
+              <view class="content-time">{{item.createTime}}</view>
+            </view>
+            <view class="right">
+              <view class="point" wx:if="{{!item.isSee}}"></view>
+              <image src="/images/right.png" />
+            </view>
+          </view>
+        </SwiperDelete>
+      </repeat>
+    </view>
+    <block wx:elif>
+      <Empty image='/images/family/icon-none.png' title='暂无消息' subtitle='' :imageStyle.sync="imageStyle"></Empty>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import mine from '@/api/mine'
+  import pagination from '@/mixins/pagination'
+  import Tab from '@/components/common/tab'
+  import Tips from '@/utils/Tips'
+  import SwiperDelete from '@/components/common/swiper_delete'
+  import Empty from '@/components/common/empty'
+  export default class Message extends wepy.page {
+    config = {
+      navigationBarTitleText: '消息',
+      enablePullDownRefresh: true
+    };
+    data = {
+      delBtnWidth: 160,
+      listData: [],
+      page: '',
+      editBtnStatus: 0,
+      imageStyle: {
+        height: 300,
+        width: 300
+      },
+      tab: {
+        list: [{
+          id: 1,
+          title: '家谱消息'
+        },
+        {
+          id: 2,
+          title: '平台通知'
+        }
+        ],
+        selectedId: 1
+      },
+      startX: '',
+      selectedId: 1,
+      isScroll: true
+    };
+    components = {
+      Tab,
+      Empty,
+      SwiperDelete
+    };
+    mixins = [base, router, pagination];
+    methods = {
+      // 跳转到详情
+      skipDetails(data) {
+        // 1家谱数  2申请 3寻根问祖
+        // if (this.selectedId === 2) {
+        //   wepy.navigateTo({
+        //     url: `/pages/mine/message-details?messageId=${data.messageId}`
+        //   })
+        //   return false
+        // }
+        if (data.type === 1) {
+          let genealogyId = JSON.parse(data.params).genealogyId
+          wepy.navigateTo({
+            url: `/packageFamily/pages/family/tree?treeStatus=manager&genealogyId=${genealogyId}`
+          })
+          this.setAlreadyView(data.messageId)
+        } else if (data.type === 2) {
+          this._routerTo('/packageFamily/pages/family/application-management')
+          this.setAlreadyView(data.messageId)
+        } else if (data.type === 3) {
+          let seekingRootsId = JSON.parse(data.params).seekingRootsId
+          wepy.navigateTo({
+            url: `/packageFamily/pages/family/ask-them?seekingRootsId=${seekingRootsId}`
+          })
+          this.setAlreadyView(data.messageId)
+        } else {
+          let genealogyId = JSON.parse(data.params).genealogyId
+          wepy.navigateTo({
+            url: `/packageFamily/pages/family/tree?treeStatus=info&genealogyId=${genealogyId}`
+          })
+          this.setAlreadyView(data.messageId)
+        }
+      },
+      switchTab(data) {
+        this.selectedId = data.selectedId
+        this.getMessageList()
+      },
+      // 删除通知
+      deletedMessage(item) {
+        mine.deletedMessage(item.messageId).then((res) => {
+          if (res === '操作成功') {
+            Tips.success('删除成功')
+            setTimeout(() => {
+              this.getMessageList()
+            }, 800)
+          }
+        })
+      }
+    }
+    params() {
+      return {
+        type: this.selectedId
+      }
+    }
+    async getMessageList() {
+      try {
+        this.page = await mine.getMessageList()
+        await this.next()
+        this.listData = this.page.list
+        this.listData.map(item => {
+          item.right = 0
+          item.startX = 0
+        })
+        this.isLoading = true
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.listData.map(item => {
+        item.right = 0
+        item.startX = 0
+      })
+      this.$apply()
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.listData.map(item => {
+        item.right = 0
+        item.startX = 0
+      })
+      this.$apply()
+    }
+    setAlreadyView(messageId) {
+      mine.setAlreadyView(messageId).then(res => {
+        console.log(res)
+      })
+    }
+    onShow() {
+      this.getMessageList()
+    }
+    onLoad(option) {}
+  }
+</script>

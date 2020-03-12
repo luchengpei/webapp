@@ -1,0 +1,194 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.bind-card-wrap {
+  display: flex;
+  flex-direction: column;
+  .tips {
+    margin: 30rpx;
+    font-size: $fontSize4;
+    color: $gray;
+  }
+  .bottom-button {
+    position: fixed;
+    bottom: 100rpx;
+    left: 30rpx;
+  }
+}
+</style>
+
+<template>
+  <view class="bind-card-wrap" style="{{configStyle}}">
+    <view class="tips">为保证资金安全，请输入正确的身份证信息</view>
+    <view class="g-form">
+      <view class="g-form-item">
+        <view class="g-form-label">
+          <view class="g-form-label__inner g-form-label__justify">姓名</view>
+        </view>
+        <view class="g-form-content">
+          <input class="g-form-input" type="text" maxlength="7" placeholder-class="g-placeholder" placeholder="请输入真实姓名" value="{{name}}" @input="onInput('name')"></input>
+        </view>
+      </view>
+      <view class="g-form-item">
+        <view class="g-form-label">
+          <view class="g-form-label__inner g-form-label__justify">身份证号</view>
+        </view>
+         <view class="g-form-content">
+          <input class="g-form-input" type="text" maxlength="18" placeholder-class="g-placeholder" placeholder="请输入18位身份证号码" value="{{idCard}}" @input="onInput('idCard')"></input>
+        </view>
+      </view>
+      <view class="g-form-item">
+        <view class="g-form-label">
+          <view class="g-form-label__inner g-form-label__justify">手机号码</view>
+        </view>
+         <view class="g-form-content">
+          <input class="g-form-input" type="number" maxlength="11" placeholder-class="g-placeholder" placeholder="请输入手机号码" value="{{phone}}" @input="onInput('phone')"></input>
+        </view>
+      </view>
+    </view>
+    <view class="g-form">
+      <view class="g-form-item">
+        <view class="g-form-label">
+          <view class="g-form-label__inner ">卡号</view>
+        </view>
+        <view class="g-form-content">
+          <input class="g-form-input" style="width: 500rpx;" maxlength="23" type="number" placeholder-class="g-placeholder" placeholder="请输入银行卡号" value="{{cardNo}}" @input="onInput('cardNo')"></input>
+        </view>
+      </view>
+      <view class="g-form-item">
+        <view class="g-form-label">
+          <view class="g-form-label__inner">卡类型</view>
+        </view>
+         <view class="g-form-content">
+          <view class="g-form-content__inner">{{cardText}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="g-button bottom-button" hover-class="g-hover" @tap="onSubmit">下一步</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+import wallet from '@/api/wallet'
+import Validator from '@/utils/Validator'
+import Tips from '@/utils/Tips'
+const cardTypeMap = {
+  1: '储蓄卡',
+  2: '信用卡'
+}
+export default class BindCard extends wepy.page {
+  config = {
+    navigationBarTitleText: '实名认证'
+  };
+  data = {
+    name: '',
+    idCard: '',
+    phone: '',
+    cardNum: '',
+    bankName: '',
+    cardText: '',
+    bankCard: {},  // 银行卡信息
+    cardType: '' // 卡类型 1储蓄卡 2信用卡
+  };
+  mixins = [base, router];
+  methods = {
+    onInput(key, e) {
+      const value = e.detail.value
+      if (key === 'cardNo') {
+        this[key] = value.replace(/(\d{4})(?=\d)/g, '$1 ')
+        this.setData({
+          [key]: value.replace(/(\d{4})(?=\d)/g, '$1 ')
+        })
+        this.matchBank()
+      } else {
+        this[key] = value
+      }
+      this.$apply()
+    },
+    onSubmit() {
+      const {name, idCard, phone, cardNo, bankName, bankCard} = this
+      const user = wx.getStorageSync('user')
+      if (!Validator.isBlank(name, {name: '姓名'})) return false
+      if (!Validator.isBlank(idCard, {name: '身份证号'})) return false
+      if (idCard.length !== 18) {
+        Tips.toast('请填写正确的身份证号', null, 'none')
+        return false
+      }
+      if (!Validator.isMobile(phone, {name: '手机号'})) return false
+      if (!Validator.isBlank(cardNo, {name: '卡号'})) return false
+      const cardNoStr = cardNo.replace(/\s/g, '')
+
+      // 银行卡号长度判断、类型判断
+      if (!this.bankCard.cardLength) {
+        Tips.toast('请填写正确的银行卡号', null, 'none')
+        return false
+      }
+      if (this.bankCard.cardLength !== cardNoStr.length) {
+        Tips.toast('请输入完整的银行卡号', null, 'none')
+        return false
+      }
+      if (this.cardType !== 1) {
+        Tips.toast('仅支持绑定储蓄卡，请换卡重试', null, 'none')
+        return false
+      }
+      const form = {
+        name,
+        idCard,
+        phone,
+        cardNo: cardNoStr,
+        bankName,
+        cardType: this.cardType
+      }
+      // 判断手机号是否和微信绑定的手机号一致
+      if (user.mobile === phone) {  // 相同直接提交
+        this.toIdentity()
+      } else {
+        wepy.navigateTo({ url: `/pages/bank/identity?form=${JSON.stringify(form)}` })
+      }
+    }
+  };
+  onLoad(options, data) {}
+  // 认证提交
+  toIdentity() {
+    // 使用微信绑定的手机号，不需要验证码流程
+    const {name, idCard, phone, bankName, bankCard} = this
+    const cardNo = this.cardNo.replace(/\s/g, '')
+    const param = {
+      userId: wepy.getStorageSync('user').userId,
+      subMerchantPhone: phone,
+      subMerchantIdCard: idCard,
+      subMerchantBankNo: cardNo,
+      openBank: bankName,
+      userName: name,
+      code: '',
+      isEq: 1 // 是否校验验证码 1不校验 0 校验
+    }
+    const postData = {
+      ...param
+    }
+    wallet.bindCard(postData).then(res => {
+      this._redirectTo('/pages/bank/identity_success')
+    })
+  }
+  // 匹配银行信息
+  matchBank() {
+    const cardNo = this.cardNo.replace(/\s/g, '')
+    const cardLen = cardNo.length
+    if (cardLen > 13) {
+      wallet.matchBank({
+        bankNo: cardNo
+      }).then(res => {
+        this.bankName = res.bankName
+        this.cardType = res.cardType
+        this.bankCard = res
+        this.cardText = `${this.bankName} | ${cardTypeMap[res.cardType]}`
+        this.$apply()
+      }).catch(err => {
+        console.log('errr', err)
+      })
+    }
+  }
+}
+</script>

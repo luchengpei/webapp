@@ -1,0 +1,131 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .business {
+    padding-bottom: 68rpx;
+  }
+  .save {
+    height: 92rpx;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: $mainColor;
+    color: $subMainColor;
+    font-size: $fontSize3;
+    text-align: center;
+    line-height: 92rpx;
+  }
+  .business-item:nth-last-child(1) {
+    border: 0;
+  }
+  .business-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30rpx 30rpx 30rpx 0;
+    margin-left: 30rpx;
+    border-bottom: 1rpx solid #dadbdf;
+    .content-wrapper {
+      display: flex;
+      >image {
+        width: 170rpx;
+        height: 130rpx;
+        border-radius: 15rpx;
+      }
+      .content {
+        margin-left: 34rpx;
+        .title {
+          font-size: $fontSize2;
+          color: $black;
+        }
+        .introduce {
+          font-size: $fontSize3;
+          color: $gray;
+        }
+        .label {
+          margin-top: 6rpx;
+          width: 110rpx;
+          height: 28rpx;
+          text-align: center;
+          line-height: 28rpx;
+          font-size: 20rpx;
+          background: $mainColor;
+          color: $subMainColor;
+          border-radius: 6rpx;
+        }
+      }
+    }
+    >i {
+      color: #aaaaaa;
+      font-size: 24rpx;
+    }
+  }
+  .business-list {
+    background: $subMainColor;
+  }
+</style>
+
+<template>
+  <view class="business">
+    <view class="business-list">
+      <view class="business-item" wx:for="{{quickList}}" @tap="skipModify('{{index}}')">
+        <view class="content-wrapper">
+          <image mode="aspectFill" src="{{item.logo}}"></image>
+          <view class="content">
+            <view class="title">{{item.name}}</view>
+            <view class="introduce">{{tiem.introduction}}</view>
+            <view class="label">{{item.type===1?'小程序':'富文本'}}</view>
+          </view>
+        </view>
+        <i class="iconfont icon-arrow"></i>
+      </view>
+    </view>
+    <view class="save" @tap="skipAdd">
+      + 添加业务
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class Business extends wepy.page {
+    config = {
+      navigationBarTitleText: '企业业务入口',
+      enablePullDownRefresh: true
+    }
+    mixins = [base]
+    props = ['type']
+    components = {}
+    data = {
+      uploadFile: [],
+      isAdd: true,
+      typeSkip: '',
+      entryType: 1,
+      quickList: []
+    }
+    onLoad(option) {
+      this.typeSkip = option.typeSkip
+      this.entryType = option.entryType
+      this.$apply()
+      console.log(option)
+    }
+    onShow() {
+      this.quickList = wepy.getStorageSync('quickList').data || []
+      this.$apply()
+    }
+    methods = {
+      skipModify(index) {
+        console.log(index)
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/add-business?typeSkip=${this.typeSkip}&entryType=${this.entryType}&index=${index}`
+        })
+      },
+      skipAdd() {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/add-business?typeSkip=${this.typeSkip}&entryType=${this.entryType}`
+        })
+      }
+    }
+  }
+</script>

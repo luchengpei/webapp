@@ -1,0 +1,278 @@
+<style lang="scss" scoped>
+  @import "../../scss/common";
+  @import "../../scss/item";
+  .member-wrap {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    .middle-wrap {
+      display: flex;
+      flex-direction: row;
+      height: 184rpx;
+      background-color: #ffffff;
+      align-items: center;
+      justify-content: center;
+      .cell {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        .num {
+          font-size: 48rpx;
+          color: $mainColor;
+        }
+        .text {
+          font-size: $fontSize4;
+          color: $gray;
+        }
+      }
+      .line {
+        border-right: 1px solid $borderColor;
+        border-left: 1px solid $borderColor;
+      }
+    }
+    .top-wrap {
+      margin-top: $margin;
+      .item-content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        background-color: #ffffff;
+      }
+    }
+    .hover-class {
+      background-color: #ffffff;
+    }
+    .bind-text {
+      font-size: $fontSize4;
+      color: #F7564C;
+      text-decoration: underline;
+      margin-left: 10rpx;
+      margin-top: 3rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="member-wrap" style="{{configStyle}}">
+    <AuditTag wx:if="{{identity === auditMember}}" text="会员审核中，若审核不通过，7个工作日后可重新申请"/>
+    <CardTag wx:if="{{identity === myMember && isBind === 0}}" text="未绑定银行卡信息，请前去绑定！">
+      <view class="bind-text" @tap="goBind">去绑定</view>
+    </CardTag>
+    <NoPassTag wx:if="{{identity === nopassMember}}" :text.sync="resTime" />
+    <MyMemberHeader
+      wx:if="{{identity === myMember}}"
+      :nickName.sync="name"
+      :time.sync="time"
+      :tag.sync="levelName"
+      :avatar.sync="avatar"
+      :cover.sync="coverPic"
+      btnText="升级"
+      @click.user="onUp" />
+    <NoMemberHeader
+      wx:if="{{identity === noMember}}"
+      :nickName.sync="name"
+      time="未成为会员"
+      :avatar.sync="avatar"
+      :cover.sync="coverPic"
+      btnText="去成为会员"
+      @click.user="onUp" />
+    <AuditMemberHeader
+      wx:if="{{identity === auditMember}}"
+      :nickName.sync="name"
+      time="未成为会员"
+      :avatar.sync="avatar"
+      :cover.sync="coverPic"
+      btnText="申请审核中"
+      btnClass="btnLong"/>
+    <NopassMemberHeader
+      wx:if="{{identity === nopassMember}}"
+      :nickName.sync="name"
+      time="未成为会员"
+      :avatar.sync="avatar"
+      :cover.sync="coverPic"
+      btnText="申请未通过"
+      btnClass="btnWarn"/>
+    <view class="middle-wrap">
+      <navigator url="/pages/mine/wallet" hover-class="hover-class" class="cell">
+        <text class="num">{{info.walletAccount || '0.00'}}</text>
+        <text class="text">余额(元)</text>
+      </navigator>
+      <view class="cell line">
+        <text class="num">0</text>
+        <text class="text">积分</text>
+      </view>
+      <navigator url="/pages/dis/relationship" hover-class="hover-class" class="cell">
+        <text class="num">{{info.introducerCount || 0}}</text>
+        <text class="text">人脉</text>
+      </navigator>
+    </view>
+    <view class="top-wrap">
+      <ListTitleFun title="精选功能" />
+      <view class="item-content">
+        <repeat for="{{listFun}}" key="index" index="index" item="item">
+          <Item :item.sync="item" @click.user="onClickFn"></Item>
+        </repeat>
+      </view>
+    </view>
+    
+    <view class="top-wrap" wx:if="{{identity===myMember && info.disMemberWelfareList.length>0}}">
+      <ListTitleWel title="会员福利" />
+      <view class="item-content">
+        <block wx:for="{{info.disMemberWelfareList}}" wx:for-item="item" wx:key="{{memberWelfareId}}" wx:for-index="index">
+          <view class="item" style="flex-basis: 25%" @tap="onClickWel({{item}})" >
+            <image class="img" src="{{item.welfareIcon}}" />
+            <text class="text">{{item.welfareName}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import Tips from '@/utils/Tips'
+  import Event from '@/utils/Event'
+  import dis from '@/api/dis'
+  import nRouter from '@/mixins/new_router'
+  import Header from '@/components/dis/header'
+  import Tag from '@/components/common/tag'
+  import ListTitle from '@/components/common/list_title'
+  import Item from '@/components/dis/item'
+  export default class Member extends wepy.page {
+    config = {
+      navigationBarTitleText: '会员'
+    }
+    mixins = [base, nRouter]
+    components = {
+      MyMemberHeader: Header,
+      NoMemberHeader: Header,
+      AuditMemberHeader: Header,
+      NopassMemberHeader: Header,
+      AuditTag: Tag,
+      NoPassTag: Tag,
+      CardTag: Tag,
+      ListTitleFun: ListTitle,
+      ListTitleWel: ListTitle,
+      Item,
+      WelItem: Item
+    }
+    data = {
+      identity: '', // 会员状态0 申请成功  1审核未通过 2审核中
+      noMember: '',
+      myMember: '0',  // 会员申请成功标识
+      nopassMember: '1',  // 审核未通过标识
+      auditMember: '2',   // 审核中标识
+      isBind: '',  // 0 未绑卡 1 已绑卡
+      resTime: '会员审核未通过，请于7日后提交，未通过原因：某项条件未达标', // 再次提交时间
+      name: '',                   // 昵称
+      time: '未成为会员',               // 到期时间
+      levelName: '',                  // 会员类型名称
+      avatar: '',                     // 头像
+      coverPic: '',                   // 会员封面图
+      info: null,
+      listFun: [
+        {
+          name: '会员介绍',
+          img: '../../images/mine_page/dis/mine_ic17.png',
+          url: '/pages/dis/member_info',
+          type: 'navigate'
+        },
+        {
+          name: '会员进度',
+          img: '../../images/mine_page/dis/mine_ic18.png',
+          url: '/pages/dis/upgrade_member',
+          type: 'navigate'
+        },
+        {
+          name: '会员二维码',
+          img: '../../images/mine_page/dis/mine_ic15.png',
+          url: '/pages/dis/qr_code',
+          type: 'navigate'
+        },
+        {
+          name: '会员排行榜',
+          img: '../../images/mine_page/dis/mine_ic16.png',
+          url: '/pages/dis/rank',
+          type: 'navigate'
+        },
+        {
+          name: '邀请会员',
+          img: '../../images/mine_page/dis/mine_ic22.png',
+          url: '/pages/dis/rank',
+          type: 'share'
+        }
+      ]
+    }
+    methods = {
+      onUp() {
+        const { noMember, identity, isBind } = this
+        let url = noMember === identity ? `/pages/dis/upgrade_member?isBind=${isBind}` : `/pages/dis/upgrade_member?isMember=${true}&isBind=${isBind}`
+        wepy.navigateTo({url})
+      },
+      onClickFn(url) {
+        const { myMember, identity } = this
+        if (url === '/pages/dis/member_info' || myMember === identity) {
+          wepy.navigateTo({url})
+        } else {
+          Tips.toast('会员才能查看哟！', false, 'none')
+        }
+      },
+      onClickWel(item) {
+        if (item.welfareType === 2) { // 福利类型为文本
+          item = JSON.stringify(item)
+          wepy.navigateTo({
+            url: `/pages/dis/member_welfare?item=${item}`
+          })
+        } else {
+          wx.navigateToMiniProgram({
+            appId: item.appId, // 要打开的小程序 appId,
+            path: item.link // 打开的页面路径，如果为空则打开首页,
+          })
+          Tips.toast('跳转到小程序', false, 'none')
+        }
+      },
+      goBind() {
+        wepy.navigateTo({url: `/pages/bank/bind_prompt`})
+      }
+    }
+    onShow() {
+      this.getMemberInfo()
+    }
+    onUnload() {
+      Event.emit(Event.UPDATE_USERINFO)
+    }
+    getMemberInfo() {
+      // memberType会员类型0 永久 1年度
+      dis.getMemberInfo().then((res) => {
+        let expireTime = res.expireTime
+        this.time = res.memberType === 0 ? '终身会员' : `${expireTime ? expireTime.substr(0, 10) + '到期' : ''}`
+        const { applyStatus, avatar, nickName, auditOpinion, coverPic } = res
+        const resTime = `会员审核未通过，请于${res.againCheckTime}日后请重新提交，未通过原因：${auditOpinion}`
+        let identity = applyStatus || applyStatus === 0 ? String(applyStatus) : ''
+        this.identity = identity
+        this.name = nickName
+        this.resTime = resTime
+        this.avatar = avatar ? avatar.slice(0, 4) === 'http' ? avatar : this.imageUrl + avatar : ''
+        this.coverPic = applyStatus === 0 ? coverPic : ''
+        this.info = res
+        this.levelName = res.levelName
+        this.isBind = res.isBind
+        const { myMember, noMember, auditMember, nopassMember } = this
+        const titleMap = {[myMember]: '我的会员', [noMember]: '未成为会员', [auditMember]: '审核中会员', [nopassMember]: '未通过会员'}
+        wepy.setNavigationBarTitle({title: titleMap[identity]})
+        this.$apply()
+      })
+    }
+    onShareAppMessage() {
+      // const user = wepy.getStorageSync('user')
+      const url = `/pages/dis/upgrade_member?scene=${this.sceneData}`
+      return {
+        path: url
+      }
+    }
+}
+</script>

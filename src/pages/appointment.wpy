@@ -1,0 +1,640 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+  .order-page {
+    //   background: white
+    padding-bottom: 88rpx
+  }
+  .info {
+    margin-top: 20rpx;
+  }
+  .order-row {
+    font-size: $fontSize2;
+    height: 88rpx;
+    padding-left: 40rpx;
+    background: white;
+    box-sizing: border-box;
+    margin-bottom: 3rpx;
+    .inwrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      padding-right: 40rpx;
+      .img-box{
+        flex: 1;
+        display: flex
+      }
+      .image-box{
+        width: 68rpx;
+        height: 68rpx;
+        >image{
+          width: 100%;
+          height: 100%;
+          border-radius: 50%
+        }
+      }
+    }
+    &.remark {
+      .title {
+        flex: inherit;
+      }
+    }
+    .title {
+      width: 160rpx;
+      color: $black;
+    }
+    .subtitle {
+      color: $gray;
+      flex: 1
+    }
+    .right-arrow {
+      height: 24rpx;
+      width: 14rpx;
+      margin-left: 30rpx;
+    }
+    input {
+      flex: 1;
+      margin-left: 40rpx;
+      text-align: right;
+    }
+  }
+  .bd-b {
+    border-bottom: 1rpx solid #D9D9D9;
+  }
+  .time-range {
+    background: white;
+    margin-top: 0.1rpx;
+    padding: 0 40rpx;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    height: 88rpx;
+    color: $black;
+    font-size: $fontSize2;
+    border-bottom: 1rpx solid #efeff4;
+    .title {
+      margin-right: 20rpx
+    }
+  }
+  .picker-view {
+    width: 30%;
+    height: 84.3rpx;
+  }
+  .fixed-btn {
+    position: fixed;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    bottom: 0;
+    height: 88rpx;
+    background: $mainColor;
+    color: #FFFFFF;
+    font-size: $fontSize3;
+  }
+  .tip {
+    color: #A5A5A5;
+    font-size: $fontSize4;
+    margin: 20rpx auto;
+    display: flex;
+    justify-content: center;
+  }
+.store{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .inwrap{
+    width: 670rpx;
+     .title {
+      width: 160rpx;
+      color: $black;
+    }
+    .subtitle {
+      color: $gray;
+      flex: 1
+    }
+  }
+}
+.rl{
+  position: relative;
+  left: -20rpx;
+}
+</style>
+
+<template>
+  <view class="order-page" style="{{configStyle}}">
+    <view class="order-row" >
+      <picker class="store" @change="storeChange" range="{{storeList}}" range-key="storeName">
+        <view class="inwrap">
+          <text class="title">选择门店</text>
+          <text class="subtitle">{{orderInfo.storeName?orderInfo.storeName:'附近'}}</text>
+          <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}" @click="selectStore"/>
+        </view>
+      </picker>
+    </view>
+    <calendar bind:selectDay="selectDay" />
+    <view class="info">
+      <view class="order-row baby" @tap="selectBaby">
+        <view class="inwrap">
+          <text class="title">{{selectBabyList.length?'已选宝贝':'选择宝贝'}}</text>
+          <view class="img-box">
+            <view wx:for="{{selectBabyList}}" wx:key="{{key}}"  class="image-box"
+            style="margin-left:{{index!==0?'-20rpx':'4rpx'}}"
+            >
+              <image src="{{item.babyPortrait}}" mode="aspectFill"
+                lazy-load="false">
+              </image>
+            </view>
+          </view>
+          <!-- <text class="subtitle">{{selectBabyList.length}}</text> -->
+          <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}" />
+        </view>
+      </view>
+      <view class="order-row">
+        <view class="inwrap">
+          <text class="title">托管日期</text>
+          <text class="subtitle" wx:if="{{orderTime.choosed}}">{{orderTime.month}}月{{orderTime.day}}日(星期{{orderTime.weekDay}})</text>
+        </view>
+      </view>
+      <view class="time-range">
+        <picker bindchange="startTimePicker" value="{{startTime}}" range="{{timeList}}" placeholder="开始时间">
+          <view>
+            开始时间 {{timeList[startTime]}}
+          </view>
+        </picker>
+        <picker bindchange="endTimePicker" value="{{endTime}}" range="{{timeList}}" placeholder="开始时间" style="margin-left:164rpx">
+          <view>
+            结束时间 {{timeList[endTime]}}
+          </view>
+        </picker>
+      </view>
+      <view class="order-row">
+        <view class="inwrap" @tap="selectCart">
+          <text class="title">时光卡</text>
+          <text class="subtitle" wx:if="{{cartInfo.timeCardId}}">{{cartInfo.type===1?'小时卡':'月卡'}}</text>
+          <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}" />
+        </view>
+      </view>
+      <view class="order-row">
+        <view class="inwrap" @tap="changeShowCoupon">
+          <text class="title">优惠券</text>
+          <text class="subtitle" wx:if="{{couponInfo.couponsName}}">{{couponInfo.couponsName}}</text>
+          <text class="subtitle" wx:if="{{!couponInfo.couponsName&&(selectBabyList.length===1||selectBabyList.length===0)&&cartInfo.type!==2}}">{{couponList.length}}张优惠券可用</text>
+          <!-- <text class="subtitle" wx:if="{{!couponInfo.couponsName&&(selectBabyList.length===1||selectBabyList.length===0)&&cartInfo.type!==2}}">无可用优惠券</text> -->
+          <text class="subtitle" wx:if="{{cartInfo.type===2||selectBabyList.length>1}}">无可用优惠券</text> 
+          <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}" />
+        </view>
+      </view>
+      <view class="order-row">
+        <view class="inwrap">
+          <text class="title">是否就餐</text>
+          <switch checked="{{isMeal}}" type="switch" color="#1182A4" @change="switchChange" 
+          disabled="{{orderInfo.meal.key===1}}"
+          />
+        </view>
+      </view>
+      <view class="tip"  wx:if="{{orderInfo.meal.key!==1}}">微信支付餐费，{{mealValue}}元/宝贝</view>
+      <view class="tip" wx:else>不提供餐食</view>
+      <HourCartCoupon :display.sync="showCart" :list.sync="hourCartList" @select.user='selectHourCart'></HourCartCoupon>
+      <CouponSelect :display.sync="showCoupon" :list.sync="couponList" @select.user='selectCoupon'></CouponSelect>
+      <dialog
+      id="modal"
+      title="提示"
+      cancelText="取消"
+      confirmText="立即购买"
+      bind:cancelEvent="_cancelEvent"
+      bind:confirmEvent="_confirmEvent"
+      isShow="{{isShow}}"
+      >
+      <view style="font-size:28rpx;color:#444;text-align:center">
+        {{cartInfo.type===1?'时光卡余额不足,请充值':'月卡已过期,请充值'}}
+      </view>
+      </dialog>
+      <view class="fixed-btn" @tap="submit">
+        预约
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import {
+    enableArea
+  } from '@/components/calendar/main'
+  import HourCartCoupon from '@/components/intime/bottom_select_coupon'
+  import CouponSelect from '@/components/coupon/bottom_select_coupon'
+  import Tips from '@/utils/Tips'
+  import base from '@/mixins/base'
+  import store from '@/api/store'
+  import Util from '@/utils/Util'
+  import order from '@/api/order'
+  import WxApi from '@/utils/WxApi'
+  export default class Appointment extends wepy.page {
+    config = {
+      navigationBarTitleText: '预约',
+      'usingComponents': {
+        'calendar': '/components/calendar/index',
+        'dialog': '/components/intime/dialog/dialog'
+      }
+    }
+    components = {
+      HourCartCoupon,
+      CouponSelect
+    }
+    mixins = [base]
+    data = {
+      rangeDate: [], // 可选择的预约范围
+      type: 1,
+      currentMonth: new Date().getMonth() + 1,
+      selectBabyList: [],
+      orderTime: {}, // 选择日历的预约日期
+      showCart: false,
+      showCoupon: false,
+      couponList: [],
+      hourCartList: [], // 时光卡
+      cartInfo: {}, // 时光卡信息
+      value: '',
+      timeList: [], // 生成24小时隔半个小时的时间段
+      startTime: 0, // 时间段开始时间下标
+      endTime: 1, // 时间段结束时间下标
+      appointmentTime: 0.5, // 预约多少个小时
+      isSubmit: false,
+      isMeal: false,
+      mealValue: '',
+      couponInfo: {},
+      isShow: false,
+      storeList: [],
+      selectedStore: null,
+      orderInfo: {}// 后台返回的预约信息
+    }
+    methods = {
+      _cancelEvent() {
+        this.isShow = false
+      },
+      _confirmEvent() {
+        wepy.navigateTo({
+          url: `/packageStore/pages/member-homepage`
+        })
+        this.isShow = false
+        this.$apply()
+      },
+      // 选择门店
+      storeChange(e) {
+        let index = Number(e.detail.value)
+        this.orderInfo.storeName = this.storeList[index].storeName
+        this.selectedStore = this.storeList[index]
+        this.$apply()
+        console.log(this.storeList[index], 'jjjjjindex')
+      },
+      switchChange(e) {
+        this.isMeal = e.detail.value
+        this.$apply()
+      },
+      // 选择预约时间
+      selectDay(e) {
+        this.couponInfo.couponsName = ''
+        const selectedDay = e.detail['calendar.selectedDay'][0]
+        this.orderTime = selectedDay
+        const day = new Map([
+          [1, '一'],
+          [2, '二'],
+          [3, '三'],
+          [4, '四'],
+          [5, '五'],
+          [6, '六'],
+          [0, '天']
+        ])
+        this.orderTime.weekDay = day.get(this.orderTime.week)
+        this.getConpups()
+      },
+      // 选择宝贝
+      selectBaby() {
+        const babyList = this.orderInfo.babyList ? JSON.stringify(this.orderInfo.babyList) : []
+        wepy.navigateTo({
+          url: `/packageStore/pages/select-baby?babyList=${babyList}`
+        })
+      },
+      // 选择时光卡 显示弹出框
+      selectCart() {
+        if (!this.selectBabyList.length) {
+          Tips.toast('请选择宝贝', null, 'none')
+          return false
+        }
+        if (!Object.keys(this.orderTime).length) {
+          Tips.toast('请选择托管日期', null, 'none')
+          return false
+        }
+        this.showCart = true
+        this.$apply()
+      },
+      changeShowCoupon() {
+        if (!this.selectBabyList.length) {
+          Tips.toast('请选择宝贝', null, 'none')
+          return false
+        } else if (this.selectBabyList.length > 1 || this.cartInfo.type === 2) {
+          Tips.toast('无可用优惠券', null, 'none')
+          return false
+        }
+        this.showCoupon = true
+        this.$apply()
+      },
+      // 选择时光卡回调
+      selectHourCart(val) {
+        console.log(val, '选择的时光卡')
+        this.cartInfo = val
+        wepy.setStorageSync('selectCard', val)
+        const {
+          type
+        } = val
+        this.$apply()
+        if (type === 2 && this.selectBabyList.length > 1) {
+          Tips.toast('月卡只能预约一个宝贝', null, 'none')
+          this.couponInfo = {}
+          this.isSubmit = false
+        } else if (Number(val.surplusTime) < this.appointmentTime && val.type === 1) {
+          this.isSubmit = false
+        } else {
+          this.isSubmit = true
+        }
+        if (type === 2) this.couponInfo = {}
+      },
+      // 优惠券回调
+      selectCoupon(val) {
+        console.log(val, 'val')
+        this.couponInfo = val
+        this.showCoupon = false
+        this.$apply()
+      },
+      // 选择开始时间
+      startTimePicker(e) {
+        if (!Object.keys(this.orderTime).length) {
+          Tips.toast('请选择托管日期', null, 'none')
+          return false
+        }
+        this.couponInfo.couponsName = ''
+        this.startTime = Number(e.detail.value)
+        this.endTime = this.startTime + 1
+        this.appointmentTime = 0.5
+        this.$apply()
+        this.getConpups()
+      },
+      // 选择结束时间
+      endTimePicker(e) {
+        if (!Object.keys(this.orderTime).length) {
+          Tips.toast('请选择托管日期', null, 'none')
+          return false
+        }
+        this.couponInfo.couponsName = ''
+        let startTime = this.timeList[this.startTime]
+        this.endTime = Number(e.detail.value)
+        let endTime = this.timeList[this.endTime]
+        const startArr = startTime.split(':').map(Number)
+        const endArr = endTime.split(':').map(Number)
+        const time = (endArr[0] * 60 + endArr[1]) - (startArr[0] * 60 + startArr[1])
+        this.appointmentTime = time / 60
+        console.log(this.appointmentTime, 'aaaa111')
+        if (!time) {
+          Tips.toast('预约时间30分钟起', null, 'none')
+        }
+        if (time.toString().includes('-')) {
+          Tips.toast('结束时间不能大于开始时间', null, 'none')
+        }
+        this.$apply()
+      },
+      // 提交预约
+      async submit() {
+        if (!this.selectBabyList.length) {
+          Tips.toast('请选择宝贝', null, 'none')
+          return false
+        } else if (!Object.keys(this.orderTime).length) {
+          Tips.toast('请选择托管日期', null, 'none')
+          return false
+        } else if (!Object.keys(this.cartInfo).length) {
+          Tips.toast('请选择时光卡', null, 'none')
+          return false
+        } else if (this.cartInfo.type === 2 && this.selectBabyList.length > 1) {
+          Tips.toast('月卡只能预约一个宝贝', null, 'none')
+          return false
+        }
+        const {
+          surplusTime,
+          isExpire,
+          type
+        } = this.cartInfo
+        const {
+          year,
+          month,
+          day
+        } = this.orderTime
+        const selectEndTime = `${year}-${month}-${day} ${this.timeList[this.endTime]}:00`
+        const selectStartTime = `${year}-${month}-${day} ${this.timeList[this.startTime]}:00`
+        if (Number(surplusTime) < this.appointmentTime && type === 1) {
+          this.isShow = true
+          // Tips.toast('小时卡余额不足', null, 'none')
+          return false
+        } else if (type === 2 && isExpire) {
+          this.isShow = true
+          this.$apply()
+          return false
+        }
+        const params = {
+          bookStart: selectStartTime,
+          bookEnd: selectEndTime,
+          spendType: this.cartInfo.type,
+          babyIds: this.selectBabyList.map(row => row.babyId).join(','),
+          couponsUserId: this.couponInfo.couponsUserId ? this.couponInfo.couponsUserId : '',
+          isEat: this.isMeal ? 1 : 0,
+          storeId: this.selectedStore && this.selectedStore.storeId ? this.selectedStore.storeId : ''
+        }
+        let data
+        if (this.isSubmit) data = await store.orderSubmit(params)
+        if (data.code === '40002' || data.code === '40001') {
+          this.isShow = true
+          this.$apply()
+          return false
+        }
+        if (data.includes('intime')) {
+          const params = {
+            orderType: 25,
+            orderNo: data
+          }
+          let res = await order.thirdPay(params)
+          const payData = {
+            timeStamp: res.timeStamp,
+            nonceStr: res.nonceStr,
+            package: res.wxPackage,
+            signType: res.signType,
+            paySign: res.paySign
+          }
+          WxApi.wxPayFun(payData).then(res => {
+            Tips.toast('预约成功', () => {
+              wepy.navigateTo({
+                url: `/packageStore/pages/order-success`
+              })
+            }, 'none')
+          }).catch(() => {
+            console.log(666)
+          })
+        } else {
+          Tips.toast('预约成功', () => {
+            wepy.navigateTo({
+              url: `/packageStore/pages/order-success`
+            })
+          }, 'none')
+        }
+      }
+    }
+    // 生成时间范围
+    rangeSetting(type = 1) {
+      let s = this.currentMonth + type > 12 ? (this.currentMonth + type) % 12 : this.currentMonth + type
+      const time = new Date()
+      let year = time.getFullYear()
+      let month = time.getMonth() + 1
+      const day = time.getDate()
+      let y = this.currentMonth + type > 12 ? year + 1 : year
+      let res = null
+      if (type === 1) {
+        res = [this.generateTime(year, month, day), this.generateTime(y, s, day - 1)]
+        return res
+      } else if (type === 2) {
+        res = [this.generateTime(year, month, day), this.generateTime(y, s, day - 1)]
+        return res
+      } else {
+        const customTime = this.orderInfo.day.value.split('/')
+        res = [customTime[0].slice(0, 10), customTime[1].slice(0, 10)]
+        return res
+      }
+    }
+    // 生成时间
+    generateTime(year, month, day) {
+      return `${year}-${month}-${day}`
+    }
+    // 生成时间段
+    generateTimeList(type = 1) {
+      const TimeValue = this.orderInfo.time.value
+      // 生成时间一天隔半小时的时间段[0:30-24:00]
+      if (type === 1) { // 生成全天时间段
+        this.timeList = new Array(24).fill('').reduce((prev, curr, index) => {
+          var startSymbol = index < 10 ? '0' : ''
+          return [...prev, `${startSymbol}${index}:00`, `${startSymbol}${index}:30`]
+        }, [])
+        this.timeList.shift()
+        this.timeList.push('24:00')
+      } else { // 自定义时间段范围
+        this.timeList = new Array(24).fill('').reduce((prev, curr, index) => {
+          var startSymbol = index < 10 ? '0' : ''
+          var [h1, m1, h2, m2] = TimeValue.match(/\d+/g)
+          let start = `${startSymbol}${index}:00`
+          let end = `${startSymbol}${index}:30`
+          if (h1 <= index && index <= h2) {
+            if (h2 == index && m2 == '00') return [...prev, start]
+            else if (h1 == index && m1 == '30') return [...prev, end]
+            else return [...prev, start, end]
+          }
+          return [...prev]
+        }, [])
+      }
+      const time = new Date()
+      let min
+      let hour = time.getHours() >= 10 ? `${time.getHours()}` : `0${time.getHours()}`
+      min = time.getMinutes() >= 10 ? `${time.getMinutes()}` : `0${time.getMinutes()}`
+      if (hour.slice(0, 1) !== '0') {
+        hour = (Number(hour) + 1).toString()
+      }
+      if (Number(min) >= 30 && Number(hour.slice(1)) + 1 === 10) {
+        hour = `10`
+      }
+      min = `30`
+      Number(min) >= 30 ? min = `00` : min = `30`
+      const clock = `${hour}:${min}`
+      console.log(clock, 'clock')
+      const index = this.timeList.findIndex(row => row === clock)
+      this.startTime = index
+      this.endTime = index + 1
+    }
+    // 获取预约信息
+    async getInfo() {
+      const data = await store.orderConfig()
+      this.orderInfo = data
+      this.hourCartList = data.cardList
+      this.rangeDate = this.rangeSetting(data.day.key)
+      // this.isMeal = data.meal.key !== 1
+      this.mealValue = data.meal.value ? data.meal.value : 0
+      this.generateTimeList(data.time.key)
+      enableArea(this.rangeDate)
+      console.log(data, 'data')
+      if (Object.keys(this.cartInfo).length) {
+        let index = data.cardList.findIndex(row => row.timeCardId === this.cartInfo.timeCardId)
+        this.cartInfo = data.cardList[index]
+      }
+      this.$apply()
+    }
+    dealUseThreShold(val) {
+      const status = new Map([
+      [0, '无限制'],
+      [1, '抵扣邮费'],
+      [2, '满减']
+      ])
+      return status.get(val)
+    }
+    watch = {
+      appointmentTime(val) {
+        this.getConpups()
+      }
+    }
+    // 获取优惠券
+    async getConpups() {
+      const {
+          year,
+          month,
+          day
+        } = this.orderTime
+      const selectEndTime = `${year}-${month}-${day} ${this.timeList[this.endTime]}:00`
+      let timeInfo = {
+        intime: this.appointmentTime === 0.5 ? 30 : this.appointmentTime * 60,
+        couponsUserIds: this.orderInfo.couponsUserIds ? this.orderInfo.couponsUserIds : '',
+        time: selectEndTime
+      }
+      let params = {
+        issuedId: wepy.getStorageSync('pid'),
+        orderInfo: JSON.stringify(timeInfo),
+        postAge: 0.01
+      }
+      if (this.selectBabyList.length === 1 || !this.selectBabyList.length) {
+        let data = await store.getCoupons(params)
+        this.couponList = data
+        this.couponList.forEach(row => {
+          row.userRange = this.dealUseThreShold(row.useThreshold)
+          row.faceValue = row.faceValue.toString()
+          row.validStopTime = Util.dateFormate(new Date(row.validEndTime.replace(/-/g, '/')), 'yyyy.MM.dd hh:mm')
+        })
+        this.$apply()
+      }
+    }
+    // 门店列表
+    async getStoreList() {
+      this.storeList = await store.storeList()
+      this.$apply()
+      console.log(this.storeList, 'storelist')
+    }
+    onLoad() {
+      wepy.removeStorageSync('selectBaby')
+      this.getStoreList()
+    }
+    onShow() {
+      this.selectBabyList = wepy.getStorageSync('selectBaby')
+      this.getInfo()
+      if (this.selectBabyList.length > 1) {
+        this.couponInfo = {}
+        this.$apply()
+      }
+      if (this.selectBabyList.length > 1 && this.cartInfo.type === 2) {
+        Tips.toast('月卡只能预约一个宝贝', null, 'none')
+      }
+    }
+  }
+</script>

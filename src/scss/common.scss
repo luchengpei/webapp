@@ -1,0 +1,37 @@
+page {  // 默认色调
+  --color-main: #06a0ff;
+}
+
+// 色值
+$mainColor: var(--color-main);  // 主色调
+$subMainColor: #ffffff; // 次要主色调
+$subColor: #e7f5ff; // 次要颜色
+$bgColor: #efeff4; // 部分背景色
+$borderColor: #e0e0e0;  // 边界颜色
+$priceRed: #f11717; // 价格红
+$black: #444444; // 主要文字颜色
+$gray: #999999; // 次要文字颜色
+$opacity: 0.8;
+$imageBgColor: #999999; 
+$margin: 40rpx; // 边框
+$borderRadius: 5rpx;
+$title: 34rpx;
+
+// 字号
+$fontSize1: 36rpx; // 大按钮字号、少数重要标题
+$fontSize2: 34rpx;  // 较重要字号、主标题、操作按钮等
+$fontSize3: 28rpx;  // 小按钮
+$fontSize4: 24rpx;  // 大部分文字
+$fontSize5: 20rpx;  // tab文字
+$fontSize6: 100rpx; // 特殊字号
+$fontSize7: 58rpx;  // 少数强调文字
+$fontSize8: 32rpx;  // 少数强调文字
+
+$fixIpxBottom: 68rpx; // 适配全面屏 顶部高度44
+
+.mainColor {
+  color: $mainColor;
+}
+.bn-mt-30{
+  margin-top: 30rpx;
+}

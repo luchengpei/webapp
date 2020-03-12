@@ -1,0 +1,175 @@
+.family-tree__ul {
+  padding-top: 35rpx;
+  position: relative;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+}
+.family-tree__ul.family-tree__ul-only {
+  padding-top: 70rpx;
+}
+.family-tree__ul .family-tree__ul::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    border-left: 2rpx solid #ccc;
+    width: 0;
+    height: 35rpx;
+  }
+  .family-tree__ul .family-tree__ul.family-tree__ul-only::before {
+    height: 70rpx;
+  }
+.family-tree__li {
+  float: left;
+  text-align: center;
+  position: relative;
+  padding: 35rpx 5rpx 0 5rpx;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+}
+/*We will use ::before and ::after to draw the connectors*/
+.family-tree__li::before,
+.family-tree__li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-top: 2rpx solid #ccc;
+  width: 50%;
+  height: 35rpx;
+}
+.family-tree__li::after {
+  right: auto;
+  left: 50%;
+  border-left: 2rpx solid #ccc;
+}
+/*We need to remove left-right connectors from elements without 
+any siblings*/
+.family-tree__li:only-child::after,
+.family-tree__li:only-child::before {
+  display: none;
+}
+/*Remove space from the top of single children*/
+.family-tree__li:only-child {
+  padding-top: 0;
+  float: none;
+}
+/*Remove left connector from first child and 
+right connector from last child*/
+.family-tree__li:first-child::before,
+.family-tree__li:last-child::after {
+  border: 0 none;
+}
+/*Adding back the vertical connector to the last nodes*/
+.family-tree__li:last-child::before {
+  border-right: 2rpx solid #ccc;
+  border-radius: 0 10rpx 0 0;
+  -webkit-border-radius: 0 10rpx 0 0;
+  -moz-border-radius: 0 10rpx 0 0;
+  -ms-border-radius: 0 10rpx 0 0;
+  -o-border-radius: 0 10rpx 0 0;
+}
+
+.family-tree__li:first-child::after {
+  border-radius: 10rpx 0 0 0;
+  -webkit-border-radius: 10rpx 0 0 0;
+  -moz-border-radius: 10rpx 0 0 0;
+  -ms-border-radius: 10rpx 0 0 0;
+  -o-border-radius: 10rpx 0 0 0;
+}
+
+.family-tree__node {
+  display: flex;
+  width: 74rpx;
+  height: 196rpx;
+  border: 2rpx solid #c5d7e8;
+  border-radius: 10rpx;
+  background: #fff;
+  flex-direction: column;
+  text-decoration: none;
+  display: inline-block;
+  -webkit-border-radius: 10rpx;
+  -moz-border-radius: 10rpx;
+  -ms-border-radius: 10rpx;
+  -o-border-radius: 10rpx;
+}
+.family-tree__node .family-tree__node-inner-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 73rpx;
+  background: #c5d7e8;
+}
+.family-tree__node .family-tree__node-inner-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 124rpx;
+  width: 100%;
+  font-size: 32rpx;
+  color: #999999;
+  writing-mode: vertical-rl;
+  -webkit-writing-mode: vertical-rl;
+  -ms-writing-mode: vertical-rl;
+}
+
+.family-tree__node.family-tree-mine__node {
+  border-color: #159dfc;
+  color: #159dfc;
+  box-shadow: 0 0 10rpx #159dfc;
+}
+.family-tree__node.family-tree-mine__node .family-tree__node-inner-avatar {
+  background: #159dfc;
+}
+.family-tree__node.family-tree-mine__node .family-tree__node-inner-text {
+  color: #159dfc;
+}
+
+.family-tree__mate {
+  display: flex;
+  width: 74rpx;
+  height: 196rpx;
+  border: 2rpx solid #c5d7e8;
+  border-radius: 10rpx;
+  background: #fff;
+  flex-direction: column;
+  text-decoration: none;
+  display: inline-block;
+  -webkit-border-radius: 10rpx;
+  -moz-border-radius: 10rpx;
+  -ms-border-radius: 10rpx;
+  -o-border-radius: 10rpx;
+}
+.family-tree__mate .family-tree__mate-inner-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 73rpx;
+  background: #c5d7e8;
+}
+.family-tree__mate .family-tree__mate-inner-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 124rpx;
+  width: 100%;
+  font-size: 32rpx;
+  color: #999999;
+  writing-mode: tb-rl;
+  -webkit-writing-mode: tb-rl;
+  -ms-writing-mode: tb-rl;
+}
+
+.family-tree__avatar-male {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+/* 结点hover */
+.family-tree__node-hover {
+  opacity: 0.7;
+}

@@ -1,0 +1,214 @@
+<script>
+  import wepy from 'wepy'
+  import auth from '@/api/auth'
+  import configStore from '@/store'
+  import agency from '@/api/agency'
+  import Util from '@/utils/Util'
+  import Tips from '@/utils/Tips'
+  import Time from '@/utils/Time'
+  export default class Base extends wepy.mixin {
+    data = {
+      tabs: wepy.getStorageSync('tabs'),
+      isIpx: !!wepy.$instance.globalData.isIpx,
+      systemInfo: wepy.$instance.globalData.systemInfo,
+      industryMark: wepy.$instance.globalData.industryMark,
+      configStyle: `${
+            wepy.$instance.globalData.color.main
+              ? `--color-main: ${wepy.$instance.globalData.color.main};`
+              : ''
+          }; --color-sub: #fff`,
+      // imageUrl: '',
+      color: wepy.$instance.globalData.color,
+      imageUrl: wepy.$appConfig.qiniuUrl,
+      _timeInter: 0, // 全局定时器
+      sceneData: null
+    };
+    methods = {}
+    onShow() {}
+    onLoad(options) {
+      if (options && options.scene) {
+        let sceneData = Util.analyseQrcodeScene({scene: options.scene})
+        wepy.setStorageSync('inviteUser', sceneData.userId)
+        this.sceneData = Util.generateScene()
+        this.$apply()
+      } else {
+        this.sceneData = Util.generateScene()
+      }
+    }
+    // 加载完成
+    loaded() {
+      this.loading = false
+      this.init = true
+      this.$apply()
+      wepy.stopPullDownRefresh()
+      Tips.loaded()
+    }
+    // 判断是否绑定手机号
+    isBindPhone() {
+      const user = wepy.getStorageSync('user')
+      if (!user.mobile) {
+        wepy.navigateTo({
+          url: '/pages/login'
+        })
+        return false
+      }
+      return true
+    }
+    // 捕获未登录异常
+    async loginCatch(fn, fn2) {
+      try {
+        await fn()
+      } catch (e) {
+        if (e.statusCode === 401) {
+          await auth.doLogin()
+          fn2()
+        }
+      }
+    }
+    // 缓存companyId projectId
+    async saveProjectId(options) {
+      if (options && options.cid && options.pid && options.inviteUser) {
+        const cid = wepy.getStorageSync('cid')
+        const pid = wepy.getStorageSync('pid')
+        const inviteUser = wepy.getStorageSync('inviteUser')
+        if (
+          options.cid !== cid ||
+          options.pid !== pid ||
+          options.inviteUser !== inviteUser
+        ) {
+          wepy.removeStorageSync('cid')
+          wepy.removeStorageSync('pid')
+          wepy.removeStorageSync('inviteUser')
+          wepy.setStorageSync('cid', options.cid)
+          wepy.setStorageSync('pid', options.pid)
+          wepy.setStorageSync('inviteUser', options.inviteUser)
+        }
+      } else {
+        // 填充测试项目与测试公司Id，以免进入项目无Id
+        if (!wepy.getStorageSync('cid') &&
+          !wepy.getStorageSync('pid') &&
+          !wepy.getStorageSync('inviteUser')
+        ) {
+          wepy.setStorageSync('cid', wepy.$appConfig.defaultCid)
+          wepy.setStorageSync('pid', wepy.$appConfig.defaultPid)
+          wepy.setStorageSync('inviteUser', wepy.$appConfig.defaultInviteUser)
+        }
+      }
+      return true
+    }
+    async initProject(query) {
+      const store = configStore()
+      console.log('app query', query, Util.analyseQrcodeScene(query))
+      // 小程序码传参scene
+      const scene = query.scene ? decodeURIComponent(query.scene) : ''
+      // 获取项目ID&邀请人ID
+      const pid = scene ? scene.split('_')[0] : null
+      const inviteUser = scene ? scene.split('_')[1] : null
+      console.log('pid', pid, 'inviteUser', inviteUser)
+      const curPid =
+        pid || wepy.getStorageSync('pid') || wepy.$appConfig.defaultPid
+      const curInviteUser =
+        inviteUser ||
+        wepy.getStorageSync('inviteUser') ||
+        wepy.$appConfig.defaultInviteUser
+      const project = await agency.project(curPid)
+      wepy.setStorageSync('pid', (project && project.projId) || curPid)
+      wepy.setStorageSync('cid', (project && project.companyId) || '')
+      wepy.setStorageSync('inviteUser', curInviteUser)
+      store.dispatch({
+        type: 'PROJECT_INIT',
+        payload: project
+      })
+    }
+        // 初始化代小程序底部Tabs
+    initExtTabs() {
+      const tabs = wepy.getStorageSync('tabBar')
+      console.log('initExtTabs', tabs)
+      if (!tabs) return
+      // 更新TabBar网络图片
+      const len = tabs.length
+      console.log('初始化EXTTABS', tabs, len)
+      this.updateTabs(0, tabs, len)
+    }
+    // 递归更新Tabs
+    updateTabs(index, tabs, len) {
+      console.log('初始化EX =====', index, tabs, len)
+      let _this = this
+      wx.setTabBarItem({
+        index: index, // tabBar的哪一项，从左边算起,
+        text: tabs[index].text || '无', // tab 上按钮文字,
+        iconPath: tabs[index].iconPath, // 图片路径，icon 大小限制为40kb，建议尺寸为 81px * 81px，当 postion 为 top 时，此参数无效，不支持网络图片,
+        selectedIconPath: tabs[index].selectedIconPath, // 选中时的图片路径，icon 大小限制为40kb，建议尺寸为 81px * 81px ，当 postion 为 top 时，此参数无效,
+        success: function(res) {
+          console.log('setTabBarItem Success')
+          const next = index + 1
+          if (next < len) {
+            _this.updateTabs(next, tabs, len)
+          }
+        },
+        fail: function(res) {
+          console.log('setTabBarItem Fail', res)
+        },
+        complete: function(res) {
+          console.log('setTabBarItem Complete', res)
+        }
+      })
+    }
+    // 处理扫码进入的邀请人，项目id，公司id等参数
+    handleRouteOptions(options) {
+      if (options.cid) wepy.setStorageSync('cid', options.cid)
+      if (options.pid) wepy.setStorageSync('pid', options.pid)
+      if (options.inviteUser) {
+        wepy.setStorageSync('inviteUser', options.inviteUser)
+      }
+    }
+    handlePageScroll(e) {}
+    // 处理 倒计时
+    _countDown(toTimeStamp = 123, callback) {
+      if (toTimeStamp.toString().length === 10) {
+        toTimeStamp = Number(toTimeStamp) * 1000
+      }
+      if (Object.prototype.toString.call(toTimeStamp) === '[object String]') {
+        toTimeStamp = toTimeStamp.replace(/-/g, '/')
+      }
+      let newToTimeStamp = Date.parse(new Date(toTimeStamp)) // 强制转换时间戳 结束时间
+      let curTimeStamp = parseInt(new Date().getTime()) // 当前时间戳
+      if (newToTimeStamp < curTimeStamp) return '已结束' // 结束时间小于当前时间 已经结束
+      let time = parseInt((parseInt(newToTimeStamp) - curTimeStamp) / 1000)
+      Time.downTime(time, (ss, inter) => {
+        this._timeInter = inter
+        callback(ss, inter)
+        this.$apply()
+      })
+    }
+    // 页面倒计时调取此方法 列表
+    _timeDeal(keyEnd = 'flashSaleEndTimeStamp', keyValue = 'timeDown') {
+      this.list.map((v, i) => {
+        if (v[keyEnd]) {
+          this._countDown(v[keyEnd], ss => {
+            v[keyValue] = ss
+            this.$apply()
+          })
+        }
+      })
+    }
+    // 清除定时器
+    _clearTimeDown(inter = 0) {
+      clearInterval(inter) // 指定清除
+      clearInterval(this._timeInter) // 全局清除
+    }
+    // 获取节点信息
+    getRect(selector) {
+      return new Promise((resolve) => {
+        wx.createSelectorQuery()
+          .select(selector)
+          .boundingClientRect((rect) => {
+            if (rect) {
+              resolve(rect)
+            }
+          })
+          .exec()
+      })
+    }
+  }
+</script>

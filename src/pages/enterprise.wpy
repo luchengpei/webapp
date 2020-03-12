@@ -1,0 +1,148 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+  .enterprise-wrapper {
+    padding-top: 177rpx;
+    position: relative;
+  }
+  .enterprise-search {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+  .enterprise-title {
+    position: absolute;
+    top: 88rpx;
+    left: 0;
+    right: 0;
+    border-top: 1rpx solid #d6d6db;
+  }
+</style>
+
+<template>
+  <view class="enterprise-wrapper">
+    <view class="enterprise-search">
+      <SearchBar title="搜索企业" :skipUrl="skipUrl"></SearchBar>
+    </view>
+    <view class="enterprise-title">
+      <Tab :tab.sync="tab" :fixed="fixed" @change.user="switchTab" />
+    </view>
+    <repeat wx:if="{{listData.length>0}}">
+      <EnterpriseList :listData="listData" :type="listType"></EnterpriseList>
+    </repeat>
+    <block wx:if="{{listData.length===0}}">
+      <Empty title='暂无企业' subtitle='' :fixed="fixed"></Empty>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import enterprise from '@/api/enterprise'
+  import Tab from '@/components/common/tab'
+  import pagination from '@/mixins/pagination'
+  import Empty from '@/components/common/empty'
+  import EnterpriseList from '@/components/enterprise/enterprise_list'
+  import SearchBar from '@/components/index/search_bar'
+  export default class Enterprise extends wepy.page {
+    config = {
+      navigationBarTitleText: '企业',
+      enablePullDownRefresh: true
+    }
+    mixins = [base, pagination, base]
+    components = {
+      EnterpriseList,
+      SearchBar,
+      Tab,
+      Empty
+    }
+    data = {
+      fixed: false,
+      skipUrl: '/pages/enterprise/list?m=search',
+      tab: {
+        list: [],
+        scroll: true,
+        selectedId: 1
+      },
+      page: [],
+      listData: [],
+      listType: '1',
+      categoryList: []
+    }
+    onLoad() {
+      this.getclancompanycategoryApi()
+    }
+    methods = {
+      switchTab(data) {
+        this.selectedId = data.selectedId
+        console.log(data)
+        this.getCompanyListApi()
+      },
+      sikpDetails() {
+        wepy.navigateTo({
+          url: '../packageEnterprise/pages/enterprise/details'
+        })
+      }
+    }
+    // 获取公司列表
+    async getCompanyListApi() {
+      try {
+        this.page = await enterprise.getCompanyList()
+        await this.next()
+        this.listData = this.page.list
+        this.listData.map((item, index) => {
+          this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+        })
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 获取公司分类
+    async getclancompanycategoryApi() {
+      try {
+        let res = await enterprise.getclancompanycategory()
+        this.categoryList = []
+        let label
+        res.map((item) => {
+          label = {}
+          label.title = item.categoryName
+          label.id = item.companyCategoryId
+          this.categoryList.push(label)
+        })
+        this.tab.list = this.categoryList
+        this.tab.selectedId = this.categoryList[0].id
+        this.selectedId = this.categoryList[0].id
+        this.$apply()
+        this.getCompanyListApi()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 请求参数
+    params() {
+      return {
+        type: this.selectedId
+      }
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.listData.map((item, index) => {
+        this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+      })
+      this.$apply()
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.listData.map((item, index) => {
+        this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+      })
+      this.$apply()
+    }
+  }
+</script>

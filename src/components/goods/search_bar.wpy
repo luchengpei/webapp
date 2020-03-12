@@ -1,0 +1,167 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .search-bar-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 88rpx;
+    border-bottom: 1rpx solid #d6d6db;
+    background: #efeff4;
+    z-index: 1002;
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 56rpx;
+      width: 100%;
+      margin: 0 26rpx;
+      background: #fff;
+      border-radius: 10rpx;
+      .search-text {
+        font-size: 26rpx;
+        color: #b2b2b2;
+        margin-left: 14rpx;
+        max-width: 492rpx;
+        height: 56rpx;
+        line-height: 56rpx;
+        overflow: hidden;
+      }
+      .search-icon {
+        width: 25rpx;
+        height: 25rpx;
+      }
+      .delete-icon {
+        width: 27rpx;
+        height: 27rpx;
+        margin-right: 30rpx;
+      }
+      &.hover {
+        opacity: $opacity;
+      }
+      &.on-focus {
+        justify-content: flex-start;
+        .search-icon {
+          margin-left: 20rpx;
+        }
+        .search-text {
+          flex: 1;
+          margin-right: 20rpx;
+          color: $black;
+        }
+      }
+      &.on-search {
+        justify-content: flex-start;
+        .search-icon {
+          margin-left: 20rpx;
+        }
+        .search-text {
+          flex: 1;
+          margin-right: 20rpx;
+          color: $black;
+        }
+      }
+    }
+  }
+  .search-keyword-container {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 1001;
+    background: $bgColor;
+  }
+  .search-bar-box {
+    flex: 1;
+    display: flex;
+  }
+  .cancel-btn {
+    font-size: 26rpx;
+    color: $mainColor;
+    margin-right: 20rpx;
+  }
+</style>
+
+<template>
+  <view class="search-bar">
+    <!-- 搜索栏 -->
+    <view class="search-bar-container">
+      <view class="search-bar-box">
+        <!-- <view class="search-bar" wx:if="{{!isFocus&&!isSearch}}" @tap="onFocus()">
+          <image class="search-icon" src="{{imageUrl}}/ic-search.png" />
+          <text class="search-text">搜索商品</text>
+        </view> -->
+        <view class="search-bar on-focus" wx:if="{{isFocus}}">
+          <image class="search-icon" src="{{imageUrl}}ic-search.png" wx:if="{{imageUrl}}"/>
+          <input class="search-text" value="{{keyword}}" focus="{{isFocus}}" @blur="onBlur" @confirm="onConfirm"/>
+          <image class="delete-icon" src="{{imageUrl}}ic-delete.png" @tap="onDelete" wx:if="{{imageUrl}}"/>
+        </view>
+        <view class="search-bar on-search" wx:if="{{!isFocus}}">
+          <image class="search-icon" src="{{imageUrl}}ic-search.png" wx:if="{{imageUrl}}"/>
+          <view class="search-text" @tap="onFocus()">{{keyword}}</view>
+          <image class="delete-icon" src="{{imageUrl}}ic-delete.png" @tap="onDelete" wx:if="{{showSearch}}"/>
+        </view>
+      </view>
+      <text class="cancel-btn" @tap="onCancel" wx:if="{{showSearch}}">取消</text>
+    </view>
+    <!-- 热词区 -->
+    <view class="search-keyword-container" wx:if="{{showSearch}}">
+    </view>
+    <!-- 商品列表 -->
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class SearchBar extends wepy.component {
+    props = {
+      keyword: {
+        type: String,
+        default: '',
+        twoWay: true
+      },
+      isFocus: {
+        type: Boolean,
+        default: false
+      },
+      showSearch: {
+        type: Boolean,
+        default: false,
+        twoWay: true
+      }
+    }
+    data = {
+      isSearch: false  // 是否搜索
+    }
+    mixins = [base]
+    onLoad() {}
+    methods = {
+      onFocus() {
+        this.isFocus = true
+        this.showSearch = true
+      },
+      onBlur(e) {
+        if (e.detail.value) this.isSearch = true
+        this.keyword = e.detail.value
+        this.isFocus = false
+      },
+      onConfirm(e) {
+        this.keyword = e.detail.value
+        this.isFocus = false
+        this.showSearch = false
+        this.$apply()
+        this.$emit('search')
+      },
+      onDelete() {
+        this.keyword = ''
+        this.isFocus = false
+      },
+      onCancel() {
+        this.isFocus = false
+        this.showSearch = false
+        this.$emit('cancel')
+      }
+    }
+  }
+</script>

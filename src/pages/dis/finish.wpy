@@ -1,0 +1,66 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .finish-wrap {
+    background: $bgColor;
+    padding: 0rpx $margin;
+    display: flex;
+    flex-direction: column;
+    .icon {
+      font-size: 200rpx;
+      color: $mainColor;
+      margin: 206rpx auto 64rpx;
+    }
+    .text1 {
+      font-size: 40rpx;
+      color: $black;
+      padding-bottom: 30rpx;
+      text-align: center;
+    }
+    .text2 {
+      font-size: $fontSize3;
+      color: $gray;
+      text-align: center;
+    }
+    .btn {
+      width: 100%;
+      background-color: $mainColor;
+      color: #ffffff;
+      font-size: $fontSize1;
+      height: 88rpx;
+      line-height: 88rpx;
+      margin-top: 166rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="finish-wrap" style="{{configStyle}}">
+    <i class="iconfont icon-info_kick icon" />
+    <text class="text1">恭喜您，申请会员资格成功</text>
+    <text class="text2" wx:if="{{isMember}}">会员申请需要工作人员审核，请耐心等待1-3个工作日，若有异议，请联系客服人员</text>
+    <button type="primary" class="btn" @tap="onSubmit">回到会员中心</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class Finish extends wepy.page {
+    config = {
+      navigationBarTitleText: '申请成功'
+    }
+    data = {
+      isMember: false
+    }
+    mixins = [base]
+    methods = {
+      onSubmit() {
+        wepy.navigateBack()
+      }
+    }
+    onLoad(option) {
+      let { isMember } = option
+      this.isMember = isMember
+    }
+  }
+</script>

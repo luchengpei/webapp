@@ -1,0 +1,211 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .activity-detail-page {
+    width: 100%;
+    background: $bgColor;
+  }
+  .cover-box {
+    position: relative;
+    height: 500rpx;
+    width: 100%;
+    image {
+      width: 100%;
+      height: 100%;
+    }
+    .cover-msg-row {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      background: linear-gradient(rgba(255, 255, 255, 0.1), $black);
+      padding: 30rpx 40rpx;
+      .type {
+        height: 28rpx;
+        padding: 0 20rpx;
+        font-size: 20rpx;
+        border-radius: 4rpx;
+        color: #fff;
+        background: $mainColor;
+      }
+      .social-group {
+        display: flex;
+        align-items: center;
+        .social-item {
+          margin-left: 40rpx;
+          display: flex;
+          align-items: center;
+          text {
+            margin-left: 10rpx;
+            font-size: 24rpx;
+            color: #fff;
+          }
+          .see-icon {
+            width: 33rpx;
+            height: 22rpx;
+          }
+          .share-num-icon {
+            width: 29rpx;
+            height: 28rpx;
+          }
+        }
+      }
+    }
+  }
+  .activity-info {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    padding-bottom: 30rpx;
+    margin-bottom: 20rpx;
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 30rpx 40rpx 20rpx;
+      text {
+        flex: 1;
+        color: $black;
+        font-size: 32rpx;
+        line-height: 42rpx;
+      }
+      image {
+        margin-left: 26rpx;
+        width: 36rpx;
+        height: 36rpx;
+      }
+    }
+    .time-row {
+      display: flex;
+      justify-content: flex-start;
+      padding: 0 40rpx;
+      image {
+        margin-top: 7rpx;
+        width: 24rpx;
+        height: 24rpx;
+      }
+      text {
+        margin-left: 12rpx;
+        flex: 1;
+        font-size: 24rpx;
+        line-height: 40rpx;
+        color: $gray;
+      }
+    }
+  }
+  .activity-detail {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    .pannel {
+      padding: 0 40rpx;
+      height: 88rpx;
+      line-height: 88rpx;
+      border-bottom: 1rpx solid #e5e5e5;
+      text {
+        padding-left: 15rpx;
+        height: 30rpx;
+        font-size: 28rpx;
+        color: $mainColor;
+        border-left: 6rpx solid $mainColor;
+      }
+    }
+  }
+  .activity-bottom-btn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 92rpx;
+    line-height: 92rpx;
+    color: #fff;
+    background: $mainColor;
+    font-size: 34rpx;
+    text-align: center;
+  }
+</style>
+
+<template>
+  <view class="activity-detail-page">
+    <!-- 封面图 -->
+    <view class="cover-box">
+      <image src="http://static.ibona.cn/uPQAgs4lQ0M0odH9Y7a123WlQ" />
+      <view class="cover-msg-row">
+        <text class="type">公益</text>
+        <view class="social-group">
+          <view class="social-item">
+            <image class="see-icon" src="{{imageUrl}}/ic-eye.png" wx:if="{{imageUrl}}"/>
+            <text>9999+</text>
+          </view>
+          <view class="social-item">
+            <image class="share-num-icon" src="{{imageUrl}}/ic-share-num.png" wx:if="{{imageUrl}}"/>
+            <text>9999+</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 活动内容 -->
+    <view class="activity-info">
+      <view class="title-row">
+        <text>初春暖风 万物萌芽 节后好茶推荐初春暖风 万物萌芽 节后好茶推荐初春暖风 万物萌芽 节后好茶推荐</text>
+        <image class="share-icon" src="{{imageUrl}}/ic-share.png" wx:if="{{imageUrl}}"/>
+        <image class="collect-icon" src="{{imageUrl}}/ic-collect.png" wx:if="{{imageUrl}}"/>
+      </view>
+      <view class="time-row">
+        <image src="{{imageUrl}}/ic-activity-time.png" wx:if="{{imageUrl}}"/>
+        <text>活动时间：2017.09.30 14:59 ~ 10.31 14:59</text>
+      </view>
+      <view class="time-row">
+        <image src="{{imageUrl}}/ic-activity-info.png" wx:if="{{imageUrl}}"/>
+        <text>新的白茶，口感比较清新，但是由于氧化不多，所有比较寒性，体质偏寒的人不建议多喝。但白茶经过几年的自然发酵，性已从凉转温，但同时</text>
+      </view>
+    </view>
+    <!-- 活动详情 -->
+    <view class="activity-detail">
+      <view class="pannel">
+        <text>商品详情</text>
+      </view>
+    </view>
+    <!-- 底部按钮 -->
+    <view class="activity-bottom-btn">
+      参与报名
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class AboutPage extends wepy.component {
+    components = {}
+    data = {
+      firstLoading: true
+    }
+    mixins = [base]
+    methods = {
+      copy(e) {
+        wx.setClipboardData({
+          data: 'dkkdkk',
+          success: function(res) {
+            wx.showToast({
+              title: '复制成功'
+            })
+          }
+        })
+      },
+      call() {
+        wx.makePhoneCall({
+          phoneNumber: '1340000'
+        })
+      }
+    }
+    onLoad() {}
+    initabout() {
+      this.$emit('onSetTitle', '个人中心')
+      if (!this.firstLoading) return
+      this.firstLoading = false
+    }
+  }
+</script>

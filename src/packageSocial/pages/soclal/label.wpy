@@ -1,0 +1,144 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .label {
+    padding-bottom: 92rpx;
+  }
+  .label-content {
+    padding: 30rpx 10rpx 10rpx 30rpx;
+    background: $subMainColor;
+    justify-content: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    .label-item {
+      margin-right: 20rpx;
+      margin-bottom: 20rpx;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 157rpx;
+      height: 58rpx;
+      background: $mainColor;
+      border-radius: 10rpx;
+      font-size: $fontSize4;
+      line-height: 58rpx;
+      >view {
+        color: $subMainColor;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      >image {
+        width: 16rpx;
+        height: 16rpx;
+        margin-left: 14rpx;
+      }
+    }
+  }
+  .label-add {
+    margin-bottom: 20rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 157rpx;
+    height: 58rpx;
+    background: $subMainColor;
+    border: 1rpx solid $mainColor;
+    color: $mainColor;
+    border-radius: 10rpx;
+    font-size: $fontSize4;
+    line-height: 58rpx;
+    >image {
+      margin-right: 14rpx;
+      width: 16rpx;
+      height: 16rpx;
+    }
+    >input {
+      text-align: center;
+    }
+  }
+  .save {
+    height: 92rpx;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    flex: 1;
+    text-align: center;
+    background: #159dfc;
+    color: #ffffff;
+    line-height: 92rpx;
+    font-size: $fontSize3;
+  }
+</style>
+
+<template>
+  <view class="label">
+    <view class="label-content">
+      <view class="label-item" wx:for="{{list}}" item="item" index="index">
+        <view>{{item.name}}</view>
+        <image mode="aspectFill" src="/images/packageSocial/icon_label_del.png" @tap="deleteLabel('{{index}}')"></image>
+      </view>
+      <view class="label-add" @tap="isLabelInput">
+        <image mode="aspectFill" src="/images/packageSocial/icon_add.png" wx:if="{{isAddLabel}}"></image>
+        <view wx:if="{{isAddLabel}}">新增</view>
+        <input wx:elif maxlength="4" @blur="addLabel" focus="{{inputShowed}}"></input>
+      </view>
+    </view>
+    <view class="save" @tap="back">
+      保存
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class Label extends wepy.page {
+    config = {
+      navigationBarTitleText: '标签'
+    }
+    mixins = [base]
+    components = {}
+    data = {
+      list: [],
+      isAddLabel: true,
+      typeSkip: '',
+      inputShowed: true,
+      labelData: {
+        type: '',
+        data: []
+      }
+    }
+    onLoad(option) {
+      this.typeSkip = option.typeSkip
+      this.list = wepy.getStorageSync(this.typeSkip) || []
+    }
+    onShow() {
+    }
+    methods = {
+      deleteLabel(index) {
+        this.list.splice(index, 1)
+      },
+      isLabelInput() {
+        this.isAddLabel = false
+        this.$apply()
+      },
+      addLabel(e) {
+        if (this.list.lenght > 20) return false
+        let obj = {}
+        obj.name = e.detail.value
+        if (obj.name) {
+          this.list.push(obj)
+        }
+        this.isAddLabel = true
+        this.$apply()
+      },
+      back() {
+        wepy.setStorageSync(this.typeSkip, this.list)
+        wepy.navigateBack({
+          delta: 1
+        })
+      }
+    }
+  }
+</script>

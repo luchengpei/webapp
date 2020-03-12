@@ -1,0 +1,208 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.about-page {
+  width: 100%;
+  background: $bgColor;
+}
+.top-box {
+  padding: 65rpx 0;
+  .logo {
+    display: block;
+    width: 190rpx;
+    height: 190rpx;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  .name {
+    padding-top: 20rpx;
+    font-size: 36rpx;
+    color: #3f3f3f;
+    letter-spacing: 4rpx;
+    text-align: center;
+  }
+}
+.simple-pannel-container {
+  width: 100%;
+  background: #fff;
+}
+.simple-pannel-list {
+  width: 100%;
+  background: #fff;
+  border-bottom: 20rpx solid $bgColor;
+}
+.simple-pannel {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 88rpx;
+  margin-left: 40rpx;
+  border-bottom: 1rpx solid $borderColor;
+  &:last-child {
+    border: none;
+  }
+  text {
+    font-size: 32rpx;
+    &.title {
+      flex: 1;
+      color: $black;
+    }
+    &.subtitle {
+      color: $gray;
+      &.c-main {
+        color: $mainColor;
+      }
+    }
+  }
+  .right-arrow {
+    margin-right: 40rpx;
+    height: 24rpx;
+    width: 14rpx;
+  }
+  .wx-contact {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    &::after {
+      border: none;
+    }
+  }
+}
+.copyright {
+  position: fixed;
+  bottom: 88rpx;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: $fontSize4;
+  color: $gray;
+}
+</style>
+
+<template>
+  <view
+    class="about-page"
+    style="{{configStyle}}"
+  >
+    <view class="top-box">
+      <image
+        class="logo"
+        src="{{dataForm.platInfo.platformLogo}}"
+      ></image>
+      <view class="name">{{project.projName}}</view>
+    </view>
+    <view class="simple-pannel-container">
+      <view class="simple-pannel-list">
+        <view class="simple-pannel-container">
+          <view class="simple-pannel">
+            <text class="title">微信客服</text>
+            <text
+              class="subtitle c-main"
+              @longpress="copy"
+            >{{kf.weixin}}</text>
+            <image
+              class="right-arrow"
+              style="visibility: hidden;"
+              src="{{imageUrl}}/ic-right-arrow.png"
+              wx:if="{{imageUrl}}"
+            />
+          </view>
+          <view class="simple-pannel">
+            <text class="title">热线电话</text>
+            <text
+              class="subtitle"
+              @tap="call"
+            >{{kf.telephone}}</text>
+            <image
+              class="right-arrow"
+              style="visibility: hidden;"
+              src="{{imageUrl}}/ic-right-arrow.png"
+              wx:if="{{imageUrl}}"
+            />
+          </view>
+          <view class="simple-pannel">
+            <text class="title">版本号</text>
+            <text class="subtitle">v1.0.0</text>
+            <image
+              class="right-arrow"
+              style="visibility: hidden;"
+              src="{{imageUrl}}/ic-right-arrow.png"
+              wx:if="{{imageUrl}}"
+            />
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="copyright">
+      <text>博纳移动 @2012-2019 版权所有</text>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import mine from '@/api/mine'
+import {
+  connect
+} from 'wepy-redux'
+import {
+  kfInit,
+  projectInit
+} from '@/store/actions'
+@connect({
+  kf(state) {
+    return state.common.kf
+  },
+  project(state) {
+    return state.common.project
+  }
+}, { kfInit, projectInit })
+export default class About extends wepy.page {
+  config = {
+    navigationBarTitleText: '关于我们'
+  }
+  components = {};
+  data = {
+    dataForm: {
+    }
+  }
+  mixins = [base]
+  methods = {
+    copy() {
+      let _this = this
+      wx.setClipboardData({
+        data: _this.kf.weixin,
+        success: function (res) {
+          wx.showToast({
+            title: '复制成功'
+          })
+        }
+      })
+    },
+    call() {
+      wx.makePhoneCall({
+        phoneNumber: this.kf.telephone
+      })
+    }
+  }
+  async getAbout() {
+    this.dataForm = await mine.getAboutMessage()
+    this.$apply()
+  }
+  onLoad(options) {
+    this.getAbout()
+    this.methods.kfInit()
+    this.methods.projectInit()
+  }
+}
+</script>

@@ -1,0 +1,333 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .group-comment-index {
+    width: 100%;
+    overflow-x: hidden;
+    margin-top:30rpx;
+    box-sizing: border-box;
+  }
+  .right {
+    width: 150rpx;
+    height: 60rpx;
+    color: #ffffff;
+    font-size: 28rpx;
+    line-height: 60rpx;
+    text-align: center;
+    background: $mainColor;
+    border-radius: 10rpx;
+    margin-left: 420rpx;
+  }
+  .comm-main {
+    background: #ffffff;
+    padding: 20rpx 30rpx 20rpx 30rpx;
+  }
+  .say-something {
+    padding-bottom: 30rpx;
+    border-bottom: 1rpx solid $borderColor;
+    .head-user {
+      display: flex;
+      align-items: center;
+      .head-img {
+        width: 72rpx;
+        height: 72rpx;
+        border-radius: 72rpx;
+        margin-right: 25rpx;
+        overflow: hidden;
+      }
+      .nick {
+        flex: 1;
+        font-size: 32rpx;
+        color: #576B95;
+      }
+      .time {
+        width: 250rpx;
+        font-size: 24rpx;
+        color: #AAAAAA;
+        text-align: right;
+      }
+    }
+    .center-text {
+      font-size: 28rpx;
+      color: $black;
+      padding-left: 97rpx;
+      box-sizing: border-box;
+      .img-value {
+        margin-top: 20rpx;
+        display: flex;
+        flex-wrap: wrap;
+        .img-item {
+          width: 158rpx;
+          height: 158rpx;
+          margin-right: 10rpx;
+          margin-bottom: 10rpx;
+        }
+      }
+    }
+    .bottom-like {
+      margin-top: 20rpx;
+      display: flex;
+      align-items: center;
+        padding-left: 97rpx;
+      box-sizing: border-box;
+      .left-tip {
+        flex: 1;
+        display: flex;
+        flex-wrap:wrap;
+        .item-t {
+          height: 30rpx;
+          color: $mainColor;
+          font-size: 20rpx;
+          border: 1rpx solid $mainColor;
+          padding-left: 10rpx;
+          padding-right: 10rpx;
+          border-radius: 10rpx;
+          text-align: center;
+          margin-right: 20rpx;
+          margin-bottom: 5rpx;
+        }
+      }
+      .like-comm {
+        width: 220rpx;
+        height: 42rpx;
+        background: #F5F5F5;
+        color: $gray;
+        display: flex;
+        align-items: center;
+        .lc {
+          width: 50%;
+          height: 100%;
+          line-height: 20rpx;
+          font-size: 20rpx;
+          color: $gray;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .comm {
+          border-left: 1rpx solid $gray;
+        }
+      }
+    }
+    .comment {
+      margin-top: 25rpx; 
+        padding-left: 97rpx;
+      box-sizing: border-box;
+      .tringle {// 三角形
+        width: 0;
+        height: 0;
+        border-left: 10rpx solid transparent;
+        border-right: 10rpx solid transparent;
+        border-bottom: 20rpx solid #F5F5F5;
+        margin-left: 40rpx;
+      }
+      .comment-index {
+        background: #F5F5F5;
+        .people-like {   
+          font-size: $fontSize4;
+          color: #576B95;
+          display: flex;
+          padding: 20rpx 30rpx 20rpx 30rpx;
+          border-bottom: 1rpx solid $borderColor;
+          image{
+            margin-top:5rpx;
+          }
+          .people{
+            flex: 1;
+          }
+        }
+        .people-comm {
+          padding: 5rpx 30rpx 5rpx 30rpx;
+          color: #444444;
+          font-size: $fontSize4;
+          .people {
+            font-size: $fontSize4;
+            color: #576B95;
+          }
+          .value {
+            padding-left: 20rpx;
+            box-sizing: border-box;
+          }
+        }
+        .comment-cloumn{
+          padding-top: 15rpx;
+          padding-bottom: 15rpx; 
+        }
+      }
+    }
+  }
+  .lc-img {
+    width: 25rpx;
+    height: 25rpx;
+    margin-right: 10rpx;
+  }
+  image{
+      width: 100%;
+      height: 100%;
+  }
+  .icon-comment{
+    font-size: $fontSize4;
+    line-height: 24rpx;
+    margin-right: -5rpx;
+  }
+  .is-like{
+    color:$mainColor;
+  }
+</style>
+
+<template>
+  <view class='group-comment-index'>
+    <LeftTitle title="留言">
+      <!-- 右边导航插槽 -->
+      <view class="right" slot="right" @tap="routerTo('/pages/activity/saying')">发表留言</view>
+       </LeftTitle>
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <!-- 默认插槽 -->
+        <view class="comm-main">
+          <!-- 留言 -->
+          <view class="say-something" style="{{index+1===list.length?'border:none':''}}">
+            <view class="head-user">
+              <view class="head-img">
+                <image src="{{item.userAvatar}}" @tap="_toImgLook({{item.userAvatar}})"></image>
+              </view>
+              <view class="nick">{{item.username}}</view>
+              <view class="time">{{item._createTime}}</view>
+            </view>
+            <view class="center-text">
+              <view class="font">{{item.content}}</view>
+              <view class="img-value">
+                <repeat for="{{item._commentImg}}" key="index" index="index" item="valImg">
+                  <view class="img-item">
+                    <image mode="aspectFill" @tap="_toImgLook({{valImg}},{{item._commentImg}})" src="{{valImg}}"></image>
+                  </view>
+                </repeat>
+              </view>
+            </view>
+            <view class="bottom-like">
+              <view class="left-tip">
+                <repeat for="{{item._commentLabel}}" key="index" index="index" item="valTip">
+                     <view class="item-t">{{valTip}}</view>
+                </repeat>  
+              </view>
+              <view class="like-comm">
+                <view class="like lc" @tap="like({{item}})">
+                  <view class="lc-img">
+                     <i wx:if="{{!item._isLiked}}" class="iconfont icon-shoucang icon-comment"></i>
+                     <i wx:if="{{item._isLiked}}" class="iconfont icon-shoucang is-like icon-comment"></i>
+                  </view>
+                  赞
+                </view>
+                <view class="comm lc" @tap="comment({{item}})">
+                  <view class="lc-img">
+                      <i  class="iconfont icon-tab_ic_activity_s icon-comment"></i>
+                    
+                  </view>
+                  评论
+                </view>
+              </view>
+            </view>
+            <!-- 留言评论 -->
+            <view class="comment">
+              <view class="tringle" wx:if="{{item.likePeople}}"></view>
+              <view class="comment-index">
+                <view class="people-like" wx:if="{{item.likePeople}}">
+                  <view class="lc-img" @tap="like({{item}})">
+                     <i  class="iconfont icon-shoucang is-like icon-comment"></i>
+                  </view>
+                  <view class="people" wx:if="{{item.likePeople}}">{{item.likePeople}}</view>
+                </view>
+                <view class="comment-cloumn" wx:if="{{item.leaveMessage.length!==0}}">
+                  <repeat for="{{item.leaveMessage}}" key="index" index="index" item="valChild">
+                    <view class="people-comm">
+                      <text class="people">{{valChild.username}}:</text>
+                      <text class="value">{{valChild.content}}</text>
+                    </view>
+                  </repeat>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </repeat>
+    <CommInput :show.sync="showTrue" @commSub.user="submitComment"></CommInput>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+//   import tool from '@/mixins/tool'
+  import router from '@/mixins/router'
+  import CommInput from './comment_input'
+  import LeftTitle from '@/components/common/title'
+  import activity from '@/api/activity'
+//   import reg from '@/mixins/reg_form'
+  import Tips from '@/utils/Tips'
+  export default class GroupComment extends wepy.component {
+    components = {
+      LeftTitle,
+      CommInput
+    }
+    props={
+      list: {
+        default: []
+      }
+    }
+  
+    data = {
+      showTrue: false,
+      answerId: '', // 当前回复评论回复id
+      answerValue: '' // 当前回复评论回复内容
+    }
+    mixins = [router]
+    methods = {
+      // 点赞
+      async like(val) {
+        await this.setLike(val)
+        this.$emit('readyComment')
+      },
+      // 评论
+      comment(val) {
+        this.answerId = val.commentId
+        setTimeout(() => {
+          this.showTrue = true
+        }, 300)
+        this.$apply()
+      },
+      // 提交评论
+      async submitComment(value) {
+        this.answerValue = value
+        this.$apply()
+        await this.dataIsTrue()
+        this.$emit('readyComment')
+      }
+    }
+    // 点赞
+    async setLike(val) {
+      let query = {
+        isPraise: val.isLiked,
+        objectId: val.commentId
+      }
+      let data = await activity.clickLike(query)
+      return data
+    }
+    // 发表评论数据验证
+    async dataIsTrue() {
+      let query = {
+        activityId: wepy.getStorageSync('activityId'),
+        content: this.answerValue, // 留言类容
+        answerId: this.answerId
+      }
+      if (query.content === '') {
+        Tips.error('评论不能为空')
+        return Promise.reject(Error)
+      }
+      // 提交请求
+      await this.setSaying(query)
+      await Tips.success('发表留言成功')
+    }
+    // 发表评论
+    async setSaying(query) {
+      await activity.publishSaying(query)
+    }
+    onLoad() {}
+  }
+</script>

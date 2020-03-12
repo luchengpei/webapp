@@ -1,0 +1,113 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .sign-up-index {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background-color: $bgColor;
+    box-sizing: border-box;
+  }
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 92rpx;
+    background: $mainColor;
+    color: #fff;
+    line-height: 92rpx;
+    font-size: 36rpx;
+    text-align: center;
+  }
+</style>
+
+<template>
+  <view class='sign-up-index' style="{{configStyle}}">
+    <view class="main">
+      <view class="bn-mt-30">
+          <view class="form-info">
+            <repeat for="{{formInfoArr}}" key="index" index="index" item="item">
+              <LeftInput :item.sync="item"></LeftInput>
+            </repeat>
+          </view>
+      </view>
+    </view>
+    <!-- 按钮 -->
+    <view class="bottom-bar safe-area-bottom" @tap="submit">确认</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import LeftInput from '@/components/activity/form_input_arr'
+  import activity from '@/api/activity'
+  import Tips from '@/utils/Tips'
+  import base from '@/mixins/base'
+  export default class SignUp extends wepy.page {
+    config = {
+      navigationBarTitleText: '报名'
+    }
+    components = {
+      LeftInput
+    }
+    data = {
+      btnText: '确定', // 按钮文字
+      formInfoArr: [] // http表单信息
+    }
+    mixins = [base, router]
+    methods = {
+      async submit() {
+        let query = await this.formDealValue()
+        await activity.signUp(query)
+        if (wepy.getStorageSync('pay')) {
+          this._routerTo(`/pages/activity/submit`)
+          return 0
+        }
+        await Tips.success('报名成功')
+        this._routerTo(`/pages/activity/success`)
+      }
+    }
+    // 获取活动表单字段
+    async getActiveFormInfo() {
+      let data = await activity.getForm({
+        settingId: wepy.getStorageSync('settingId')
+      })
+      // 处理表单字段
+      data.map((v, i) => {
+        let border = !(data.length === i + 1)
+        this.formInfoArr.push({
+          text: v.name,
+          placeholder: `请输入${v.name}`,
+          model: '',
+          border,
+          isRequired: v.isRequired
+        })
+      })
+      this.$apply()
+    }
+    // 参数整理
+    formDealValue() {
+      return new Promise((resolve, reject) => {
+        let applyInfo = {}
+        this.formInfoArr.map((v, i) => {
+          applyInfo[v.text] = v.model
+          // 表单验证
+          if (v.model === '' && v.isRequired) {
+            Tips.error(`请输入${v.text}`)
+            reject(Error, '表单验证')
+          }
+        })
+        let data = {
+          applyInfo: JSON.stringify(applyInfo), // 表单字段
+          activityId: wepy.getStorageSync('activityId'), // 活动ID
+          settingId: wepy.getStorageSync('settingId') // 设置ID
+        }
+        resolve(data)
+      })
+    }
+    onLoad() {
+      this.getActiveFormInfo()
+    }
+  }
+</script>

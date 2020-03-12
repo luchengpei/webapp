@@ -1,0 +1,54 @@
+<style lang="scss" >
+  @import '../scss/common';
+  page {
+    background: #fff;
+  }
+</style>
+
+<template>
+  <view class="rich-text-wrap">
+    <import src="../components/wxparse/wxParse.wxml" />
+    <Html2wxml :parserName="name" :parserContent.sync="introduction"></Html2wxml>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import Html2wxml from '@/components/common/html2wxml'
+  import { connect } from 'wepy-redux'
+  import { richTextRemove } from '@/store/actions'
+  @connect({
+    text(state) {
+      return state.richText.text
+    }
+  }, {
+    richTextRemove
+  })
+  export default class RichText extends wepy.page {
+    components = {
+      Html2wxml
+    }
+    data = {
+      introduction: ''
+    }
+    methods = {
+    }
+    mixins = [router]
+    onLoad(options, data) {
+      wx.setNavigationBarTitle({
+        title: options.title,
+        success: () => {
+  
+        }
+      })
+      // 通过preload获取完整的富文本数据
+      this.introduction = this.text || '<h1>暂无数据/h1>'
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    onUnload() {
+      this.methods.richTextRemove()
+    }
+  }
+</script>

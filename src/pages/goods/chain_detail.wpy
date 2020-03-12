@@ -1,0 +1,576 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .goods-recommend-detail-page-container {
+    width: 100%;
+    background: $bgColor;
+    padding-bottom: 93rpx;
+    .goods-item {
+      border-bottom: 1rpx solid $borderColor;
+      border-top: 1rpx solid $borderColor;
+      .top-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 88rpx;
+        padding: 0 30rpx;
+        font-size: 32rpx;
+        border-bottom: 1rpx solid $borderColor;
+        margin-bottom: 30rpx;
+        background: #fff;
+        .uname {
+          color: $gray;
+        }
+      }
+      .main-box {
+        position: relative;
+        display: flex;
+        padding: 30rpx;
+        border-top: 1rpx solid $borderColor;
+        background-color: #fff;
+        .goods-pic {
+          width: 150rpx;
+          height: 150rpx;
+          border-radius: 8rpx;
+        }
+        .goods-info {
+          position: relative;
+          flex: 1;
+          padding-left: 50rpx;
+          .quantity-box {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .line-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .name {
+            font-size: 34rpx;
+            color: $black;
+            line-height: 50rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
+          .intro {
+            font-size: 24rpx;
+            line-height: 46rpx;
+            color: $gray;
+          }
+          .price {
+            padding: 10rpx 0;
+            font-size: 34rpx;
+            color: $priceRed;
+          }
+          .price-o {
+            font-size: 24rpx;
+            color: #999;
+            text-decoration: line-through;
+          }
+          .num {
+            font-size: 20rpx;
+            color: #999999;
+          }
+          .labels {
+            text-align: right;
+            .item {
+              display: inline-block;
+              padding: 0 20rpx;
+              height: 28rpx;
+              line-height: 28rpx;
+              text-align: center;
+              background: $mainColor;
+              color: #fff;
+              font-size: 20rpx;
+              margin-right: 10rpx;
+              border-radius: 4rpx;
+            }
+          }
+        }
+      }
+    }
+    .tab-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: #fff;
+      height: 82rpx;
+      font-size: 32rpx;
+      border-bottom: 1rpx solid $borderColor;
+      .item {
+        display: inline-block;
+        padding: 0 15rpx;
+        line-height: 76rpx;
+        border-bottom: 6rpx solid #fff;
+        &.current {
+          color: $mainColor;
+          border-color: $mainColor;
+        }
+      }
+    }
+    .users-list {
+      background: #fff;
+      padding-left: 30rpx;
+      .item {
+        padding-right: 30rpx;
+        display: flex;
+        align-items: center;
+        border-bottom: 1rpx solid $borderColor;
+        font-size: 32rpx;
+        height: 88rpx;
+        &:last-child {
+          border: none;
+        }
+        .list-no {
+          width: 80rpx;
+        }
+        .user-info {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          .pic {
+            display: inline-block;
+            width: 60rpx;
+            height: 60rpx;
+            margin-right: 20rpx;
+            border-radius: 50%;
+            overflow: hidden;
+          }
+        }
+        .pic-num {
+          text-align: right;
+          width: 100rpx;
+        }
+      }
+    }
+    .goods-detail {
+      background: #fff;
+    }
+    .bottom-box {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 92rpx;
+      line-height: 92rpx;
+      border-top: 1rpx solid $borderColor;
+      background: #fff;
+      display: flex;
+      .home-btn {
+        display: flex;
+        width: 190rpx;
+        align-items: center;
+        justify-content: center;
+        background: $mainColor;
+        .icon {
+          width: 47rpx;
+          height: 44rpx;
+        }
+      }
+      .right-box {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        color: #444;
+        font-size: 32rpx;
+        .btn {
+          position: relative;
+          flex: 1;
+          text-align: center;
+          &::after {
+            position: absolute;
+            display: inline-block;
+            content: '';
+            right: 0;
+            top: 50%;
+            width: 2rpx;
+            height: 50rpx;
+            margin-top: -25rpx;
+            background: $borderColor;
+          }
+          &:last-child::after {
+            display: none;
+          }
+        }
+      }
+    }
+    .addr-box {
+      display: flex;
+      align-items: center;
+      height: 68rpx;
+      background: #fefcec;
+      color: #ffa200;
+      font-size: 24rpx;
+      padding: 0 30rpx;
+      .addr {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        .icon {
+          display: inline-block;
+          width: 36rpx;
+          height: 36rpx;
+          margin-right: 15rpx;
+        }
+        .txt {
+          flex: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      .edit {
+        width: 200rpx;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        .arrow {
+          width: 15rpx;
+          height: 27rpx;
+          display: inline-block;
+          margin-left: 15rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <import src="../../components/wxparse/wxParse.wxml" />
+  <view class="goods-recommend-detail-page-container" style="{{configStyle}}">
+    <!-- 地址 -->
+    <view class="addr-box">
+      <view class="addr">
+        <image src="{{imageUrl}}/warn-icon.png" class="icon" wx:if="{{imageUrl}}" />
+        <view class="txt">配送至：{{address.province}}{{address.city}}{{address.area}}{{address.address}}</view>
+      </view>
+      <view class="edit" wx:if="{{address}}" @tap="routerTo('/pages/mine/address?f=order')">
+        <view>更改</view>
+        <image class="arrow" src="{{imageUrl}}/arrow-y.png" wx:if="{{imageUrl}}" />
+      </view>
+      <view class="edit" wx:else @tap="routerTo('/pages/mine/address_detail?t=add&f=order')">
+        <view>完善收货信息</view>
+        <image class="arrow" src="{{imageUrl}}/arrow-y.png" wx:if="{{imageUrl}}" />
+      </view>
+    </view>
+    <!-- 商品 -->
+    <view class="goods-item">
+      <view class="top-box">
+        <view>发起人 <text class="uname">{{chainInfo.userName}}</text></view>
+      </view>
+      <view class="main-box">
+        <image class="goods-pic" src="{{chainInfo.productThumbnail}}"></image>
+        <view class="goods-info">
+          <view class="quantity-box">
+            <Quantity :quantity.sync="quantity" @change.user="num" />
+          </view>
+          <view class="name">{{chainInfo.productName}}</view>
+          <view class="line-box">
+            <view class="labels" wx:if="{{chainInfo.purchaseLimit > 0}}">
+              <view class="item">限购{{chainInfo.purchaseLimit}}件</view>
+            </view>
+            <view class="intro">{{extendNames}}</view>
+          </view>
+          <view class="line-box">
+            <view class="price">￥{{chainInfo.groupByPrice}}</view>
+          </view>
+          <view class="line-box">
+            <view class="price-o">￥{{chainInfo.productTpPrice}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 商品描述&接龙列表 -->
+    <view class="tab-box">
+      <view class="item {{tab === 'list' ? 'current' : ''}}" @tap="changeTab('list')">接龙明细</view>
+      <view class="item {{tab === 'detail' ? 'current' : ''}}" @tap="changeTab('detail')">商品详情</view>
+    </view>
+    <view class="users-list" wx:if="{{tab === 'list'}}">
+      <view class="item" wx:for="{{list}}" wx:for-item="item" wx:for-index="index" wx:key="index">
+        <view class="list-no">{{index + 1}}.</view>
+        <view class="user-info">
+          <image src="{{item.headImg}}" class="pic"></image>
+          <view class="nick-name">{{item.userName}}</view>
+        </view>
+        <view class="pick-num">{{item.num}}件</view>
+      </view>
+    </view>
+    <view class="goods-detail" wx:else>
+      <Html2wxml :parserName="name" :parserContent.sync="productDesc"></Html2wxml>
+    </view>
+    <view class="bottom-box {{isIpx ? 'fix-ipx-btn' : ''}}">
+      <view class="home-btn" @tap="redirectTo('/pages/index?p=index')">
+        <image src="{{imageUrl}}/home-icon.png" class="icon" wx:if="{{imageUrl}}" />
+      </view>
+      <view class="right-box">
+        <view class="btn" @tap="toChainList('/pages/goods/chain?hid={{headId}}&chainId={{chainId}}')">更多接龙</view>
+        <view class="btn" @tap="submit">一键接龙</view>
+        <!--<button class="btn" open-type="share"  >分享</button>-->
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import chain from '@/api/chain'
+  import order from '@/api/order'
+  import address from '@/api/address'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import Event from '@/utils/Event'
+  import Util from '@/utils/Util'
+  import Tips from '@/utils/Tips'
+  import Quantity from '@/components/zanui/quantity'
+  import Html2wxml from '@/components/common/html2wxml'
+  export default class ChainDetail extends wepy.page {
+    mixins = [base, router, pagination]
+    config = {
+      navigationBarTitleText: '接龙活动'
+    }
+    components = {
+      Quantity,
+      Html2wxml
+    }
+    computed = {
+      extendNames() {
+        if (this.chainInfo && this.chainInfo.productTpList && this.chainInfo.productTpList.length > 0) {
+          let tpNames = []
+          let tps = this.chainInfo.productTpList
+          tps.map((item) => {
+            tpNames.push(item.productTpValue)
+          })
+          return tpNames.join(',')
+        } else {
+          return ''
+        }
+      },
+      quantity() {
+        return {
+          num: this.buyNum,
+          min: 1,
+          max: this.chainInfo && this.chainInfo.purchaseLimit ? this.chainInfo.purchaseLimit : 99
+        }
+      }
+    }
+    data = {
+      firstLoading: true,
+      tab: 'list', // list列表 detail详情
+      headId: 0,
+      productId: 0,
+      chainId: 0,
+      chainInfo: null,
+      buyNum: 1,
+      list: [],
+      page: {
+        list: []
+      },
+      address: null,
+      productDesc: '',
+      canSubmit: true, // true 可以提交 false 不可提交
+      sceneData: null
+    }
+    methods = {
+      // 更多接龙
+      toChainList(page) {
+        const pages = getCurrentPages()
+        const prevPage = pages[pages.length - 2] || null
+        if (prevPage) {
+          wepy.navigateBack({
+            delta: 1
+          })
+        } else {
+          wepy.redirectTo({
+            url: page
+          })
+        }
+      },
+      changeTab(tab) {
+        this.tab = tab
+      },
+      num({
+        quantity
+      }) {
+        this.buyNum = quantity
+      },
+      // 提交订单
+      submit() {
+        if (!this.canSubmit) return
+        if (!this.isBindPhone()) return false
+        // 活动已结束
+        if (this.chainInfo.isDeleted === 1 || this.chainInfo.isEnabled === 0) {
+          wepy.showModal({
+            // title: '提示', // 提示的标题,
+            content: '此次接龙活动已结束！', // 提示的内容,
+            showCancel: false, // 是否显示取消按钮,
+            confirmText: '确定', // 确定按钮的文字，默认为取消，最多 4 个字符,
+            confirmColor: '#3CC51F' // 确定按钮的文字颜色,
+          })
+          return
+        }
+        // 检查是否选择收货地址
+        if (!(this.address && this.address.addressId)) {
+          Tips.toast('请先完善收货信息', null, 'none')
+          return false
+        }
+        const user = wepy.getStorageSync('user')
+        let param = {
+          userId: user.userId,
+          communityRelayInitiate: this.chainInfo.communityRelayInitiate,
+          userName: user.username || '',
+          headImg: user.avatar || '',
+          orderPrice: this.chainInfo.groupByPrice * this.buyNum,
+          payType: 1,
+          addressId: this.address.addressId,
+          phone: user.telephone || ''
+        }
+        param.orderProductList = []
+        param.orderProductList.push({
+          buyingNum: this.buyNum,
+          productTpExtendId: this.chainInfo.productTpExtendId
+        })
+        this.canSubmit = false
+        // 下单
+        chain.order(param).then(async(res) => {
+          try {
+            const oid = res.productOrderId
+            const orderNo = res.productOrderNo
+            const wxdata = await order.pay(oid, orderNo, user.openId)
+            const payInfo = wxdata.orderInfo
+            wepy.requestPayment({
+              timeStamp: payInfo.timeStamp,
+              nonceStr: payInfo.nonceStr,
+              package: payInfo.packageValue,
+              signType: payInfo.signType,
+              paySign: payInfo.paySign
+            }).then(res => {
+              // order.payStatus({
+              //   orderId: oid,
+              //   outTradeNo: orderNo
+              // })
+              Tips.toast('接龙成功', () => {
+                this.resetSubmitBtn()
+                wepy.reLaunch({
+                  url: `/pages/goods/chain?hid=${this.headId}&chainId=${this.chainId}`
+                })
+              }, 'none', 2000)
+            }).catch(async(res) => {
+              this.resetSubmitBtn()
+              // 取消支付or支付失败
+              await order.cancel(oid, 4)
+              this.onLoad()
+            })
+          } catch (error) {
+            this.resetSubmitBtn()
+            console.log('error', error)
+          }
+        }).catch(error => {
+          console.log('error', error)
+          this.resetSubmitBtn()
+        })
+      }
+    }
+    onLoad(query) {
+      if (query) {
+        const param = query && query.scene ? Util.analyseQrcodeScene(query) : {
+          headId: query.hid || null,
+          productId: query.productId || null,
+          activityId: query.chainId || null
+        }
+        this.headId = param.headId
+        this.productId = param.productId
+        this.chainId = param.activityId
+        wepy.setStorageSync('headId', this.headId)
+        wepy.setStorageSync('productId', this.productId)
+        wepy.setStorageSync('chainId', this.chainId)
+      }
+      // 监听地址更新
+      Event.listen('TRADE_ADDRESS_UPDATE', this.updateAddress.bind(this), this)
+      this.getChainInfo()
+    }
+    onRoute() {
+      if (!Util.isLogin()) return
+      this.getDefaultAddress()
+    }
+    initgoodslist() {
+      this.$emit('onSetTitle', '接龙活动')
+      if (!this.firstLoading) return
+      this.firstLoading = false
+    }
+    // 重置接龙按钮
+    resetSubmitBtn() {
+      this.canSubmit = true
+      this.$apply()
+    }
+    // 获取接龙详情
+    async getChainInfo() {
+      let param = {
+        communityRelayId: this.chainId,
+        headId: this.headId,
+        communityRelayProductId: this.productId
+      }
+      this.chainInfo = await chain.info(param)
+      this.productDesc = this.chainInfo.productDesc
+      this.quantity.max = this.chainInfo.purchaseLimit
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+      this.getUserList()
+    }
+    // 获取默认收获地址
+    async getDefaultAddress() {
+      this.address = await address.defaultAddr()
+      this.$apply()
+    }
+    // 获取接龙列表
+    async getUserList() {
+      this.page = chain.userlist()
+      await this.reload()
+      this.list = this.page.list
+      this.$apply()
+    }
+    params() {
+      return {
+        communityRelayInitiate: this.chainInfo.communityRelayInitiate
+      }
+    }
+    // 触底加载
+    async onReachBottom() {
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+    // 更新收货地址信息
+    updateAddress(address) {
+      this.address = address
+      this.$apply()
+    }
+    // 分享
+    onShareAppMessage(e) {
+      // let pid = wepy.getStorageSync('pid')
+      const sceneData = Util.generateScene({
+        projectId: wepy.getStorageSync('pid'),
+        inviteUser: this.headId,
+        productId: this.productId,
+        type: this.chainId,
+        activityId: '',
+        headId: ''
+      })
+      return {
+        title: this.chainInfo.productName,
+        imageUrl: this.chainInfo.productThumbnail,
+        // path: `/pages/goods/chain_detail?scene=${pid}_${this.headId}_${this.productId}_${this.chainId}`
+        path: `/pages/goods/chain_detail?scene=${sceneData}`
+      }
+    }
+  }
+</script>

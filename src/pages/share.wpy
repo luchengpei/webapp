@@ -1,0 +1,32 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+</style>
+
+<template>
+  <view class="share-container">
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Util from '@/utils/Util'
+  export default class Login extends wepy.page {
+    config = {
+      navigationBarTitleText: ''
+    }
+    components = {}
+    data = {}
+    methods = {
+    }
+    onLoad(options) {
+      console.log('options', options)
+      const param = Util.analyseQrcodeScene(options)
+      console.log('param', param)
+      if (options.type === 'default') {
+        wepy.reLaunch({ url: '/pages/goods/detail?scene=100295_694_300' })
+      } else {
+        wepy.reLaunch({ url: '/pages/goods/chain_detail?scene=100295_1_10_5' })
+      }
+    }
+  }
+</script>

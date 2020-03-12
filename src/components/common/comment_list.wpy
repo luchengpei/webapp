@@ -1,0 +1,170 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.comment-list{
+  display: flex;
+  flex-direction: column;
+  background:$bgColor;
+  .comment-title{
+    display: flex;
+    align-items: center;
+    margin-top: 30rpx;
+    background: #fff;
+    border-bottom:1rpx solid $borderColor;
+    .pannel{
+        padding: 0 40rpx;
+        height: 88rpx;
+        line-height: 88rpx;
+        text{
+          padding-left: 15rpx;
+          height: 30rpx;
+          font-size: $fontSize3;
+          color: $mainColor;
+          border-left: 6rpx solid $mainColor;
+        }
+      }
+  }
+  .list{
+    padding: 40rpx 0rpx 0 40rpx;
+    background:#fff;
+    .list-box{
+      border-bottom: 1rpx solid #e5e5e5;
+       display:flex;
+    }
+    .iconfont{
+      color: $black;
+      font-size:$fontSize3
+    }
+    .i-like{
+          color: $mainColor
+    }
+    .avator-box {
+      width: 60rpx;
+      height: 60rpx;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 20rpx;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .info-box{
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding-bottom: 30rpx;
+      .info-head{
+        display: flex;
+        justify-content: space-between;
+        padding-bottom:8rpx;
+        margin-top:-8rpx;
+        color: $black;
+        font-size: $fontSize4;
+        .point{
+          padding-right: 40rpx
+        }
+      }
+      .info-content{
+        font-size: $fontSize3;
+        color: $black;
+        padding-right: 40rpx
+      }
+      .info-time{
+        padding-top: 12rpx;
+        color: $gray;
+        font-size: $fontSize5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .dot{
+          font-size: $fontSize3;
+          margin-right: 40rpx
+        }
+      }
+    }
+  }
+}
+.more-comment{
+  width: 200rpx;
+  padding: 20rpx;
+  border-radius: 40rpx;
+  text-align: center;
+  border:1rpx solid $borderColor;
+  margin: 0 auto;
+  font-size: $fontSize3;
+  color: $gray;
+  margin-top: 20rpx
+}
+</style>
+<template>
+ <view>
+  <view class="comment-list">
+    <view class="comment-title">
+      <view class="pannel">
+        <text>用户评论</text>
+      </view>
+    </view>
+    <view class="list" wx:for="{{list}}" wx:key="{{index}}" >
+      <view class="list-box">
+        <view class="avator-box">
+          <image src="{{item.avatar}}" />
+        </view>
+        <view class="info-box">
+          <view class="info-head">
+            <view class="nickname">
+            {{item.nickname}}
+            </view>
+            <view class="point">
+              <i class="iconfont icon-ic_like {{item.isPraise?'i-like':''}}" @tap="addCommentLike({{item}})"></i>
+              {{item.praise_points_num}}
+            </view>
+          </view>
+          <view class="info-content">
+            {{item.content}}
+          </view>
+          <view class="info-time">
+            <view>{{item.createTime}}</view>
+            <i class="dot iconfont icon-menu" @tap="copy({{item}})"></i>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="more-comment" @tap="readMore" wx:if="{{!!list.length&&list.length>=10}}">
+    更多评论
+  </view>
+ </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import WxApi from '@/utils/WxApi'
+  export default class CommentList extends wepy.component {
+    data = {
+
+    }
+    props={
+      list: {
+        type: Array,
+        default: []
+      }
+    }
+    methods = {
+      readMore() {
+        this.$emit('getCommentList')
+      },
+      addCommentLike(item) {
+        this.$emit('addCommentLike', item)
+      },
+      copy(item) {
+        wx.showActionSheet({
+          itemList: ['复制'],
+          success: (res) => {
+            WxApi.wxSetClipboard(item.content)
+          }
+        })
+      }
+    }
+    mixins = [base]
+}
+</script>

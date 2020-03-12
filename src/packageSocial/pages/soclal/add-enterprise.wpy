@@ -1,0 +1,752 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .add-enterprise {
+    padding: 30rpx 0 92rpx 0;
+  }
+  .basic-info {
+    padding-left: 30rpx;
+    background: #ffffff;
+    margin-bottom: 30rpx;
+    .the-input {
+      height: 88rpx;
+      padding-right: 30rpx;
+      border-bottom: 1rpx solid #e0e0e0;
+      display: flex;
+      justify-content: left;
+      font-size: $fontSize2;
+      align-items: center;
+      .required {
+        position: relative;
+        &::after {
+          position: absolute;
+          right: -14rpx;
+          top: 29rpx;
+          font-size: $fontSize4;
+          content: '*';
+          color: red;
+        }
+      }
+      .required-backgr {
+        position: relative;
+        .title__inline {
+          width: 165rpx !important;
+        }
+        &::after {
+          position: absolute;
+          right: -20rpx;
+          top: 29rpx;
+          font-size: $fontSize4;
+          content: '*';
+          color: red;
+        }
+      }
+      .title {
+        .title__inline {
+          height: 88rpx;
+          line-height: 88rpx;
+          width: 140rpx;
+          color: $black;
+          text-align: justify;
+          &::after {
+            width: 100%;
+            display: inline-block;
+            content: ''; //这三个都不可以少
+          }
+        }
+        .nowrap {
+          white-space: nowrap;
+        }
+      }
+      .select-avatar {
+        width: 72%;
+        margin-left: 50rpx;
+        height: 50rpx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        >image {
+          height: 64rpx;
+          width: 64rpx;
+          border-radius: 50%;
+        }
+        >i {
+          color: #aaa;
+          font-size: 24rpx;
+        }
+      }
+      .background-pop {
+        width: 72%;
+        margin-left: 50rpx;
+        height: 50rpx;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        >i {
+          color: #aaa;
+          font-size: 24rpx;
+        }
+        >view {
+          width: 54rpx;
+          height: 32rpx;
+          border-radius: 16rpx;
+          background: #f7564c;
+          font-size: $fontSize4;
+          color: $subMainColor;
+          text-align: center;
+          line-height: 32rpx;
+          margin-left: 28rpx;
+        }
+      }
+      >input {
+        margin: 0 30rpx 0 50rpx;
+        color: #a5a5a5;
+        height: 46rpx;
+        flex: 1;
+      }
+    }
+    .the-input:nth-last-child(1) {
+      border-bottom: 0rpx;
+    }
+    .section-wrapper {
+      >picker {
+        width: 72%;
+        >.section {
+          margin-left: 0;
+        }
+      }
+      .section {
+        margin-left: 50rpx;
+        width: 100%;
+        font-size: $fontSize2;
+        color: #a5a5a5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        >i {
+          font-size: 24rpx;
+          color: #aaa;
+        }
+        margin-right: 10rpx;
+      }
+    }
+  }
+  .contact-info {
+    padding-left: 30rpx;
+    background: #ffffff;
+    margin-bottom: 30rpx;
+    .the-input {
+      border-bottom: 1rpx solid #e0e0e0;
+      display: flex;
+      justify-content: left;
+      font-size: $fontSize2;
+      align-items: center;
+      .switch {
+        margin-left: 40rpx;
+        width: 72%;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .required {
+        position: relative;
+        &::after {
+          position: absolute;
+          right: -14rpx;
+          top: 29rpx;
+          font-size: $fontSize4;
+          content: '*';
+          color: red;
+        }
+      }
+      .title {
+        .title__inline {
+          height: 88rpx;
+          line-height: 88rpx;
+          width: 140rpx;
+          color: $black;
+          text-align: justify;
+          &::after {
+            width: 100%;
+            display: inline-block;
+            content: ''; //这三个都不可以少
+          }
+        }
+      }
+      >input {
+        margin: 0 30rpx 0 50rpx;
+        color: #a5a5a5;
+        height: 46rpx;
+        flex: 1;
+      }
+    }
+    .the-input:nth-last-child(1) {
+      border-bottom: 0rpx;
+    }
+  }
+  .save {
+    position: fixed;
+    height: 92rpx;
+    width: 100%;
+    bottom: 0;
+    right: 0;
+    line-height: 92rpx;
+    text-align: center;
+    font-size: $fontSize3;
+    background: #159dfc;
+    color: $subMainColor;
+  }
+  .avatar-wrapper {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(43, 39, 39, 0.77);
+    top: 0;
+    left: 0;
+    z-index: 10;
+    .avatar {
+      position: relative;
+      width: 591rpx;
+      background: #fff;
+      border-radius: 10rpx;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      .title {
+        height: 60rpx;
+        padding: 30rpx 30rpx;
+        font-size: $fontSize2;
+      }
+      .content {
+        height: 300rpx;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 0 30rpx;
+        .item {
+          width: 108rpx;
+          height: 108rpx;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          >image {
+            border: 2rpx;
+            width: 100rpx;
+            height: 100rpx;
+            border-radius: 50%;
+          }
+        }
+      }
+      .btn {
+        border-top: 1rpx solid $borderColor;
+        display: flex;
+        >view {
+          flex: 1;
+          text-align: center;
+          line-height: 100rpx;
+          font-size: $fontSize2;
+          color: $mainColor;
+        }
+        width: 100%;
+        height: 100rpx;
+      }
+    }
+  }
+  .pop-location {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.6);
+    >van-area {
+      animation: animate 0.5s;
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      overflow: hidden;
+    }
+    @keyframes animate {
+      from {
+        height: 0px;
+      }
+      to {
+        height: 528rpx;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="add-enterprise_wrapper">
+    <view class="add-enterprise">
+      <view class="basic-info">
+        <!-- <view class="the-input">
+                                                    <view class="title">
+                                                      <view class="title__inline">头像</view>
+                                                    </view>
+                                                    <view class="select-avatar" @tap="getAvatar">
+                                                      <image mode="aspectFill" src='{{prepareAvatar}}' class="avatar"></image>
+                                                      <i class="iconfont icon-arrow"></i>
+                                                    </view>
+                                                  </view> -->
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">公司名称</view>
+          </view>
+          <input placeholder="{{isEndit?'请填写公司名称，最多20字':''}}" maxlength="20" disabled="{{!isEndit}}" value="{{formData.companyName}}" @blur="nameFn('{{item}}')" placeholder-class="g-placeholder" />
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title required">
+            <view class="title__inline">公司地址</view>
+          </view>
+          <view class="section" @tap="sectionLocation">
+            {{formData.location.length?'':'请填写地址'}}
+            <view class="section-content">
+              {{formData.location[0]}} {{formData.location[1]}} {{formData.location[2]}}
+            </view>
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+        <view class="the-input">
+          <input style="margin-left:0" placeholder="请填写详细地址" maxlength="15" disabled="{{!isEndit}}" value="{{formData.address}}" @blur="addressFn('{{item}}')" placeholder-class="g-placeholder" />
+        </view>
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">企业简介</view>
+          </view>
+          <input placeholder="{{isEndit?'请填写企业简介':''}}" maxlength="500" disabled="{{!isEndit}}" value="{{formData.companyProfile}}" @blur="companyProfileFn('{{item}}')" placeholder-class="g-placeholder" />
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title required">
+            <view class="title__inline">行业</view>
+          </view>
+          <picker mode="selector" bindchange="typeFn" disabled="{{!isEndit}}" value="{{formData.type}}" range="{{industryList}}">
+            <view class="section">
+              {{industryList[formData.type]}}
+              <i class="iconfont icon-arrow" wx:if="{{isEndit}}"></i>
+            </view>
+          </picker>
+        </view>
+        <view class="the-input">
+          <view class="title required-backgr">
+            <view class="title__inline nowrap">企业背景图</view>
+          </view>
+          <view class="background-pop" @tap="sikpBackground">
+            <view wx:if='{{enterpriseImgList.length}}'>{{enterpriseImgList.length}}</view>
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+        <view class="the-input">
+          <view class="title">
+            <view class="title__inline nowrap">行业标签</view>
+          </view>
+          <view class="background-pop" @tap="sikpTagJson">
+            <view wx:if='{{tagJsonList.length}}'>{{tagJsonList.length}}</view>
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+        <view class="the-input">
+          <view class="title">
+            <view class="title__inline">产品图册</view>
+          </view>
+          <view class="background-pop" @tap="sikpProductCatalogue">
+            <view wx:if='{{productImgList.length}}'>{{productImgList.length}}</view>
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+        <!-- <view class="the-input">
+          <view class="title">
+            <view class="title__inline nowrap">业务快捷入口</view>
+          </view>
+          <view class="background-pop" @tap="businessSkip">
+            <view wx:if='{{formData.quickList.length}}'>{{formData.quickList.length}}</view>
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view> -->
+      </view>
+      <view class="contact-info">
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">姓名</view>
+          </view>
+          <input placeholder="{{isEndit?'(必填) 请输入姓名':''}}" maxlength="11" disabled="{{!isEndit}}" value="{{formData.userName}}" @blur="userNameFn('{{item}}')" placeholder-class="g-placeholder" />
+        </view>
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">手机号码</view>
+          </view>
+          <input placeholder="{{isEndit?'(必填) 请输入手机号码':''}}" maxlength="11" disabled="{{!isEndit}}" value="{{formData.phone}}" @blur="phoneFn('{{item}}')" placeholder-class="g-placeholder" />
+        </view>
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">微信号码</view>
+          </view>
+          <input placeholder="{{isEndit?'(必填) 请输入微信号码':''}}" maxlength="20" disabled="{{!isEndit}}" value="{{formData.wechatNum}}" @blur="wechatNumFn('{{item}}')" placeholder-class="g-placeholder" />
+        </view>
+        <!-- <view class="the-input">
+                                                    <view class="title">
+                                                      <view class="title__inline">会员可见</view>
+                                                    </view>
+                                                    <view class="switch">
+                                                        <switch color="#159dfc" bindchange="isMemberLook" />
+                                                      </view>
+                                                  </view> -->
+      </view>
+      <view class="save" @tap="submit">
+        保存
+      </view>
+    </view>
+    <view class="pop-location" wx:if="{{isPopLocation}}">
+      <van-area area-list="{{areaList}}" @cancel="onCancel" @confirm="onConfirm" value="{{formData.areaCode}}" />
+    </view>
+  </view>
+</template>
+ 
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import WxApi from '@/utils/WxApi'
+  import upload from '@/utils/FileHttp'
+  import Tips from '@/utils/Tips'
+  import Validator from '@/utils/Validator'
+  import pagination from '@/mixins/pagination'
+  import Empty from '@/components/common/empty'
+  import Area from '@/utils/Area'
+  import enterprise from '@/api/enterprise'
+  export default class AddEnterprise extends wepy.page {
+    constructor() {
+      super()
+      this.data.areaList = Area
+    }
+    config = {
+      navigationBarTitleText: '',
+      usingComponents: {
+        'van-area': '../../../components/vant/area/index'
+      }
+    }
+    components = {
+      Empty
+    }
+    data = {
+      saveType: 'add',
+      clanCompanyId: '',
+      isPopLocation: false,
+      isEndit: true,
+      formData: {
+        // icon: '',
+        companyName: '',
+        location: [],
+        address: '',
+        companyProfile: '',
+        productCatalogue: '',
+        phone: '',
+        wechatNum: '',
+        userName: '',
+        type: 1,
+        tagJson: '',
+        quickList: []
+      },
+      industryList: [],
+      industryData: [],
+      enterpriseImgList: [],
+      tagJsonList: [],
+      productImgList: [],
+      quickList: []
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      sectionLocation() {
+        this.isPopLocation = true
+        this.$apply()
+      },
+      onCancel() {
+        this.isPopLocation = false
+        this.$apply()
+      },
+      userNameFn(e) {
+        Validator.isCharacter(e.detail.value, this, '姓名')
+        this.formData.userName = e.detail.value
+      },
+      // 行业
+      typeFn(e) {
+        this.formData.type = e.detail.value
+      },
+      // 确定地址选择
+      onConfirm(e) {
+        this.formData.location = []
+        this.formData.location.push(e.detail.values[0].name)
+        if (e.detail.values[1]) {
+          this.formData.location.push(e.detail.values[1].name)
+          if (!e.detail.values[2]) {
+            this.formData.areaCode = e.detail.values[1].code
+          }
+        } else {
+          this.formData.location.push(' ')
+        }
+        if (e.detail.values[2]) {
+          this.formData.location.push(e.detail.values[2].name)
+          this.formData.areaCode = e.detail.values[2].code
+        } else {
+          this.formData.location.push('')
+        }
+        this.isPopLocation = false
+        this.$apply()
+      },
+      isMemberLook() {},
+      // 公司名称
+      nameFn(e) {
+        Validator.isCharacter(e.detail.value, this, '公司名称')
+        this.formData.companyName = e.detail.value
+      },
+      // 填写公司地址
+      addressFn(e) {
+        Validator.isCharacter(e.detail.value, this, '公司详细地址', false)
+        this.formData.address = e.detail.value
+      },
+      // 企业简介
+      companyProfileFn(e) {
+        Validator.isCharacter(e.detail.value, this, '企业简介')
+        this.formData.companyProfile = e.detail.value
+      },
+      // 获取手机号
+      phoneFn(e) {
+        Validator.isCharacter(e.detail.value, this, '手机号码')
+        this.formData.phone = e.detail.value
+      },
+      // 获取微信号
+      wechatNumFn(e) {
+        Validator.isCharacter(e.detail.value, this, '微信号')
+        this.formData.wechatNum = e.detail.value
+      },
+      // 获取头像
+      async getAvatar() {
+        let resPath = await WxApi.wxChooseImg().catch(err => {
+          Tips.error('不支持当前图片')
+          return err
+        })
+        let res = await upload.uploadImg(resPath)
+        let uploadRes = res.map(v => {
+          return {
+            url: v
+          }
+        })
+        this.formData.icon = uploadRes[0].url
+        this.$apply()
+      },
+      // 企业背景图
+      sikpBackground() {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/background-imge?typeSkip=enterpriseBgd&upLoadNum=9`
+        })
+      },
+      // 行业标签
+      sikpTagJson() {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/label?typeSkip=tagJson`
+        })
+      },
+      sikpProductCatalogue() {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/background-imge?typeSkip=productCatalogue&upLoadNum=9`
+        })
+      },
+      // 企业快捷入口
+      businessSkip() {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/business?typeSkip=businessHome&entryType=1`
+        })
+      },
+      submit() {
+        let params = Object.assign({}, this.formData)
+        let tagJsonData = ''
+        this.tagJsonList.map((item) => {
+          tagJsonData += item.name + ','
+        })
+        params.tagJson = tagJsonData.substring(0, tagJsonData.length - 1)
+        let imgData = ''
+        this.enterpriseImgList.map((item) => {
+          imgData += item.url + ','
+        })
+        params.backgroundPicture = imgData.substring(0, imgData.length - 1)
+        let productData = ''
+        this.productImgList.map((item) => {
+          productData += item.url + ','
+        })
+        if (this.industryList.length > 0) {
+          let selectCategoryArr = []
+          selectCategoryArr = this.industryData.filter((item) => {
+            return item.categoryName === this.industryList[this.formData.type]
+          })
+          params.companyCategoryId = selectCategoryArr[0].companyCategoryId
+        } else {
+          params.companyCategoryId = 1
+        }
+        params.productCatalogue = productData.substring(0, productData.length - 1)
+        params.province = this.formData.location[0] || ''
+        params.city = this.formData.location[1] || ''
+        params.area = this.formData.location[2] || ''
+        this.submitValidation(params)
+        delete params.location
+        if (!this.isSubmit) return false
+        if (this.saveType === 'add') {
+          this.addClancompanyApi(params)
+        } else {
+          params.clanCompanyId = this.clanCompanyId
+          let that = this
+          wx.showModal({
+            content: '修改会重新审核，是否确认提交？', // 提示的内容,
+            showCancel: true, // 是否显示取消按钮,
+            cancelText: '取消', // 取消按钮的文字，默认为取消，最多 4 个字符,
+            cancelColor: '#000000', // 取消按钮的文字颜色,
+            confirmText: '确定', // 确定按钮的文字，默认为取消，最多 4 个字符,
+            confirmColor: wepy.$instance.globalData.color.main || '#06a0ff', // 确定按钮的文字颜色,
+            success(res) {
+              if (res.confirm) {
+                that.modfiyClancompanyApi(params)
+              }
+            }
+          })
+        }
+      }
+    }
+    async getDownWebListApi() {
+      try {
+        let res = await enterprise.getDownWebList()
+        this.industryData = res
+        res.map((item) => {
+          this.industryList.push(item.categoryName)
+        })
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    async addClancompanyApi(params) {
+      try {
+        await enterprise.addClancompany(params)
+        Tips.success('添加成功')
+        wepy.navigateBack({
+          delta: 1
+        })
+      } catch (error) {}
+    }
+    async modfiyClancompanyApi(prams) {
+      try {
+        await enterprise.modfiyClancompany(prams)
+        Tips.success('修改成功')
+        wepy.navigateBack({
+          delta: 1
+        })
+      } catch (error) {}
+    }
+    onShow() {
+      this.enterpriseImgList = wepy.getStorageSync('enterpriseBgd')
+      this.tagJsonList = wepy.getStorageSync('tagJson')
+      this.productImgList = wepy.getStorageSync('productCatalogue')
+      this.formData.quickList = wepy.getStorageSync('quickList').data || []
+    }
+    // 数据处理
+    getData(data) {
+      this.formData.companyName = data.companyName
+      this.formData.location.push(data.province || '')
+      this.formData.location.push(data.city || '')
+      this.formData.location.push(data.area || '')
+      this.formData.address = data.address
+      this.formData.productCatalogue = data.productCatalogue
+      this.formData.phone = data.phone
+      this.formData.userName = data.userName
+      this.formData.wechatNum = data.wechatNum
+      this.formData.companyProfile = data.companyProfile
+      this.formData.quickList = data.quickList
+      if (data.backgroundPicture) {
+        data.backgroundPictureList.map((item) => {
+          this.enterpriseImgList.push({
+            url: item
+          })
+        })
+      }
+      if (data.productCatalogue) {
+        data.productCatalogueList.map((item) => {
+          this.productImgList.push({
+            url: item
+          })
+        })
+      }
+      if (data.tagJsonList) {
+        data.tagJsonList.map((item) => {
+          this.tagJsonList.push({
+            name: item
+          })
+        })
+      }
+      this.formData.type = this.industryData.findIndex((item) => {
+        return item.companyCategoryId === data.companyCategoryId
+      })
+      this.$apply()
+      wepy.setStorageSync('enterpriseBgd', this.enterpriseImgList)
+      wepy.setStorageSync('tagJson', this.tagJsonList)
+      wepy.setStorageSync('productCatalogue', this.productImgList)
+      wepy.setStorageSync('quickList', {
+        data: this.formData.quickList
+      })
+    }
+    // 提交时表单校验
+    submitValidation(params) {
+      this.isSubmit = 1
+      for (let item of Object.keys(params)) {
+        console.log(params)
+        switch (item) {
+          case 'companyName':
+            Validator.isCharacter(params[item], this, '公司名称')
+            break
+          case 'province':
+            Validator.isCharacter(params[item], this, '公司地址')
+            break
+          case 'companyProfile':
+            Validator.isCharacter(params[item], this, '公司简介')
+            break
+          case 'backgroundPicture':
+            Validator.isCharacter(params[item], this, '企业背景图')
+            break
+          case 'userName':
+            Validator.isCharacter(params[item], this, '姓名')
+            break
+          case 'phone':
+            Validator.isMobile(params[item], '手机号码', this)
+            break
+          case 'wechat':
+            Validator.isCharacter(params[item], this, '微信号')
+            break
+        }
+        if (!this.isSubmit) return false
+      }
+    }
+    async onLoad(options) {
+      wepy.setStorageSync('enterpriseBgd', [])
+      wepy.setStorageSync('tagJson', [])
+      wepy.setStorageSync('productCatalogue', [])
+      wepy.setStorageSync('quickList', {
+        data: ''
+      })
+      this.getDownWebListApi()
+      this.saveType = options.saveType || 'add'
+      this.clanCompanyId = options.clanCompanyId || ''
+      wx.setNavigationBarTitle({
+        title: this.clanCompanyId ? '修改企业' : '添加企业'
+      })
+      if (this.clanCompanyId) {
+        const res = await enterprise.getClancompanyDetails({
+          clanCompanyId: options.clanCompanyId
+        })
+        this.getData(res)
+      }
+      this.$apply()
+    }
+  }
+</script>

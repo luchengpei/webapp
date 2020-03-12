@@ -1,0 +1,144 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .commonweal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .top {
+    margin-bottom: 30rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 232rpx;
+    background: #fff; 
+    .title {
+      font-size: $fontSize4;
+      line-height: 36rpx;
+      color: $gray;
+    }
+    .money {
+      margin-top: 20rpx;
+      font-size: 58rpx;
+      line-height: 36rpx;
+      color: $mainColor;
+    }
+  }
+  .bottom {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    .list {
+      display: flex;
+      flex-direction: column;
+      .item {
+        display: flex;
+        align-items: center;
+        margin-left: 40rpx;
+        padding-right: 40rpx;
+        height: 140rpx;
+        border-top: 1rpx solid $borderColor;
+        &:first-child {
+          border: none;
+        }
+        .left {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          .title {
+            font-size: $fontSize2;
+            color: $black;
+          }
+          .time {
+            margin-top: 12rpx;
+            font-size: $fontSize4;
+            color: $gray;
+          }
+        }
+        .right {
+          font-size: $fontSize2;
+          color: #f31313;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <view class="commonweal">
+      <view class="top">
+        <text class="title">累计公益金（元）</text>
+        <text class="money">{{moneyData.totalCommonweal}}</text>
+      </view>
+      <view class="bottom">
+        <Title title="明细"/>
+        <view class="list">
+          <repeat for="{{moneyData.list}}" key="index" index="index" item="item">
+              <view class="item">
+                <view class="left">
+                  <text class="title">消费-商品  ¥{{item.orderPrice}}</text>
+                  <text class="time">{{item.createAt}}</text>
+                </view>
+                <view class="right">+{{item.commonewal}}</view>
+              </view>
+          </repeat>
+        </view>
+      </view>
+    </view>
+  </view> 
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Title from '@/components/common/title'
+  import pagination from '@/mixins/pagination'
+  import base from '@/mixins/base'
+  import mine from '@/api/mine'
+  export default class Commonweal extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的公益',
+      enablePullDownRefresh: true
+    }
+    components = {
+      Title
+    }
+    data = {
+      page: '',
+      moneyData: {
+        list: [],
+        totalCommonweal: ''
+      }
+    }
+    mixins = [base, pagination]
+    methods = {
+    }
+    // 获取数据
+    async getData() {
+      this.page = await mine.commonweal()
+      await this.next()
+      this.moneyData.list = this.page.list
+      this.moneyData.totalCommonweal = this.page.nativeData.totalCommonweal
+      console.log('哥哥哥的数据', this.page)
+      this.$apply()
+    }
+     // 到达底部
+    async onReachBottom () {
+      await this.next()
+      this.moneyData.list = this.page.list
+      this.moneyData.totalCommonweal = this.page.nativeData.totalCommonweal
+      this.$apply()
+    }
+     // 下拉刷新
+    async onPullDownRefresh () {
+      await this.reload()
+      this.moneyData.list = this.page.list
+      this.moneyData.totalCommonweal = this.page.nativeData.totalCommonweal
+      this.$apply()
+    }
+    onLoad() {
+      this.getData()
+    }
+  }
+</script>

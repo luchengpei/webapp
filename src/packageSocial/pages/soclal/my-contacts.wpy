@@ -1,0 +1,212 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .my-contacts {
+    position: relative;
+    margin-top: 30rpx;
+    background: $subMainColor;
+    padding-top: 140rpx;
+    .new {
+      padding: 20rpx 30rpx;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      align-items: center;
+      .content {
+        display: flex;
+        align-items: center;
+        font-size: $fontSize2;
+        color: #159dfc;
+        >image {
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+          margin-right: 25rpx;
+        }
+      }
+      .right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        >view {
+          width: 54rpx;
+          height: 32rpx;
+          border-radius: 16rpx;
+          background: #f7564c;
+          font-size: $fontSize4;
+          color: $subMainColor;
+          text-align: center;
+          line-height: 32rpx;
+          margin-left: 28rpx;
+        }
+        >i {
+          font-size: 24rpx;
+          color: #aaaaaa;
+        }
+      }
+    }
+    .my-contacts-list-item {
+      position: relative;
+      overflow: hidden;
+      .my-contacts-list {
+        position: relative;
+        overflow: hidden;
+        border-top: 1rpx solid #e0e0e0;
+        padding: 20rpx 30rpx 20rpx 0;
+        margin-left: 30rpx;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .left {
+          display: flex;
+          >image {
+            width: 100rpx;
+            height: 100rpx;
+            border-radius: 50%;
+          }
+          .content {
+            margin-left: 25rpx;
+            padding-top: 12rpx;
+            .name {
+              font-size: $fontSize2;
+              color: $black;
+            }
+            .introduce {
+              font-size: $fontSize4;
+              color: $gray;
+            }
+          }
+        }
+        .look {
+          width: 120rpx;
+          height: 60rpx;
+          background-color: #159dfc;
+          border-radius: 6rpx;
+          font-size: $fontSize4;
+          color: $subMainColor;
+          text-align: center;
+          line-height: 60rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="my-contacts">
+    <view class="new" @tap="routerTo('/packageSocial/pages/soclal/new-request')">
+      <view class="content">
+        <image mode="aspectFill" mode="aspectFill" src='/images/avatar.jpg'></image>
+        <view>新的请求</view>
+      </view>
+      <view class="right">
+        <view wx:if="{{count}}">{{count>99?'99+':count}}</view>
+        <i class="iconfont icon-arrow"></i>
+      </view>
+    </view>
+    <view class="my-contacts-list-item">
+      <repeat for="{{listData}}" key="index" index="index" item="item">
+        <SwiperDelete :swipeData.sync="item" :index="index" :stopAnimate.sync="editBtnStatus" @delItem.user="deletedMessage">
+          <view class="my-contacts-list">
+            <view class="left">
+              <image mode="aspectFill" src="{{item.logo?item.logo:'/images/avatar.jpg'}}"></image>
+              <view class="content">
+                <view class="name">{{item.name}}</view>
+                <view class="introduce">{{item.position}}</view>
+              </view>
+            </view>
+            <view class="look" @tap="skip('{{item.homePageId}}')">
+              查看
+            </view>
+          </view>
+        </SwiperDelete>
+      </repeat>
+    </view>
+  </view>
+</template>
+ 
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import enterprise from '@/api/enterprise'
+  import pagination from '@/mixins/pagination'
+  // import Empty from '@/components/common/empty'
+  import Tips from '@/utils/Tips'
+  import SwiperDelete from '@/components/common/swiper_delete'
+  export default class MyCollects extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的人脉',
+      enablePullDownRefresh: true
+    }
+    components = {
+      SwiperDelete
+    }
+    data = {
+      page: {},
+      editBtnStatus: 0,
+      listData: [],
+      count: 0
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      skip(homePageId) {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/contacts/contacts-details?clanUserInfoId=${homePageId}`
+        })
+      },
+      deletedMessage(item) {
+        this.deletedfriendApi(item.friendId)
+      }
+    }
+    onLoad(options) {}
+    onShow() {
+      this.getClanfriendListApi()
+    }
+    // 删除好友
+    async deletedfriendApi(params) {
+      try {
+        await enterprise.deletedfriend(params)
+        Tips.success('删除成功')
+        setTimeout(() => {
+          this.getClanfriendListApi()
+        }, 800)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    async getClanfriendListApi() {
+      try {
+        this.page = await enterprise.getClanfriendList()
+        await this.next()
+        this.listData = this.page.list
+        console.log('数据', this.page)
+        this.count = this.page.nativeData.count
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // // 列表传参
+    // params() {
+    //   return {}
+    // }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.count = this.page.nativeData.count
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.count = this.page.nativeData.count
+      this.$apply()
+    }
+  }
+</script>

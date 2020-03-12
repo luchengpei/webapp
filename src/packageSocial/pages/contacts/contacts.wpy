@@ -1,0 +1,83 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+</style>
+
+<template>
+  <view class="contacts">
+    <repeat wx:if="{{listData.length>0}}">
+      <ContactsList :listData="listData" :type="listType"></ContactsList>
+    </repeat>
+    <block wx:if="{{listData.length===0}}">
+      <Empty title='暂无人脉' subtitle='' :fixed="fixed"></Empty>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import ContactsList from '@/components/enterprise/contacts-list'
+  import Empty from '@/components/common/empty'
+  import enterprise from '@/api/enterprise'
+  export default class Contacts extends wepy.page {
+    config = {
+      navigationBarTitleText: '人脉',
+      enablePullDownRefresh: true
+    }
+    components = {
+      Empty,
+      ContactsList
+    };
+    data = {
+      page: [],
+      listData: [],
+      listType: '1'
+    }
+    mixins = [base, router, pagination]
+    methods = {}
+    onLoad(options) {
+      this.getClanuserinfoListApi()
+    }
+    // 获取人脉列表
+    async getClanuserinfoListApi() {
+      this.page = await enterprise.getClanuserinfoList()
+      await this.next()
+      this.listData = this.page.list
+      this.$apply()
+    }
+    // // 列表传参
+    // params() {
+    //   return {name:1}
+    // }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.listData.map((item) => {
+        if (item.goodAtLabels) {
+          item.goodAtLabels = item.goodAtLabels.split(',')
+        }
+        if (item.knowLabels) {
+          item.knowLabels = item.knowLabels.split(',')
+        }
+      })
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.listData.map((item) => {
+        if (item.goodAtLabels) {
+          item.goodAtLabels = item.goodAtLabels.split(',')
+        }
+        if (item.knowLabels) {
+          item.knowLabels = item.knowLabels.split(',')
+        }
+      })
+      this.$apply()
+    }
+  }
+</script>

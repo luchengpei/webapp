@@ -1,0 +1,63 @@
+<style lang="scss" scoped>
+.activity-page {
+}
+</style>
+
+<template>
+  <view class="activity-page" style="{{configStyle}}">
+    <view class="list" wx:if="{{!firstLoading && list.length > 0}}">
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <ActivityItem :item="item" />
+      </repeat>
+    </view>
+    <Empty title="暂无活动" subtitle="" wx:elif="{{!firstLoading && list.length === 0}}" />
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import pagination from '@/mixins/pagination'
+import ActivityItem from '@/components/activity/activity_item'
+import Empty from '@/components/common/empty'
+import activity from '@/api/activity'
+export default class ActivityPage extends wepy.page {
+  config = {
+    navigationBarTitleText: '活动'
+  }
+  components = {
+    ActivityItem,
+    Empty
+  };
+  data = {
+    firstLoading: true,
+    list: null,
+    page: {}
+  };
+  mixins = [base, pagination];
+  onLoad() {
+    if (!this.firstLoading) return
+    this.firstLoading = false
+    this.getActivityList()
+  }
+  methods = {
+    switchTab(tab) {}
+  };
+  async getActivityList() {
+    this.page = activity.list()
+    await this.next()
+    this.list = this.page.list
+    this.$apply()
+  }
+  async onReachBottom() {
+    await this.next()
+    this.list = this.page.list
+    this.$apply()
+  }
+  onRoute() {}
+  async onPullDownRefresh() {
+    await this.getActivityList()
+    wx.stopPullDownRefresh()
+  }
+}
+</script>

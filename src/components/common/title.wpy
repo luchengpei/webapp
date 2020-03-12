@@ -1,0 +1,58 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.title {
+  display: flex;
+  align-items: center;
+  padding: 0 40rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  &.border-b {
+    border-bottom: 1rpx solid $borderColor;
+  }
+  .text {
+    flex: 1;
+    position: relative;
+    margin-left: 20rpx;
+    font-size: $fontSize3;
+    color: $black;
+    &::before {
+      position: absolute;
+      content: '';
+      width: 6rpx;
+      height: 30rpx;
+      left: -20rpx;
+      top: 29rpx;
+      background: $mainColor;
+    }
+  }
+}
+</style>
+
+<template>
+  <!-- 分割线 -->
+  <view class="title {{border ? 'border-b' : ''}}">
+    <view class="text">{{title}}</view>
+    <slot name="right">
+      <!-- 右边插槽 -->
+    </slot>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Title extends wepy.component {
+  props = {
+    title: {
+      default: ''
+    },
+    border: {
+      default: true
+    }
+  };
+  methods = {};
+  onLoad() {}
+}
+</script>

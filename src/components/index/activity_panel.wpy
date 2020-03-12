@@ -1,0 +1,53 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+</style>
+
+<template>
+  <Panel :title.sync="title">
+    <view slot="content">
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <ActivityItem :item="item" />
+      </repeat>
+    </view>
+  </Panel>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import activity from '@/api/activity'
+  import Panel from '@/components/index/panel'
+  import ActivityItem from '@/components/activity/activity_item'
+  
+  export default class ActivityPanel extends wepy.component {
+    mixins = [base, pagination, router]
+    props = {
+    };
+    data = {
+      title: '推荐活动',
+      list: []  // 活动列表
+    }
+    components = {
+      Panel,
+      ActivityItem
+    }
+    methods = {
+      // 初始化
+      init(data) {
+        console.log('activity init', data)
+        this.title = data.title
+        this.initActivity()
+      }
+    };
+    onLoad() {}
+    // 获取商品列表
+    async initActivity() {
+      try {
+        this.list = await activity.recommendList({ page: 1, pageSize: 2 })
+        this.$apply()
+      } catch (error) {}
+    }
+  }
+</script>

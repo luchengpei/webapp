@@ -1,0 +1,124 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  page{
+    height: 100%;
+    padding-bottom:0rpx;
+  }
+  .ask-them-list {
+     padding-bottom:92rpx;
+      overflow: auto;
+      .ask-them-list_list-item {
+        background: $subMainColor;
+        margin-top: 30rpx;
+        padding: 30rpx 30rpx;
+        .title {
+          color: $black;
+          font-size: $fontSize2;
+        }
+        .top {
+          display: flex;
+          justify-content: space-between;
+        }
+        .content {
+          margin-top: 8rpx;
+          color: $imageBgColor;
+          font-size: $fontSize4;
+          line-height: 38rpx;
+          max-width: 690px;
+          text-overflow: ellipsis;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          display: -webkit-box;
+          overflow: hidden;
+          white-space: normal;
+        }
+        .time {
+          color: $imageBgColor;
+          font-size: $fontSize4;
+          line-height: 38rpx;
+        }
+      }
+    .ask-them-list-buttom {
+      font-size: $fontSize2;
+      height: 92rpx;
+      width: 100%;
+      background: #159dfc;
+      color: #ffffff;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      line-height: 92rpx;
+      text-align: center;
+    }
+  }
+</style>
+
+<template>
+  <view class="ask-them-list">
+      <view class="ask-them-list_list-item" wx:for="{{listData}}" wx:for-item="item" wx:key="item.title" @tap="sikp('{{item.seekingRootsId}}')">
+        <view class="top">
+          <view class="title">{{item.name}}</view>
+          <view class="time">{{item.createTime[0]+'.'+item.createTime[1]+'.'+item.createTime[2]}}</view>
+        </view>
+        <view class="content">{{item.srDescription}}</view>
+      </view>
+    <view class="ask-them-list-buttom" @tap="sikp()">
+      再次发起
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import pagination from '@/mixins/pagination'
+  export default class askThemList extends wepy.page {
+    config = {
+      navigationBarTitleText: '寻根问祖列表',
+      enablePullDownRefresh: true
+    }
+    components = {}
+    data = {
+      listData: '',
+      page: ''
+    }
+    mixins = [base, pagination]
+    methods = {
+      sikp(id) {
+        wepy.navigateTo({
+          url: `ask-them?seekingRootsId=${id}`
+        })
+      }
+    }
+    async askThemListApi() {
+      try {
+        this.page = await family.askThemList()
+        await this.next()
+        this.listData = this.page.list
+        this.listData.forEach(item => {
+          item.createTime = item.createTime.split(' ')[0].split('-')
+        })
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.list = this.page.list
+      this.$apply()
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+    onShow() {
+      this.askThemListApi()
+    }
+    onLoad(option) {}
+  }
+</script>

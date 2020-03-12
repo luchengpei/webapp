@@ -1,0 +1,22 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .separator {
+    width: 100%;
+    height: 20rpx;
+    background: $bgColor;
+  }
+</style>
+
+<template>
+  <!-- 分割线 -->
+  <view class="separator"></view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class MaskLayer extends wepy.component {
+    props = {};
+    methods = {};
+    onLoad() {}
+  }
+</script>

@@ -1,0 +1,185 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+  .goods-list-page-container {
+    width: 100%;
+    background: $bgColor;
+    .sort-bar {
+      height: 87rpx;
+      display: flex;
+      align-items: stretch;
+      background: $bgColor;
+      .sort-item {
+        position: relative;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text {
+          font-size: 28rpx;
+          color: $gray;
+          &.selected {
+            color: $mainColor;
+          }
+        }
+        image {
+          margin-left: 10rpx;
+          height: 30rpx;
+          width: 30rpx;
+        }
+        &:first-child::after {
+          display: inline-block;
+          height: 36rpx;
+          content: '';
+          width: 1rpx;
+          font-size: 40rpx;
+          position: absolute;
+          right: 0;
+          top: 50%;
+          margin-top: -18rpx;
+          background: $borderColor;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="goods-list-page-container" style="{{configStyle}}">
+    <SearchBar :keyword.sync="keyword" :showSearch.sync="showSearch" :isFocus.sync="isFocus" @search.user="onSearch" @cancel.user="onCancel" wx:if="{{mode === 'search'}}" />
+    <view class="sort-bar" wx:if="{{goods.length > 0}}">
+      <view class="sort-item" @tap="changeSort('product_price')">
+        <text class="{{sortType === 'product_price' ? 'selected' : ''}}">价格</text>
+        <image src="{{imageUrl}}/ic-sort-up.png" wx:if="{{sortType === 'product_price' && sort === 'asc'}}" />
+        <image src="{{imageUrl}}/ic-sort-down.png" wx:elif="{{sortType === 'product_price' && sort === 'desc'}}" />
+        <image src="{{imageUrl}}/ic-sort.png" wx:else/>
+      </view>
+      <view class="sort-item" @tap="changeSort('buying_num')">
+        <text class="{{sortType === 'buying_num' ? 'selected' : ''}}">销量</text>
+        <image src="{{imageUrl}}/ic-sort-up.png" wx:if="{{sortType === 'buying_num' && sort === 'asc'}}" />
+        <image src="{{imageUrl}}/ic-sort-down.png" wx:elif="{{sortType === 'buying_num' && sort === 'desc'}}" />
+        <image src="{{imageUrl}}/ic-sort.png" wx:else/>
+      </view>
+    </view>
+    <GoodsList :list.sync="goods" mode="normal" wx:if="{{goods.length > 0}}" />
+    <Empty title="暂无商品" wx:if="{{goods.length <= 0}}" />
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import goods from '@/api/goods'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import GoodsList from '@/components/goods/goods_list'
+  import SearchBar from '@/components/goods/search_bar'
+  import Empty from '@/components/common/empty'
+  export default class Goods extends wepy.page {
+    config = {
+      navigationBarTitleText: '商品列表',
+      enablePullDownRefresh: true
+    }
+    components = {
+      GoodsList,
+      SearchBar,
+      Empty
+    };
+    data = {
+      firstLoading: true,
+      categoryId: -1, // 类目ID
+      mode: '', // search 搜索页模式
+      sortType: '', // 价格 product_price 销量  buying_num
+      sort: '',
+      goods: [],
+      page: {
+        list: []
+      },
+      keyword: '',
+      showSearch: false,
+      isFocus: false
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      /**
+       * 改变排序
+       */
+      async changeSort(type) {
+        if (type === this.sortType) {
+          this.sort = this.sort === 'asc' ? 'desc' : 'asc'
+        } else {
+          this.sort = 'asc'
+          this.sortType = type
+        }
+        this.page = this.mode === 'search' ? goods.search() : goods.goodsByCategoryId()
+        await this.next()
+        this.goods = this.page.list
+        this.$apply()
+      },
+      /**
+       * 搜索列表
+       */
+      onSearch() {
+        this.loginCatch(async() => {
+          this.sortType = ''
+          this.sort = ''
+          this.page = goods.search()
+          await this.next()
+          this.goods = this.page.list
+          this.$apply()
+        }, () => {
+          this.onSearch()
+        })
+      },
+      onCancel() {}
+    }
+    onLoad(options) {
+      this.mode = options.m || ''
+      this.categoryId = options.c || -1
+      if (this.mode === 'search') {
+        this.mode = 'search'
+        wepy.setNavigationBarTitle({
+          title: '商品搜索'
+        })
+        this.showSearch = true
+        this.isFocus = true
+        this.$apply()
+      }
+      this.getListsByCid(this.categoryId)
+    }
+    async getListsByCid(cid) {
+      this.loginCatch(async() => {
+        this.page = goods.goodsByCategoryId()
+        await this.next()
+        this.goods = this.page.list
+        this.$apply()
+      }, () => {
+        this.getListsByCid(cid)
+      })
+    }
+    // 列表传参
+    params() {
+      return this.mode === 'search' ? {
+        type: this.sortType === 'product_price' ? 0 : 1,
+        // sortord: this.sortType,
+        sortRule: this.sort,
+        name: this.keyword
+      } : {
+        categoryId: this.categoryId ? this.categoryId : '',
+        sortord: this.sortType,
+        sortRule: this.sort
+      }
+    }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.goods = this.page.list
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.goods = this.page.list
+      this.$apply()
+    }
+  }
+</script>

@@ -1,0 +1,31 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .coupon-page {
+    background: $bgColor;
+    padding: 30rpx 30rpx 0;
+  }
+</style>
+
+<template>
+  <view class="coupon-page">
+    <repeat for="{{[1,2,3]}}" key="index" index="index" item="item">
+      <CouponItem />
+    </repeat>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import CouponItem from '@/components/coupon/coupon_item'
+  export default class CouponPage extends wepy.component {
+    components = {
+      CouponItem: CouponItem
+    }
+    data = {
+      firstLoading: true
+    }
+    methods = {
+    }
+    onLoad() {}
+  }
+</script>

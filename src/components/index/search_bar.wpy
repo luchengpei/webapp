@@ -1,0 +1,66 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .search-bar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 88rpx;
+    background: #efeff4;
+    color: #b2b2b2;
+    .iconfont {
+      font-size: 36rpx;
+      margin-bottom: 4rpx;
+    }
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 56rpx;
+      width: 698rpx;
+      background: #fff;
+      border-radius: 10rpx;
+      .search-text {
+        font-size: 26rpx;
+        margin-left: 8rpx;
+      }
+      &.hover {
+        opacity: $opacity;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="search-bar-container" @tap="routerTo('{{skipUrl}}')">
+    <view class="search-bar" hover-class="hover" hover-stay-time="100">
+      <i class="iconfont icon-search"></i>
+      <text class="search-text">{{title}}</text>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  export default class SearchBar extends wepy.component {
+    mixins = [base, router]
+    props = {
+      title: {
+        default: '搜索商品'
+      },
+      skipUrl: {
+        default: '/pages/goods_list?m=search'
+      }
+    };
+    data = {
+    }
+    methods = {
+      init(data) {
+        console.log('searchbar init', data)
+      }
+    };
+    onLoad() {}
+  }
+</script>

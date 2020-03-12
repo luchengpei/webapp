@@ -1,0 +1,169 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .goods-item {
+    background: #fff;
+    &:first-child {
+      .main-box {
+        border-top: none;
+      }
+    }
+    .main-box {
+      position: relative;
+      border-top: 1rpx solid $borderColor;
+      display: flex;
+      padding: 34rpx 40rpx 34rpx 0;
+      margin-left: 40rpx;
+      .goods-pic {
+        width: 150rpx;
+        height: 150rpx;
+        background: #000;
+        border-radius: 8rpx;
+      }
+      .goods-info {
+        position: relative;
+        flex: 1;
+        padding-left: 40rpx;
+        .cart {
+          position: absolute;
+          right: 0;
+          bottom: 15rpx;
+          width: 70rpx;
+          height: 60rpx;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1rpx solid $mainColor;
+          border-radius: 6rpx;
+          .icon {
+            width: 34rpx;
+            height: 32rpx;
+          }
+        }
+        .line-box {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 5rpx 0;
+          align-items: flex-end;
+        }
+        .quantity-box {
+          height: 100rpx;
+        }
+        .name {
+          font-size: 34rpx;
+          color: $black;
+          line-height: 46rpx;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+        .labels {
+          text-align: right;
+          .item {
+            padding: 0 20rpx;
+            height: 28rpx;
+            line-height: 28rpx;
+            text-align: center;
+            background: $mainColor;
+            color: #fff;
+            font-size: 20rpx;
+            margin-right: 10rpx;
+            border-radius: 4rpx;
+          }
+        }
+        .open-group {
+          font-size: 24rpx;
+          height: 60rpx;
+          width: 120rpx;
+          line-height: 60rpx;
+          border-radius: 6rpx;
+          background: $mainColor;
+          color: #fff;
+          text-align: center;
+        }
+        .cash-rule {
+          padding-top: 15rpx;
+          font-size: 24rpx;
+          color: $gray;
+          text {
+            color: $mainColor;
+          }
+        }
+        .people-num {
+          font-size: 34rpx;
+          line-height: 46rpx;
+          color: #f11717;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="goods-item">
+    <!-- 返现列表 -->
+    <block wx:if="{{mode === 'default'}}">
+      <view class="main-box" @tap="routerTo('/pages/goods/detail?id={{item.productId}}&activityId={{item.bargainActivityId}}&mode=cash_back')">
+        <image class="goods-pic" src="{{item.productThumbnail}}" />
+        <view class="goods-info">
+          <view class="name">{{item.productName}}</view>
+          <view class="line-box">
+            <view class="cash-rule">价值{{item.bargainPrice}}元，最多返<text>{{item.cutBargainPrice}}元</text></view>
+          </view>
+          <view class="line-box">
+            <view class="people-num">{{item.bargainCount}}人已得返现</view>
+            <view class="open-group">去下单</view>
+          </view>
+        </view>
+      </view>
+    </block>
+    <!-- 我的返现列表 -->
+    <block wx:elif="{{mode === 'mine'}}">
+      <view class="main-box" @tap="routerTo('/pages/goods/cash_back_detail?id={{item.userBargainId}}')">
+        <image class="goods-pic" src="{{item.productThumbnail}}" />
+        <view class="goods-info">
+          <view class="name">{{item.productName}}</view>
+          <!-- 已结束 -->
+          <block wx:if="{{item.timeStatus === 2 || item.overBargainMoney === 0}}">
+            <view class="line-box">
+              <view class="cash-rule"><text>已结束</text></view>
+            </view>
+            <view class="line-box">
+              <view class="people-num">共返{{item.bargainingMoney}}元</view>
+            </view>
+          </block>
+          <!-- 还可砍价 -->
+          <block wx:if="{{item.timeStatus === 1 && item.overBargainMoney !== 0}}">
+            <view class="line-box">
+              <view class="cash-rule"><text>距结束 {{item.remainFormat}}</text></view>
+            </view>
+            <view class="line-box">
+              <view class="people-num">还可以返{{item.overBargainMoney}}元</view>
+              <view class="open-group">找人帮忙</view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  export default class CashBackItem extends wepy.component {
+    props = {
+      item: {},
+      mode: {
+        default: 'default' // 普通default  我的mine
+      }
+    }
+    mixins = [router]
+    methods = {
+      tap() {}
+    }
+    onLoad() {}
+  }
+</script>

@@ -1,0 +1,48 @@
+<style lang="scss">
+  @import '../scss/common';
+  .spectrum-book {
+    padding: 20rpx 30rpx 0 30rpx;
+    font-size: 30rpx;
+    color: $black;
+    text-indent: 48rpx;
+  }
+</style>
+
+<template>
+  <view class="spectrum-book">
+    <import src="../components/wxparse/wxParse.wxml" />
+    <Html2wxml :parserName="name" :parserContent.sync="introduction"></Html2wxml>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Html2wxml from '@/components/common/html2wxml'
+  import base from '@/mixins/base'
+  import goods from '@/api/goods'
+  export default class NoticeDetails extends wepy.page {
+    config = {
+      navigationBarTitleText: '公告详情'
+    }
+    data = {
+      introduction: []
+    }
+    components = {
+      Html2wxml
+    }
+    mixins = [base]
+    methods = {}
+    async getCarouselDetailsApi() {
+      let res = await goods.getCarouselDetails(this.noticeId)
+      this.introduction = res.context
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    onShow() {
+      this.getCarouselDetailsApi()
+    }
+    onLoad(option) {
+      this.noticeId = option.noticeId
+    }
+  }
+</script>

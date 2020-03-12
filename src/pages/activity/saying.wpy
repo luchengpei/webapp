@@ -1,0 +1,166 @@
+<style lang='scss' scoped>
+      @import '../../scss/common';
+    .leave-word-index {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        background-color: $bgColor;
+        box-sizing: border-box;
+    }
+    .word-main {
+        width: 100%;
+        background: #ffffff;
+        padding: 30rpx;
+        box-sizing: border-box;
+        .text-area {
+            textarea {
+                width: 100%;
+                color: $black;
+                box-sizing: border-box;
+            }
+        }
+        .tip-content {
+            margin-top: 20rpx;
+            display: flex;
+            flex-wrap: wrap;
+            .tip-item {
+                height: 30rpx;
+                line-height: 30rpx;
+                color: $mainColor;
+                font-size: $fontSize5;
+                border: 1px solid $mainColor;
+                padding-left: 10rpx;
+                padding-right: 10rpx;
+                border-radius: 10rpx;
+                text-align: center;
+                margin-right: 20rpx;
+                margin-top: 5rpx;
+            }
+        }
+    }
+    #select-id {
+        background: rgba(59, 176, 239, 0.73);
+        color: #fff;
+    }
+    .bottom-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 92rpx;
+        background: $mainColor;
+        color: #fff;
+        line-height: 92rpx;
+        font-size: $fontSize1;
+        text-align: center;
+    }
+</style>
+
+<template>
+    <view class='leave-word-index' style="{{configStyle}}">
+        <view class="word-main">
+            <view class="text-area">
+                <textarea @input="change" placeholder="说点什么吧~" />
+            </view>
+            <view class="tip-content">
+                <repeat for="{{tipArr}}" key="index" index="index" item="item">
+                    <view class="tip-item" id="{{item.select?'select-id':''}}" @tap="select({{index}})">{{item.title}}</view>
+                </repeat>
+            </view>
+        </view>
+        <!-- 上传图片 -->
+        <SelectImg :uploadList.sync="uploadList" max="9"></SelectImg>
+        <!-- button -->
+        <view class="bottom-bar safe-area-bottom" @tap="submit">发表</view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    import router from '@/mixins/router'
+    import SelectImg from '@/components/activity/upload'
+    import Tips from '@/utils/Tips'
+    import activity from '@/api/activity'
+    import reg from '@/mixins/reg_form'
+    import base from '@/mixins/base'
+    export default class LeaveWord extends wepy.page {
+      constructor() {
+            // 初始化数据
+        super()
+        this.data.tipArr = [
+            // {title: '邓紫棋美不美'},
+            // {title: '哈哈哈'},
+            // {title: '还有什么泪要流'},
+            // {title: '一条大河'}
+        ]
+      }
+      config = {
+        navigationBarTitleText: '留言'
+      }
+      components = {
+        SelectImg
+      }
+      data = {
+        tipArr: [],
+        uploadList: [], // 图片
+        textValue: '', // 留言类容
+        selectTipArr: [] // 过滤后的tip数据
+      }
+      mixins = [router, reg, base]
+      methods = {
+            // 多选
+        select(index) {
+          this.tipArr[index].select = !this.tipArr[index].select
+                // 过滤
+          this.selectTipArr = this.tipArr.filter(item => item.select)
+          this.$apply()
+        },
+            // 文本框Change
+        change(e) {
+          if (this.textValue.length > 100) {
+            this.textValue = this.textValue.slice(0, 99)
+            Tips.error('文本最多100字')
+            return this.textValue.slice(0, 99)
+          }
+          this.textValue = e.detail.value
+        },
+            // 提交
+        async submit() {
+          await this.dataIsTrue()
+          wx.navigateBack({
+            delta: 1
+          })
+        }
+      }
+        // 数组转字符串
+      imgArrToStr(list, key) {
+        let data = list.map(v => {
+          return v[key]
+        })
+        return data.join(',')
+      }
+        // 数据验证
+      async dataIsTrue() {
+        let query = {
+          activityId: wepy.getStorageSync('activityId'),
+          content: this.textValue, // 留言类容
+          answerId: 0,
+          commentImg: this.imgArrToStr(this.uploadList, 'url'),
+          commentLabel: this.imgArrToStr(this.selectTipArr, 'title')
+        }
+        if (query.content.length < 10 || query.content.length > 100) {
+          Tips.error('请输入评论类容(至少10个文字)')
+          return Promise.reject(Error)
+        }
+        // 提交请求
+        await this.setSaying(query)
+        await Tips.success('发表留言成功')
+      }
+        // 发表留言
+      async setSaying(query) {
+        await activity.publishSaying(query)
+      }
+      onLoad() {
+      }
+    }
+</script>

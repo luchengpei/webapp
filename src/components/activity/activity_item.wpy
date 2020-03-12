@@ -1,0 +1,132 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .activity-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 30rpx 30rpx 0;
+    background: #fff;
+    &:last-child {
+      &::after {
+        height: 0;
+      }
+    }
+    &::after {
+      position: absolute;
+      content: '';
+      bottom: 0;
+      right: 0;
+      width: 720rpx;
+      height: 1rpx;
+      background: $borderColor;
+    }
+    .title {
+      font-size: 32rpx;
+      color: $black;
+      margin-bottom: 16rpx;
+    }
+    .time,
+    .address {
+      font-size: 24rpx;
+      color: $gray;
+    }
+    .count-bar {
+      display: flex;
+      >view {
+        display: flex;
+        align-items: center;
+        line-height: 48rpx;
+        .iconfont {
+          color: #aaaaaa;
+          font-size: 28rpx;
+          margin-right: 14rpx;
+        }
+        >text {
+          font-size: 24rpx;
+          color: $gray;
+          margin-right: 50rpx;
+        }
+      }
+    }
+    >image {
+      width: 690rpx;
+      height: 276rpx;
+      border-radius: 5rpx; // background: $imageBgColor;
+    }
+    .bottom {
+      display: flex;
+      align-items: center;
+      padding: 35rpx 0;
+      >image {
+        width: 36rpx;
+        height: 36rpx;
+        border-radius: 2rpx;
+      }
+      .name {
+        flex: 1;
+        font-size: 24rpx;
+        color: $gray;
+        margin-left: 18rpx;
+      }
+      .status {
+        font-size: 20rpx;
+        color: #fff;
+        text-align: center;
+        width: 90rpx;
+        height: 28rpx;
+        border-radius: 5rpx;
+        &.wait {
+          background-color: #fbd7a8;
+        }
+        &.start {
+          background-color: #a8b2fb;
+        }
+        &.end {
+          background-color: #888;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="activity-item" @tap="routerTo('/pages/activity/detail?id={{item.activityId}}')">
+    <text class="title two-line">{{item.title}}</text>
+    <text class="time">时间：{{item.startTime}} ~ {{item.endTime}}</text>
+    <text class="address">地址：{{item.address}}</text>
+    <view class="count-bar">
+      <view>
+        <i class="iconfont icon-home_ic_browse"></i>
+        <text>{{item.pageview}}</text>
+      </view>
+      <view>
+        <i class="iconfont icon-home_ic_player"></i>
+        <text>{{item.application}}</text>
+      </view>
+    </view>
+    <image class="cover" src="{{item.coverPic}}" mode="aspectFill"></image>
+    <view class="bottom">
+      <image src="{{item.activitySubTypeLogo}}" mode="aspectFill"></image>
+      <text class="name">{{item.typeStr}}</text>
+      <!-- 活动状态 -->
+      <text class="status wait" wx:if="{{item.activityStatus === 1}}">未开始</text>
+      <text class="status wait" wx:elif="{{item.activityStatus === 2}}">报名中</text>
+      <text class="status start" wx:elif="{{item.activityStatus === 3}}">进行中</text>
+      <text class="status end" wx:elif="{{item.activityStatus === 4}}">已结束</text>
+      <text class="status end" wx:elif="{{item.activityStatus === 6}}">人数已满</text>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  export default class ActivityItem extends wepy.component {
+    props = {
+      mode: {}
+    }
+    mixins = [router];
+    methods = {}
+    onLoad() {}
+  }
+</script>

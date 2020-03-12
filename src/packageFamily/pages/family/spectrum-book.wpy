@@ -1,0 +1,45 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .spectrum-book {
+    padding: 20rpx 30rpx 0 30rpx;
+    font-size: 30rpx;
+    color: $black;
+    text-indent: 48rpx;
+  }
+</style>
+
+<template>
+  <view class="spectrum-book">
+    <import src="../../../components/wxparse/wxParse.wxml" />
+    <Html2wxml :parserName="name" :parserContent.sync="introduction"></Html2wxml>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Html2wxml from '@/components/common/html2wxml'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  export default class SpectrumBook extends wepy.page {
+    config = {
+      navigationBarTitleText: '谱书'
+    }
+    data = {
+      introduction: []
+    }
+    components = {
+      Html2wxml
+    }
+    mixins = [base]
+    methods = {}
+    async getBookApi() {
+      let res = await family.getBook()
+      this.introduction = res.content
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    onLoad(option) {
+      this.getBookApi()
+    }
+  }
+</script>

@@ -1,0 +1,464 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .banner {
+    padding-bottom: 30rpx;
+    background: $subMainColor;
+    width: 100%;
+    >image {
+      width: 100%;
+      height: 382rpx;
+    }
+    .banner-info {
+      padding: 30rpx 30rpx 12rpx 30rpx;
+      display: flex;
+      justify-content: space-between;
+      .info-left {
+        .info-left_title {
+          font-size: $fontSize8;
+          color: $black;
+        }
+        .info-left_location {
+          margin-top: 16rpx;
+          font-size: $fontSize4;
+          color: $gray;
+        }
+      }
+      >image {
+        width: 36rpx;
+        height: 44rpx;
+      }
+    }
+    .label {
+      padding: 0 30rpx;
+      display: flex;
+      flex-wrap: wrap;
+      .label-item {
+        margin-right: 20rpx;
+        margin-bottom: 24rpx;
+        width: 110rpx;
+        height: 28rpx;
+        border-radius: 6rpx;
+        background: $mainColor;
+        font-size: 20rpx;
+        color: $subMainColor;
+        text-align: center;
+        line-height: 28rpx;
+      }
+    }
+  }
+  .company-introduction {
+    background: $subMainColor;
+    margin-top: 30rpx;
+    padding-bottom: 30rpx;
+    .company-introduction-content {
+      padding: 0 30rpx;
+      font-size: $fontSize3;
+      color: $black;
+      text-indent: 46rpx;
+    }
+  }
+  .tndustry-tag {
+    background: $subMainColor;
+    margin-top: 30rpx;
+    .label {
+      padding: 30rpx 30rpx 6rpx 30rpx;
+      display: flex;
+      flex-wrap: wrap;
+      .label-item {
+        margin-right: 20rpx;
+        margin-bottom: 24rpx;
+        width: 110rpx;
+        height: 28rpx;
+        border-radius: 6rpx;
+        background: $mainColor;
+        font-size: 20rpx;
+        color: $subMainColor;
+        text-align: center;
+        line-height: 28rpx;
+      }
+    }
+  }
+  .business-entry {
+    margin-top: 30rpx;
+    background: $subMainColor;
+    .scroll-entry {
+      width: 100%;
+      white-space: nowrap;
+      display: inline-block;
+      .entry-info-warp {
+        display: flex;
+        padding: 30rpx 30rpx;
+        .entry-info:nth-child(1) {
+          margin-left: 0;
+        }
+        .entry-info {
+          position: relative;
+          margin-left: 90rpx;
+          width: 170rpx;
+          justify-content: center;
+          flex-direction: column;
+          align-items: center;
+          .quick-skip {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            top: 0;
+            left: 0;
+          }
+          >image {
+            width: 170rpx;
+            height: 130rpx;
+            border-radius: 6rpx;
+          }
+          .info-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+            font-size: $fontSize4;
+            width: 170rpx;
+            color: $black;
+            margin-top: 18rpx;
+          }
+        }
+      }
+    }
+  }
+  .product-chart {
+    margin-top: 30rpx;
+    background: $subMainColor;
+    .scroll-product {
+      width: 100%;
+      white-space: nowrap;
+      display: inline-block;
+      .product-chart-warp {
+        padding: 30rpx 30rpx;
+        >image {
+          width: 150rpx;
+          height: 150rpx;
+          margin-left: 30rpx;
+          border-radius: 6rpx;
+        }
+        >image:nth-child(1) {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+  .contact-info {
+    background: $subMainColor;
+    margin-top: 30rpx;
+    .info {
+      position: relative;
+      margin-left: 30rpx;
+      border-bottom: 1rpx solid $borderColor;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      font-size: $fontSize2;
+      .title {
+        .title__inline {
+          height: 88rpx;
+          line-height: 88rpx;
+          width: 140rpx;
+          color: $black;
+          &::after {
+            width: 100%;
+            display: inline-block;
+            content: ''; //这三个都不可以少
+          }
+        }
+      }
+      .content {
+        margin: 0 30rpx 0 50rpx;
+        color: #a5a5a5;
+        height: 46rpx;
+        flex: 1;
+      }
+    }
+    .info:nth-last-child(1) {
+      border-bottom: 0rpx;
+    }
+  }
+  .bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 92rpx;
+    display: flex;
+    >view {
+      flex: 1;
+      background: $subMainColor;
+    }
+    .left {
+      display: flex;
+      >view {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 20rpx;
+        color: $black;
+        >button {
+          position: absolute;
+          height: 100%;
+          width: 100%;
+          opacity: 0;
+        }
+        >image {
+          width: 32rpx;
+          height: 30rpx;
+          margin-bottom: 6rpx;
+        }
+        .iconfont {
+          font-size: 32rpx;
+          color: #159dfc;
+        }
+      }
+    }
+    .right {
+      background: $mainColor;
+      color: $subMainColor;
+      text-align: center;
+      line-height: 92rpx;
+    }
+  }
+  .details-wrapper {
+    padding-bottom: 156rpx;
+  }
+  .wxParse-inline {
+    font-size: $fontSize3;
+    color: $black;
+    padding: 0 30rpx;
+  }
+</style>
+
+<template>
+  <view class="details-wrapper">
+    <import src="../../components/wxparse/wxParse.wxml" />
+    <view class="banner">
+      <repeat>
+        <Swiper :banners='enterpriseData.backgroundPictureList'></Swiper>
+      </repeat>
+      <view class="banner-info">
+        <view class="info-left">
+          <view class="info-left_title">{{enterpriseData.companyName}}</view>
+          <view class="info-left_location">地址:{{enterpriseData.province}}{{enterpriseData.city}}{{enterpriseData.area}}{{enterpriseData.address}}</view>
+        </view>
+        <image src="/images/packageSocial/icon_ location.png"></image>
+      </view>
+      <view class="label">
+        <view class="label-item">企业会员</view>
+      </view>
+    </view>
+    <view class="company-introduction" wx:if="{{introduction}}">
+      <TitleA title="公司介绍"></TitleA>
+      <view class="company-introduction-content">
+        <!-- <Html2wxml :parserName="name" :parserContent.sync="introduction" :parserPadding='parserPadding'></Html2wxml> -->
+        {{introduction}}
+      </view>
+    </view>
+    <view class="tndustry-tag" wx:if="{{enterpriseData.tagJsonList.length}}">
+      <TitleB title="行业标签"></TitleB>
+      <view class="label">
+        <block wx:for="{{enterpriseData.tagJsonList}}" wx:for-item="tagJsonItem" wx:key="tagJsonItem">
+          <view class="label-item">{{tagJsonItem}}</view>
+        </block>
+      </view>
+    </view>
+    <!-- <view class="business-entry" wx:if="{{enterpriseData.quickList.length}}">
+      <TitleC title="业务快捷入口"></TitleC>
+      <scroll-view class="scroll-entry" scroll-x>
+        <view class="entry-info-warp">
+          <block wx:for="{{enterpriseData.quickList}}" wx:for-item="quickItem" wx:key="quickItem">
+            <view class="entry-info">
+              <view class="quick-skip" @tap="quickSkip('{{item}}')"></view>
+              <image mode="aspectFill" src='{{quickItem.logo}}' />
+              <view class="info-name">{{quickItem.name}}</view>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+    </view> -->
+    <view class="product-chart" wx:if="{{enterpriseData.productCatalogueList.length}}">
+      <TitleD title="产品图册"></TitleD>
+      <scroll-view class="scroll-product" scroll-x>
+        <view class="product-chart-warp">
+          <block wx:for="{{enterpriseData.productCatalogueList}}" wx:key="index">
+            <image mode="aspectFill" src='{{item}}' @tap="preview('{{item}}')" />
+          </block>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="contact-info">
+      <TitleE title="联系人"></TitleE>
+      <view class="info">
+        <view class="title">
+          <view class="title__inline">联系人</view>
+        </view>
+        <view class="content">{{enterpriseData.userName}}</view>
+      </view>
+      <view class="info">
+        <view class="title">
+          <view class="title__inline">电话</view>
+        </view>
+        <view class="content">{{enterpriseData.phone}}</view>
+      </view>
+      <view class="info">
+        <view class="title">
+          <view class="title__inline">微信</view>
+        </view>
+        <view class="content">{{enterpriseData.wechatNum}}</view>
+      </view>
+    </view>
+    <view class="bottom" wx:if="{{currentUser}}">
+      <view class="left">
+        <view>
+          <button open-type="contact"></button>
+          <image src="/images/packageSocial/icon_service.png"></image>
+          客服
+        </view>
+        <view @tap="collect"><i class="iconfont icon-shoucang" wx:if="{{enterpriseData.isCollection===0}}"></i>
+          <i class="iconfont icon-shoucangxuanzhong" wx:elif></i> 收藏
+        </view>
+        <view> <button open-type="share"></button><i class="iconfont icon-detail_ic_share"></i>分享</view>
+      </view>
+      <view class="right" @tap="phoneCall">联系TA</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import enterprise from '@/api/enterprise'
+  import Tips from '@/utils/Tips'
+  import Html2wxml from '@/components/common/html2wxml'
+  import Title from '@/components/common/list_title'
+  import WxApi from '@/utils/WxApi'
+  import Swiper from '@/components/enterprise/enterprise_swiper'
+  import {
+    connect
+  } from 'wepy-redux'
+  import {
+    richTextUpdate
+  } from '@/store/actions'
+  @connect({
+    text(state) {
+      return state.richText.text
+    }
+  }, {
+    richTextUpdate
+  })
+  export default class Details extends wepy.page {
+    config = {
+      navigationBarTitleText: '企业详情'
+    }
+    components = {
+      Html2wxml,
+      Swiper,
+      TitleA: Title,
+      TitleB: Title,
+      TitleC: Title,
+      TitleD: Title,
+      TitleE: Title
+    }
+    data = {
+      parserPadding: 30,
+      introduction: '',
+      clanCompanyId: '',
+      enterpriseData: '',
+      currentUser: true
+    }
+    mixins = [base, router]
+    methods = {
+      preview(img) {
+        wepy.previewImage({
+          urls: this.enterpriseData.productCatalogueList,
+          current: img
+        })
+      },
+      // 打电话
+      phoneCall() {
+        WxApi.wxCall(this.enterpriseData.phone).then(res => {
+          console.log(res)
+        })
+      },
+      // 跳转其他小程序
+      quickSkip(item) {
+        if (item.type === 2) {
+          this.methods.richTextUpdate(item.content)
+          this._routerTo(`/pages/rich_text`)
+        } else {
+          // WxApi.navigateToMiniProgram()
+        }
+      },
+      addFriend() {
+        let prmams = {
+          userId: this.enterpriseData.userId,
+          objectId: this.enterpriseData.companyId,
+          type: 1
+        }
+        console.log(this.dataInfo)
+        this.addClanfriendapplyApi(prmams)
+      },
+      collect() {
+        // if (this.enterpriseData.isCollection === 1) return false
+        let prmams = {
+          objectType: 7,
+          isCollection: this.enterpriseData.isCollection,
+          informationId: this.enterpriseData.clanCompanyId
+        }
+        this.addOrCloeCollection(prmams)
+      }
+    }
+    // 添加好友申请
+    async addClanfriendapplyApi(prmams) {
+      try {
+        await enterprise.addClanfriendapply(prmams)
+        Tips.success('申请成功')
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    async getClancompanyDetailsApi(clanCompanyId) {
+      let res = await enterprise.getClancompanyDetails({
+        clanCompanyId: clanCompanyId
+      })
+      this.enterpriseData = res
+      this.introduction = res.companyProfile
+      if (wepy.getStorageSync('user').userId === res.userId) {
+        this.currentUser = false
+      }
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    // 收藏
+    async addOrCloeCollection(prmams) {
+      try {
+        await enterprise.addOrCloeCollection(prmams)
+        this.getClancompanyDetailsApi(this.clanCompanyId)
+        setTimeout(() => {
+          if (this.enterpriseData.isCollection === 1) {
+            Tips.success('收藏成功')
+          } else {
+            Tips.success('取消收藏成功')
+          }
+        }, 800)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onLoad(options) {
+      this.clanCompanyId = options.clanCompanyId || ''
+    }
+    onShow() {
+      this.getClancompanyDetailsApi(this.clanCompanyId)
+    }
+  }
+</script>

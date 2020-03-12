@@ -1,0 +1,70 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .swiper-container {
+    height: 380rpx;
+    width: 100%;
+    .swiper-image {
+      width: 100%;
+      height: 100%;
+    }
+  }
+</style>
+
+<template>
+  <swiper class="swiper-container" indicator-dots indicator-color="#4d4d4d" indicator-active-color="#fff" autoplay circular>
+    <block wx:for="{{banners}}" wx:key="index">
+      <swiper-item>
+        <image class="swiper-image" mode="scaleToFill" src="{{item.img}}" @tap="handleSwiperTap({{item}})" lazy-load></image>
+      </swiper-item>
+    </block>
+  </swiper>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import carousel from '@/api/carousel'
+  import {connect} from 'wepy-redux'
+  import {
+    richTextUpdate
+  } from '@/store/actions'
+  @connect({
+    text(state) {
+      return state.richText.text
+    }
+  }, {
+    richTextUpdate
+  })
+  export default class Swiper extends wepy.component {
+    mixins = [base, router]
+    props = {
+      banners: {
+        default: ''
+      }
+    };
+    data = {
+      banners: []
+    }
+    methods = {
+      init(data) {
+        this.initBanner()
+      },
+      // swiper跳转
+      handleSwiperTap(item) {
+        if (Number(item.type) !== 1) {
+          this.methods.richTextUpdate(item.introduction)
+          this._routerTo(`rich_text?title=${item.title}`)
+        } else {
+          this._bannerTo(`${item.url}`)
+        }
+      }
+    };
+    onLoad() {}
+    // 获取轮播图
+    async initBanner() {
+      this.banners = await carousel.list()
+      this.$apply()
+    }
+  }
+</script>

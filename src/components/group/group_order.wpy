@@ -1,0 +1,180 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .order-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    margin-bottom: 20rpx;
+    .order-item-container {
+      margin-left: 40rpx;
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        height: 88rpx;
+        line-height: 88rpx;
+        border-bottom: 1rpx solid $borderColor;
+        .order-no {
+          font-size: 28rpx;
+          color: $black;
+        }
+        .order-status-text {
+          font-size: 28rpx;
+          color: $mainColor;
+          margin-right: 40rpx;
+        }
+      }
+    }
+    .order-goods-list-container {}
+    .order-count-row {
+      display: flex;
+      font-size: 28rpx;
+      padding-right: 40rpx;
+      height: 88rpx;
+      line-height: 88rpx;
+      border-bottom: 1rpx solid $borderColor;
+      .order-goods-num {
+        flex: 1;
+        color: $black;
+        text-align: right;
+        margin-right: 30rpx;
+      }
+      .order-goods-price-text {
+        color: $black;
+        text {
+          color: $priceRed;
+        }
+      }
+    }
+    .order-btn-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 88rpx;
+      line-height: 88rpx;
+      padding-right: 40rpx;
+      .btn {
+        box-sizing: border-box;
+        height: 56rpx;
+        line-height: 54rpx;
+        border: 1rpx solid $mainColor;
+        border-radius: 6rpx;
+        margin-left: 24rpx;
+        padding: 0 24rpx;
+        font-size: 24rpx;
+        color: $mainColor;
+        min-width: 150rpx;
+        text-align: center;
+      }
+    }
+    .group-order-btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 88rpx;
+      line-height: 88rpx;
+      padding-right: 40rpx;
+      margin-left: 40rpx;
+      .time {
+        font-size: 28rpx;
+        color: gray;
+      }
+      .share-btn {
+        box-sizing: border-box;
+        height: 56rpx;
+        line-height: 54rpx;
+        border: 1rpx solid $mainColor;
+        border-radius: 6rpx;
+        padding: 0 24rpx;
+        font-size: 24rpx;
+        color: $mainColor;
+        min-width: 150rpx;
+        text-align: center;
+        background: #fff;
+        margin-right: 0;
+        &::after {
+          border: none;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <!-- 订单Item -->
+  <view class="order-item">
+    <view class="order-item-container">
+      <!-- 订单头部 -->
+      <view class="order-header">
+        <text class="order-no">订单编号：{{item.productOrderNo}}</text>
+        <block>
+          <!-- <text class="order-status-text">拼团成功</text> -->
+          <!-- <text class="order-status-text">拼团失败</text> -->
+           <text class="order-status-text" wx:if="{{item.groupStatus===0}}">还差<text style="color:red">{{item.groupBuyingPersonNum-item.joinCount}}</text>人</text>
+           <text class="order-status-text" wx:if="{{item.groupStatus===1}}">拼团完成</text>
+           <text class="order-status-text" wx:if="{{item.groupStatus===2}}">拼团失败</text>
+        </block>
+      </view>
+      <!-- 订单商品 -->
+      <view class="order-goods-list-container">
+          <repeat for="{{item.productList}}" key="detailIndex" index="detailIndex" item="detailItem">
+                <OrderGoods :detail.sync="detailItem"></OrderGoods>
+          </repeat>
+      </view>
+      <!-- 合计 -->
+      <!-- <block>
+        <view class="order-count-row">
+          <text class="order-goods-num">共{{item.productList.buyingNum}}件商品</text>
+          <text class="order-goods-price-text">合计：<text>{{item.groupBuyingPrice}}</text></text>
+        </view>
+      </block> -->
+    </view>
+      <!-- 拼团按钮组 -->
+    <block >
+      <view class="group-order-btn-row" wx:if="{{item.groupStatus===0}}">
+        <view class="time" >剩余 {{item.timeDown}}</view>
+        <button type="default" class="share-btn" plain open-type="share" data-product-id="{{item.productList[0].productId}}" data-activity-id="{{item.groupBuyingActivityId}}" @tap="share({{item}})">邀请好友参团</button>
+      </view>
+
+      <view class="group-order-btn-row" wx:if="{{item.groupStatus===1}}">
+        <view class="time">去我的订单中查看</view>
+        <button class="share-btn" @tap="goOrder({{item}})">我的订单</button> 
+      </view>
+
+       <view class="group-order-btn-row" wx:if="{{item.groupStatus===2}}">
+        <view class="time">失败原因：限时时间过期/拼团失败</view>
+      </view>
+
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/new_router'
+  import OrderGoods from '@/components/order/order_goods'
+  // import order from '@/api/order'
+  // import Tips from '@/utils/Tips'
+  export default class OrderGroup extends wepy.component {
+    props={
+      item: {
+        default: {}
+      }
+    }
+    components = {
+      OrderGoods
+    }
+    data={
+    }
+    mixins = [router];
+    methods = {
+      goOrder(val) {
+        this._goRouter('/pages/order/detail', {oid: val.productOrderId})
+      },
+      share(val) {
+        this.$emit('share', val)
+      }
+    }
+    onLoad() {}
+  }
+</script>

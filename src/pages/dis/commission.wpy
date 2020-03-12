@@ -1,0 +1,158 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .header-container {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    height: 400rpx;
+    width: 100%;
+    background: #fff;
+    margin-bottom: 30rpx;
+    .cross-row {
+      position: absolute;
+      width: 1rpx;
+      height: 250rpx;
+      background: $borderColor;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+    .cross-column {
+      position: absolute;
+      width: 600rpx;
+      height: 1rpx;
+      background: $borderColor;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+    .header-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 200rpx;
+      width: 50%;
+      .title {
+        font-size: $fontSize4;
+        color: $gray;
+      }
+      .num {
+        font-size: $fontSize7;
+        color: $mainColor;
+      }
+    }
+  }
+  .main-container {
+    background: #fff;
+    padding: 30rpx;
+  }
+</style>
+
+<template>
+  <view class="mod-commission" style="{{configStyle}}">
+    <view class="header-container">
+      <view class="cross-row"></view>
+      <view class="cross-column"></view>
+      <view class="header-item">
+        <text class="title">累计佣金(元)</text>
+        <text class="num">{{cumulativeAmount}}</text>
+      </view>
+      <view class="header-item">
+        <text class="title">未核算佣金(元)</text>
+        <text class="num">{{accountingAmount}}</text>
+      </view>
+      <view class="header-item">
+        <text class="title">昨日佣金(元)</text>
+        <text class="num">{{yesterDayAmount}}</text>
+      </view>
+      <view class="header-item">
+        <text class="title">可提现佣金(元)</text>
+        <text class="num">{{withdrawableAmount}}</text>
+      </view>
+    </view>
+    <view class="main-container" wx:if="{{list.length > 0}}">
+      <Table :list.sync="list" :header.sync="header" :type.sync="tableType"></Table>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import nRouter from '@/mixins/new_router'
+  import pagination from '@/mixins/pagination'
+  import Table from '@/components/common/table'
+  import dis from '@/api/dis'
+  export default class Commission extends wepy.page {
+    config = {
+      navigationBarTitleText: '佣金明细'
+    }
+    mixins = [base, nRouter, pagination]
+    data = {
+      tableType: 'commission',
+      header: ['返佣人', '返佣金额'],
+      withdrawableAmount: 0,
+      cumulativeAmount: 0,
+      accountingAmount: 0,
+      yesterDayAmount: 0,
+      list: [{
+        name: '项目1',
+        age: 18
+      }, {
+        name: '项目2',
+        age: 20
+      }, {
+        name: '项目',
+        age: 22
+      }, {
+        name: '项目',
+        age: 22
+      }, {
+        name: '项目',
+        age: 22
+      }]
+    }
+    components = {
+      Table
+    }
+    methods = {}
+
+    async onLoad(options) {
+      this.getCommission()
+      this.$apply()
+    }
+    async getCommission() {
+      this.page = dis.onCommission()
+      await this.next()
+      this.updateData()
+    }
+    updateData() {
+      this.list = this.page.list
+      const {nativeData} = this.page
+      this.withdrawableAmount = (nativeData.withdrawableAmount || 0).toFixed(2) // 可提现佣金
+      this.cumulativeAmount = (nativeData.cumulativeAmount || 0).toFixed(2) // 累计佣金
+      this.accountingAmount = (nativeData.accountingAmount || 0).toFixed(2) // 待审核佣金
+      this.yesterDayAmount = (nativeData.yesterDayAmount || 0).toFixed(2) // 昨日佣金
+      this.$apply()
+    }
+    // 列表传参
+    params() {
+      return {}
+    }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.updateData()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.updateData()
+    }
+  }
+</script>

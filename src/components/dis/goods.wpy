@@ -1,0 +1,53 @@
+<style lang="scss" scoped>
+  @import "../../scss/dis";
+</style>
+
+<template>
+  <view class="row buy-item">
+    <image class="goods-img" src="{{item.productThumbnail}}" />
+    <view class="text-wrap">
+      <text class="title ">{{item.productName}}</text>
+      <view class="btn-wrap">
+        <text class="price">￥ {{item.productTpPrice}}</text>
+        <block wx:if="{{btnVisible && obj.isPayProduct == 0 && obj.meetOne == 0 && obj.oneNeed.productType}}">
+          <button type="primary" class="buy-btn" @tap="onGoods">去购买</button>
+        </block>
+        <block wx:if="{{btnVisible && obj.isPayProduct == 0 && obj.mustNeed.productType}}">
+          <button type="primary" class="buy-btn" @tap="onGoods">去购买</button>
+        </block>
+        <view class="finish-icon-wrap" wx:if="{{btnVisible && obj.isPayProduct == 1}}">
+          <i class="iconfont icon-order_ic_deal finish-icon"/>
+          <text>已完成</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Goods extends wepy.component {
+    props = {
+      item: {
+        default: null
+      },
+      obj: {
+        default: {
+          isPayProduct: 0 // 是否满足购买指定商品条件 1为满足 0为不满足
+        }
+      },
+      btnVisible: {
+        default: false // 是否需要按钮操作
+      }
+    }
+    methods = {
+      onGoods() {
+        const { productId, productTpExtendId } = this.item
+        wepy.navigateTo({url: `/pages/order/submit?n=1&g=${productId}&t=${productTpExtendId}&mode=member`})
+      }
+    }
+    onLoad() {
+      console.log('isPay', this.isPay)
+    }
+  }
+</script>

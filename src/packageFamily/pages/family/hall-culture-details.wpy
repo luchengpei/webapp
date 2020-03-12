@@ -1,0 +1,75 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  page {
+    background: #ffffff;
+  }
+  .hall-culture-details {
+    padding: 30rpx 30rpx 0 30rpx;
+    >image {
+      width: 690rpx;
+      height: 330rpx;
+      border-radius: 12rpx;
+    }
+    .title {
+      font-size: $fontSize2;
+      color: $black;
+      margin-top: 30rpx;
+      text-align: center;
+    }
+    .time {
+      text-align: center;
+      font-size: $fontSize4;
+      color: $gray;
+      margin: 20rpx 0;
+    }
+    .wxParse-inline {
+      font-size: 30rpx;
+      color: $black;
+    }
+  }
+</style>
+
+<template>
+  <view class="hall-culture-details">
+    <import src="../../../components/wxparse/wxParse.wxml" />
+    <image src="{{cultureData.coverChart}}" mode="aspectFill"></image>
+    <view class="title">{{cultureData.title}}</view>
+    <view class="time">{{cultureData.createTime}}</view>
+    <Html2wxml :parserName="name" :parserContent.sync="introduction"></Html2wxml>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import Html2wxml from '@/components/common/html2wxml'
+  export default class HallCulture extends wepy.page {
+    config = {
+      navigationBarTitleText: '堂号文化详情'
+    }
+    data = {
+      cultureData: '',
+      introduction: ''
+    }
+    components = {
+      Html2wxml
+    }
+    mixins = [base]
+    methods = {}
+    async GenealogyOrHallDetails(id) {
+      try {
+        let res = await family.getGenealogyOrHallDetails(id)
+        this.cultureData = res
+        this.introduction = res.content
+        this.$apply()
+        this.$invoke('Html2wxml', 'htmlParserNotice')
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onLoad(option) {
+      this.GenealogyOrHallDetails(option.workGenerationId)
+    }
+  }
+</script>

@@ -1,0 +1,77 @@
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <view class="cash-back-list" wx:if="{{page.list.length > 0}}">
+      <repeat for="{{page.list}}" key="index" index="index" item="item">
+        <CashBackItem :item.sync="item" mode="mine" />
+      </repeat>
+    </view>
+    <Empty title="暂无返现活动" subtitle="" wx:else/>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import cashBack from '@/api/cashBack'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import Util from '@/utils/Util'
+  import CashBackItem from '@/components/goods/cash_back_item'
+  import Empty from '@/components/common/empty'
+  export default class MyCashBack extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的返现'
+    }
+    components = {
+      CashBackItem,
+      Empty
+    }
+    data = {
+      firstLoading: true,
+      page: {
+        list: []
+      },
+      timer: null
+    }
+    mixins = [base, router, pagination]
+    onLoad(options) {
+      this.getMyCashBackList()
+    }
+    async getMyCashBackList() {
+      this.page = await cashBack.mine()
+      await this.next()
+      this.firstLoading = false
+      this.startCounter()
+    }
+    // 开始倒计时
+    startCounter() {
+      this.timer = setInterval(() => {
+        this.page.list = this.page.list.map(item => {
+          item.remainFormat = Util.counterDown(item.joinBargainEndTime)
+          return item
+        })
+        this.$apply()
+      }, 1000)
+    }
+    // 倒计时回调
+    counterCallBack(format) {
+      this.cashBack.remainFormat = format
+      if (format) {
+        this.cashBack.remainHour = format.split(':')[0]
+        this.cashBack.remainSecond = format.split(':')[1]
+        this.cashBack.remainMinute = format.split(':')[2]
+      } else {
+        this.cashBack.timeText = '已结束'
+        Util.clearCounter(this.timer)
+      }
+      this.$apply()
+    }
+    onUnload() {
+      Util.clearCounter(this.timer)
+    }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+    }
+  }
+</script>

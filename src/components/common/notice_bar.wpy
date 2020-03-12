@@ -1,0 +1,222 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .g-notice-bar-cross {
+    display: flex;
+    align-items: center;
+    height: 70rpx;
+    padding: 0 30rpx;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border-bottom: 1rpx solid $borderColor;
+    .g-notice-bar__wrap {
+      flex: 1;
+      position: relative;
+      margin-left: 16rpx;
+      overflow: hidden;
+      height: 70rpx;
+      .g-notice-bar__content {
+        position: absolute;
+        top: 50%;
+        margin-top: -17.5rpx;
+        font-size: $fontSize4;
+        color: $gray;
+        white-space: nowrap;
+      }
+    }
+    .left-icon {
+      color: $mainColor;
+    }
+    .right-wrap {
+      display: flex;
+      align-items: center;
+      font-size: $fontSize4;
+      color: $gray;
+      margin-left: 10rpx;
+    }
+  }
+  .g-notice-bar-vertical {
+    display: flex;
+    align-items: center;
+    height: 70rpx;
+    padding: 0 30rpx;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border-bottom: 1rpx solid $borderColor;
+    .g-notice-bar__wrap {
+      flex: 1;
+      display: flex;
+      margin-left: 16rpx;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      height: 70rpx;
+      .g-notice-bar__content {
+        font-size: $fontSize4;
+        color: $gray;
+        max-width:600rpx;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .right-wrap {
+        display: flex;
+        align-items: center;
+        font-size: $fontSize4;
+        color: $gray;
+        margin-left: 10rpx;
+      }
+    }
+    .left-icon {
+      color: $mainColor;
+    }
+  }
+</style>
+
+<template>
+  <view class="g-notice-bar-wrapper">
+    <view class="g-notice-bar-cross" wx:if="{{barType==='cross'}}">
+      <view class="left-icon">
+        <i class="iconfont icon-notice"></i>
+      </view>
+      <view class="g-notice-bar__wrap">
+        <text class="g-notice-bar__content" animation="{{animationData}}">{{text}}</text>
+      </view>
+      <view class="right-wrap" @tap="handleTap">详情 ></view>
+    </view>
+    <view class="g-notice-bar-vertical" wx:if="{{barType==='vertical'}}">
+      <view class="left-icon">
+        <i class="iconfont icon-notice"></i> </view>
+      <swiper class="g-notice-bar__wrap" circular="{{circular}}" vertical="{{vertical}}" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+        <block wx:for="{{dataList}}" wx:key="{{index}}">
+          <swiper-item>
+            <view class="g-notice-bar__wrap">
+              <text class="g-notice-bar__content">{{item.title}}</text>
+              <view class="right-wrap" @tap="handleTap('{{item}}')">详情 ></view>
+            </view>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class NoticeBar extends wepy.component {
+    props = {
+      text: {
+        default: '公告栏公告天下公告栏公告天'
+      },
+      border: {
+        default: true
+      },
+      delay: {
+        default: 1
+      },
+      speed: {
+        default: 50
+      },
+      scrollable: {
+        default: true
+      },
+      barType: {
+        default: 'cross'
+      },
+      dataList: {
+        default: []
+      },
+      indicatorDots: {
+        default: false
+      },
+      autoplay: {
+        default: true
+      },
+      vertical: {
+        default: true
+      },
+      circular: {
+        default: true
+      },
+      interval: {
+        default: 2000
+      },
+      duration: {
+        default: 500
+      }
+    };
+    data = {
+      resetAnimation: null,
+      animationData: null,
+      wrapWidth: '',
+      contentWidth: '',
+      duration: ''
+    }
+    mixins = [base]
+    methods = {
+      init() {
+        Promise.all([
+          this.getRect('.g-notice-bar__content'),
+          this.getRect('.g-notice-bar__wrap')
+        ]).then((rects) => {
+          const contentRect = rects[0]
+          const wrapRect = rects[1]
+          console.log('contentRect', contentRect, wrapRect)
+          if (contentRect == null ||
+            wrapRect == null ||
+            !contentRect.width ||
+            !wrapRect.width) {
+            return
+          }
+          const speed = this.speed
+          const scrollable = this.scrollable
+          const delay = this.delay
+          // 内容长度超出内容区才执行滚动
+          if (scrollable && wrapRect.width < contentRect.width) {
+            var duration = (contentRect.width / speed) * 1000
+            this.wrapWidth = wrapRect.width
+            this.contentWidth = contentRect.width
+            this.duration = duration
+            this.animation = wx.createAnimation({
+              duration: duration,
+              timingFunction: 'linear',
+              delay: delay
+            })
+            this.$apply()
+            this.scroll()
+          }
+        })
+      },
+      handleTap(data) {
+        this.$emit('handleTap', data)
+      }
+    };
+    onLoad() {
+      this.resetAnimation = wx.createAnimation({
+        duration: 0,
+        timingFunction: 'linear'
+      })
+    }
+    scroll() {
+      this.timer && clearTimeout(this.timer)
+      this.timer = null
+      this.animationData = this.resetAnimation
+        .translateX(this.wrapWidth)
+        .step()
+        .export()
+      this.$apply()
+      setTimeout(() => {
+        this.animationData = this.animation
+          .translateX(-this.contentWidth)
+          .step()
+          .export()
+        this.$apply()
+      }, 20)
+      this.timer = setTimeout(() => {
+        this.scroll()
+      }, this.duration)
+    }
+  }
+</script>

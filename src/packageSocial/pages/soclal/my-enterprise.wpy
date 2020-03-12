@@ -1,0 +1,202 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .my-enterprise {
+    background: $subMainColor;
+    margin-bottom: 88rpx;
+  }
+  .my-enterprise-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-left: 30rpx;
+    padding: 30rpx 30rpx 30rpx 0;
+    >image {
+      height: 240rpx;
+      width: 690rpx;
+      border-radius: 10rpx;
+      margin-bottom: 20rpx;
+    }
+    .info {
+      display: inline-block;
+      width: 500rpx;
+      .title {
+        font-size: $fontSize8;
+        color: $black;
+      }
+      .location {
+        white-space:normal;
+        word-break:break-all;
+        word-wrap:break-word;
+        font-size: $fontSize4;
+        color: $gray;
+        margin: 4rpx 0 14rpx 0;
+      }
+      .label {
+        display: flex;
+        flex-wrap: wrap;
+        .label-item {
+          margin-right: 20rpx;
+          width: 110rpx;
+          height: 28rpx;
+          border-radius: 6rpx;
+          background: $mainColor;
+          font-size: 20rpx;
+          color: $subMainColor;
+          text-align: center;
+          line-height: 28rpx;
+        }
+        .label-item:nth-child(2) {
+          background: #ffa200;
+        }
+      }
+    }
+    .right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 150rpx;
+      height: 60rpx;
+      color: $subMainColor;
+      background: $mainColor;
+      line-height: 60rpx;
+      text-align: center;
+      border-radius: 6rpx;
+      font-size: $fontSize4;
+      >view {
+        height: 34rpx;
+        width: 1rpx;
+        background-color: #ffffff;
+        opacity: 0.2;
+        margin: 0 22rpx;
+      }
+      >image {
+        width: 32rpx;
+        height: 32rpx;
+      }
+    }
+  }
+  .add {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 88rpx;
+    width: 100%;
+    text-align: center;
+    line-height: 88rpx;
+    font-size: $fontSize3;
+    color: $subMainColor;
+    background: $mainColor;
+  }
+</style>
+
+<template>
+  <view class="my-enterprise">
+    <view class="my-enterprise-list" wx:for="{{listData}}" wx:if="{{listData.length>0}}">
+      <image mode="aspectFill" src="{{item.backgroundPicture}}"></image>
+      <view class="info">
+        <view class="title">{{item.companyName}}</view>
+        <view class="location">{{item.province}}{{item.city}}{{item.area}}{{item.address}}</view>
+        <view class="label">
+          <view class="member" wx:if="{{ item.applyState=== 2 }}">审核驳回</view>
+          <view class="label-item" wx:if="{{item.applyState===1}}">企业会员</view>
+          <view class="label-item" wx:if="{{item.applyState===0}}">审核中</view>
+        </view>
+      </view>
+      <view class="right">
+        <image mode="aspectFill" src="/images/packageSocial/icon_modify.png" @tap="modifyBtn('{{item}}')"></image>
+        <view></view>
+        <image mode="aspectFill" src="/images/packageSocial/icon_delete.png" @tap="deleteBtn('{{item}}')"></image>
+      </view>
+    </view>
+    <Empty :fixed="fixed" title="暂无企业" subtitle="" wx:if="{{listData.length===0}}"></Empty>
+    <view class="add" @tap="routerTo('/packageSocial/pages/soclal/add-enterprise?saveType=add')">+ 添加企业</view>
+  </view>
+</template>
+ 
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import enterprise from '@/api/enterprise'
+  import Tips from '@/utils/Tips'
+  import Empty from '@/components/common/empty'
+  export default class MyEnterprise extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的企业',
+      enablePullDownRefresh: true
+    }
+    components = {
+      Empty
+    };
+    data = {
+      page: [],
+      listData: []
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      modifyBtn(item) {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/add-enterprise?saveType=modify&clanCompanyId=${item.clanCompanyId}`
+        })
+      },
+      deleteBtn(item) {
+        let params = {
+          clanCompanyIds: item.clanCompanyId
+        }
+        this.deleteClancompanyApi(params)
+      }
+    }
+    onLoad(options) {}
+    onShow() {
+      this.getMyClancompanyApi()
+    }
+    async getMyClancompanyApi() {
+      try {
+        this.page = await enterprise.getMyClancompany()
+        await this.next()
+        this.listData = this.page.list
+        this.listData.map((item, index) => {
+          this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+        })
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // // 列表传参
+    // params() {
+    //   return {}
+    // }
+    async deleteClancompanyApi(params) {
+      try {
+        await enterprise.deleteClancompany(params)
+        Tips.success('删除成功')
+        setTimeout(() => {
+          this.getMyClancompanyApi()
+        }, 800)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.listData.map((item, index) => {
+        this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+      })
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.listData.map((item, index) => {
+        this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+      })
+      this.$apply()
+    }
+  }
+</script>

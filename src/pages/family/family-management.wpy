@@ -1,0 +1,295 @@
+<style lang="scss">
+  @import '../../scss/common';
+  .family-management-wrapper {
+    .family-management {
+      display: flex;
+      flex-direction: column;
+      padding-top: 90rpx;
+      margin-bottom: 20rpx;
+      .family-management_list-warrper {
+        background: #ffffff;
+        position: relative;
+        .family-management_list:nth-last-child(1)::after {
+          width: 0;
+          height: 0;
+        }
+        .family-management_list {
+          padding: 30rpx 30rpx 26rpx 30rpx;
+          .family-management-list_title {
+            .family-management-list_title_head {
+              display: flex;
+              align-items: center;
+              >image {
+                width: 64rpx;
+                height: 64rpx;
+                border-radius: 50%;
+                margin-right: 14rpx;
+              }
+            }
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30rpx;
+            .family-management-list_title_info {
+              white-space: nowrap;
+              font-size: $fontSize3;
+              max-width: 440rpx;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              color: #159dfc;
+            }
+            .family-management-list_creator {
+              white-space: nowrap;
+              font-size: $fontSize4;
+              color: $gray;
+            }
+          }
+          >image {
+            width: 690rpx;
+            height: 200rpx;
+            border-radius: 5rpx;
+          }
+          .family-management-list_introduce {
+            color: $black;
+            font-size: $fontSize4;
+            margin-top: 10rpx;
+          }
+          .family-management-list_count-bar {
+            margin-top: 10rpx;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            >.left {
+              display: flex;
+              align-items: center;
+              >view {
+                display: flex;
+                align-items: center;
+                line-height: 48rpx;
+                .iconfont {
+                  color: #aaaaaa;
+                  font-size: 28rpx;
+                  margin-right: 14rpx;
+                }
+                >image {
+                  width: 26rpx;
+                  height: 26rpx;
+                  color: #aaaaaa;
+                  font-size: 28rpx;
+                  margin-right: 14rpx;
+                }
+                >text {
+                  font-size: 24rpx;
+                  color: $gray;
+                  margin-right: 50rpx;
+                }
+              }
+            }
+            >.right {
+              font-size: $fontSize4;
+              color: $gray;
+            }
+          }
+        }
+        .family-management_list:after {
+          right: 0;
+          bottom: 0;
+          content: ' ';
+          position: absolute;
+          width: 720rpx;
+          height: 1rpx;
+          background: #d7dbdf;
+        }
+      }
+    }
+    .my-family {
+      background: #ffffff;
+      position: absolute;
+      top: 88rpx;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      .my-family-circle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 450rpx;
+        margin-top: 240rpx;
+        >image {
+          width: 300rpx;
+          height: 300rpx;
+        }
+        .created {
+          font-size: 32rpx;
+          color: #159dfc;
+          margin-top: 30rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="family-management-wrapper">
+    <view class="family-management" v:if="{{isLoading}}">
+      <Tab :tab.sync="tab" @change.user="switchTab" />
+      <view class="my-family" wx:if="{{listData.length===0}}">
+        <view class="my-family-circle" wx:if="{{selectedId===1}}" @tap="routerTo('/packageFamily/pages/family/famliy-created')">
+          <image src='/images/family/icon-team-add.png'></image>
+          <view class="created">创建家谱</view>
+        </view>
+        <Empty wx:elif image='/images/family/icon-none.png' title="您尚未有此类型家谱" subtitle='' :imageStyle.sync="imageStyle"></Empty>
+      </view>
+      <view class="family-management_list-warrper" wx:else>
+        <view class="family-management_list" wx:for="{{listData}}" wx:for-item="item" wx:key="item.title" @tap="skipFamily('{{item.genealogyId}}')">
+          <view class="family-management-list_title">
+            <view class="family-management-list_title_head">
+              <image src="{{item.icon}}" mode="aspectFill"></image>
+              <view class="family-management-list_title_info">{{item.genealogyName}}</view>
+            </view>
+            <view class="family-management-list_creator">创建人：{{item.name}}</view>
+          </view>
+          <image class="family-management-list_cover" src="{{item.genealogyImage?item.genealogyImage:'/images/family/banner-zupu.jpg'}}" mode="aspectFill"></image>
+          <view class="family-management-list_introduce">{{item.genealogyIntroduction}}</view>
+          <view class="family-management-list_count-bar">
+            <view class="left">
+              <view>
+                <image src="/images/family/icon_ic_pin.png"></image>
+                <text>{{item.city?item.city:''}}</text>
+              </view>
+              <view>
+                <i class="iconfont icon-home_ic_player"></i>
+                <text>{{item.num}}</text>
+              </view>
+            </view>
+            <view class="right">
+              创建时间：{{item.createTime[0]+'.'+item.createTime[1]+'.'+item.createTime[2]}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import Tab from '@/components/common/tab'
+  import router from '@/mixins/router'
+  import family from '@/api/family'
+  import Empty from '@/components/common/empty'
+  import pagination from '@/mixins/pagination'
+  import Util from '@/utils/Util'
+  export default class FamilyManagement extends wepy.page {
+    config = {
+      navigationBarTitleText: '家谱管理'
+    }
+    components = {
+      Tab: Tab,
+      Empty
+    }
+    data = {
+      imageStyle: {
+        height: 300,
+        width: 300
+      },
+      title: '',
+      tab: {
+        list: [{
+          id: 1,
+          title: '我的'
+        },
+        {
+          id: 2,
+          title: '匹配'
+        },
+        {
+          id: 3,
+          title: '加入'
+        }
+        ],
+        selectedId: 1
+      },
+      listData: [],
+      page: '',
+      treeStatus: 'manager',
+      isLoading: false,
+      selectedId: 1
+    }
+    mixins = [base, pagination, router]
+    methods = {
+      switchTab(data) {
+        this.isLoading = false
+        this.selectedId = data.selectedId
+        if (!Util.isLogin()) return
+        this.familyManagementlist()
+        this.ifTreeStatus(data.selectedId)
+      },
+      skipFamily(genealogyId) {
+        wepy.navigateTo({
+          url: `/packageFamily/pages/family/tree?genealogyId=${genealogyId}&treeStatus=${this.treeStatus}`
+        })
+      }
+    }
+    // 判断进入的成员类型
+    ifTreeStatus(num) {
+      if (num === 1) {
+        this.treeStatus = 'manager'
+      } else if ((num === 2)) {
+        this.treeStatus = 'binding'
+      } else {
+        this.treeStatus = 'info'
+      }
+      this.$apply()
+    }
+    async familyManagementlist() {
+      try {
+        this.isLoading = false
+        this.page = await family.familyManagementlist()
+        await this.next()
+        this.listData = this.page.list
+        this.isLoading = true
+        this.listData.forEach(item => {
+          item.createTime = item.createTime.split(' ')[0].split('-')
+        })
+        this.listData.map((item, index) => {
+          this.listData[index].genealogyImage = item.genealogyImage ? item.genealogyImage : '../../../images/family/banner-zupu.jpg'
+        })
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    params() {
+      return {
+        type: this.selectedId
+      }
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.listData.map((item, index) => {
+        this.listData[index].genealogyImage = item.genealogyImage ? item.genealogyImage : '../../../images/family/banner-zupu.jpg'
+      })
+      this.$apply()
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.listData.map((item, index) => {
+        this.listData[index].genealogyImage = item.genealogyImage ? item.genealogyImage : '../../../images/family/banner-zupu.jpg'
+      })
+      this.$apply()
+    }
+    onShow() {
+      if (!Util.isLogin()) return
+      this.familyManagementlist()
+    }
+    onLoad(option) {}
+  }
+</script>

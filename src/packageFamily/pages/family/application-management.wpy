@@ -1,0 +1,240 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .application-management {
+    margin-top: 30rpx;
+    background: #ffffff;
+    overflow: hidden;
+    .application-management-list:nth-last-child(1) {
+      border-bottom: 0rpx;
+    }
+    .application-management-list {
+      overflow: hidden;
+      border-bottom: 1rpx solid #e5e5e5;
+      display: flex;
+      justify-content: space-between;
+      padding: 30rpx 30rpx 30rpx 0;
+      margin-left: 30rpx;
+      .user-info {
+        display: flex;
+        align-items: center;
+        >image {
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+        }
+        >view {
+          margin-left: 25rpx;
+          .name {
+            color: $black;
+            font-size: $title;
+            margin-bottom: 6rpx;
+          }
+          .number {
+            font-size: $fontSize4;
+            color: $gray;
+            margin-bottom: 6rpx;
+          }
+          .application {
+            font-size: $fontSize4;
+            color: $gray;
+          }
+          .pass {
+            font-size: 22rpx;
+            background: #159dfc;
+            color: #ffffff;
+            border-radius: 6rpx;
+            width: 100rpx;
+            height: 30rpx;
+            line-height: 28rxp;
+            text-align: center;
+          }
+          .refuse {
+            font-size: 22rpx;
+            line-height: 28rxp;
+            border-radius: 6rpx;
+            background: #f7564c;
+            color: #ffffff;
+            height: 30rpx;
+            width: 100rpx;
+            line-height: 28rxp;
+            text-align: center;
+          }
+        }
+      }
+      .submit {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30rpx;
+        color: #159dfc;
+        .vertical {
+          height: 28rpx;
+          width: 4rpx;
+          background: #cacaca;
+          margin: 0 22rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="application-management">
+    <repeat for="{{dataList}}" key="index" index="index" item="item" wx:if="{{dataList.length}}">
+      <SwiperDelete :swipeData.sync="item" :index="index" :stopAnimate.sync="editBtnStatus" @delItem.user="deletedMessage">
+        <view class="application-management-list">
+          <view class="user-info">
+            <image class="avatar" src='{{item.avatar}}' mode="aspectFill"></image>
+            <view>
+              <view class="name">{{item.nickname}}{{item.lineage?'('+item.lineage+')':''}}</view>
+              <view class="number">{{item.mobile}}</view>
+              <view class="application" wx:if="{{item.applyStatus===0}}">申请绑定:{{item.name}}</view>
+              <view class="pass" wx:if="{{item.applyStatus===1}}">已通过</view>
+              <view class="refuse" wx:if="{{item.applyStatus===2}}">已拒绝</view>
+            </view>
+          </view>
+          <view class="submit" wx:if="{{item.applyStatus===0||item.applyStatus===1}}">
+            <view @tap="submitFn('{{item}}',1)">{{item.applyStatus===0?'通过':'解绑'}}</view>
+            <view class="vertical"></view>
+            <view style="{{item.applyStatus===0?'color:#f7564c':''}}" @tap="submitFn('{{item}}',2)">{{item.applyStatus===0?'拒绝':'编辑'}}</view>
+          </view>
+        </view>
+      </SwiperDelete>
+    </repeat>
+    <block wx:if="{{!dataList.length}}">
+      <Empty image='/images/family/icon-none.png' title='暂无申请' subtitle='' :imageStyle.sync="imageStyle"></Empty>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import pagination from '@/mixins/pagination'
+  import Tips from '@/utils/Tips'
+  import Empty from '@/components/common/empty'
+  import SwiperDelete from '@/components/common/swiper_delete'
+  export default class FamilyIndex extends wepy.page {
+    config = {
+      navigationBarTitleText: '申请管理',
+      enablePullDownRefresh: true
+    }
+    data = {
+      editBtnStatus: 0,
+      imageStyle: {
+        height: 300,
+        width: 300
+      },
+      page: '',
+      dataList: '',
+      addOrEditData: {
+        fromMemberId: '',
+        relationType: '',
+        genealogyId: '',
+        type: 'add'
+      }
+    }
+    components = {
+      Empty,
+      SwiperDelete
+    }
+    mixins = [base, pagination]
+    methods = {
+      // 删除申请
+      deletedMessage(item) {
+        console.log(item)
+        this.deletedApplicationApi(item.applyId)
+      },
+      submitFn(data, num) {
+        let that = this
+        let params = {
+          applyId: data.applyId
+        }
+        if (data.applyStatus === 0) {
+          if (num === '1') {
+            params.type = 1
+          } else {
+            params.type = 2
+          }
+        } else {
+          if (num === '1') {
+            params.type = 3
+            wx.showModal({
+              content: '是否解除绑定？', // 提示的内容,
+              showCancel: true, // 是否显示取消按钮,
+              cancelText: '取消', // 取消按钮的文字，默认为取消，最多 4 个字符,
+              cancelColor: '#000000', // 取消按钮的文字颜色,
+              confirmText: '确定', // 确定按钮的文字，默认为取消，最多 4 个字符,
+              confirmColor: wepy.$instance.globalData.color.main || '#06a0ff', // 确定按钮的文字颜色,
+              success(res) {
+                if (res.confirm) {
+                  that.updateStatusApi(params)
+                }
+              }
+            })
+            return false
+          } else {
+            this.addOrEditData.fromMemberId = data.memberId
+            this.addOrEditData.genealogyId = data.genealogyId
+            this.addOrEditData.type = 'edit'
+            this.$apply()
+            this.$preload('addOrEditData', this.addOrEditData)
+            wepy.navigateTo({
+              url: 'join-family'
+            })
+            return false
+          }
+        }
+        this.updateStatusApi(params)
+      }
+    }
+    async getApplyList() {
+      try {
+        this.page = await family.getApplyList()
+        await this.next()
+        this.dataList = this.page.list
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onShow() {
+      this.getApplyList()
+    }
+    // 删除申请
+    deletedApplicationApi(applyId) {
+      family.deleteApplication(applyId).then(res => {
+        Tips.success(res)
+        setTimeout(() => {
+          this.getApplyList()
+        }, 800)
+      })
+    }
+    // 改变申请状态
+    async updateStatusApi(params) {
+      try {
+        let res = await family.updateStatus(params)
+        Tips.success(res)
+        setTimeout(() => {
+          this.getApplyList()
+        }, 800)
+      } catch (error) {
+        console.log(params)
+      }
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.dataList = this.page.list
+      this.$apply()
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.dataList = this.page.list
+      this.$apply()
+    }
+    onLoad(option) {}
+  }
+</script>

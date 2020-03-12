@@ -1,0 +1,190 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .my-favorite-page-container {
+    width: 100%;
+    background: $bgColor;
+  }
+  .swipe-item-wrapper {
+    border-bottom: 1rpx solid $borderColor;
+    &:last-child {
+      border: none;
+    }
+  }
+  .goods-list {
+    overflow: hidden;
+  }
+  .goods {
+    display: flex;
+    padding: 25rpx 40rpx;
+    .goods-pic {
+      width: 180rpx;
+      height: 180rpx;
+      border-radius: 8rpx;
+    }
+    .goods-info {
+      flex: 1;
+      padding-left: 30rpx;
+      .line-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .quantity-box {
+        height: 100rpx;
+      }
+      .name {
+        font-size: $fontSize2;
+        color: $black;
+        line-height: 50rpx;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .intro {
+        font-size: $fontSize4;
+        line-height: 46rpx;
+        color: $gray;
+      }
+      .price {
+        font-size: $fontSize2;
+        color: $priceRed;
+      }
+      .num {
+        font-size: $fontSize5;
+        color: #999999;
+      }
+      .invalid {
+        line-height: 30rpx;
+        text-align: center;
+        font-size: $fontSize4;
+        color: #fff;
+        background: #999;
+        border-radius: 4rpx;
+        padding: 5rpx 10rpx;
+      }
+      .labels {
+        text-align: right;
+        margin-bottom: 8rpx;
+        .item {
+          display: inline-block;
+          width: 28rpx;
+          height: 28rpx;
+          line-height: 28rpx;
+          text-align: center;
+          background: $mainColor;
+          color: #fff;
+          font-size: $fontSize5;
+          margin-left: 10rpx;
+          border-radius: 4rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="my-favorite-page-container" style="{{configStyle}}">
+    <view class="goods-list" wx:if="{{list.length > 0}}">
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <SwiperDelete :swipeData.sync="item" :index="index" :hasShare="hasShare" :stopAnimate.sync="stopAnimate" @delItem.user="delCollection">
+          <view class="goods" @tap="routerTo('/pages/goods/detail?id={{item.productId}}')">
+            <image class="goods-pic" src="{{item.productThumbnail}}" mode="aspectFill" />
+            <view class="goods-info">
+              <view class="name">{{item.productName}}</view>
+              <view class="line-box">
+                <!-- <view class="intro">250g</view> -->
+                <!--<view class="labels" >-->
+                <!--<view class="item">团</view>-->
+                <!--<view class="item">限</view>-->
+                <!--</view>-->
+              </view>
+              <view class="line-box">
+                <view class="price" wx:if="{{!item.isDeleted && item.isPutOn}}">￥{{item.productPrice}}</view>
+                <view class="invalid" wx:else>失效</view>
+                <!-- <view class="num" >222人收藏</view> -->
+              </view>
+            </view>
+          </view>
+        </SwiperDelete>
+      </repeat>
+    </view>
+    <Empty title="暂无收藏" subtitle="" wx:if="{{list.length <= 0}}" />
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import goods from '@/api/goods'
+  import router from '@/mixins/router'
+  import Tab from '@/components/common/tab'
+  import Empty from '@/components/common/empty'
+  import SwiperDelete from '@/components/common/swiper_delete'
+  import pagination from '@/mixins/pagination'
+  import Tips from '@/utils/Tips'
+  export default class Favorite extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的收藏'
+    }
+    components = {
+      Tab,
+      SwiperDelete,
+      Empty
+    };
+    data = {
+      hasShare: true,
+      stopAnimate: false,
+      list: []
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      delCollection(item) {
+        this.handleCollect(item.productId)
+      }
+    }
+    onLoad(options) {
+      this.getCollectionList()
+    }
+    async getCollectionList() {
+      this.loginCatch(async() => {
+        this.list = await goods.myCollection()
+        this.$apply()
+      }, () => {
+        this.getCollectionList()
+      })
+    }
+    handleCollect(productId) {
+      this.loginCatch(async() => {
+        let param = {
+          sourceType: 'goods',
+          sourceIds: productId
+        }
+        goods.delCollection(param).then(() => {
+          Tips.toast('删除成功', null, 'none')
+          this.getCollectionList()
+        })
+      }, () => {
+        this.handleCollect()
+      })
+    }
+    // 下拉刷新
+    onPullDownRefresh() {
+      this.$invoke('MyFavoritePage', 'handlePullDownRefresh')
+    }
+    onShareAppMessage(e) {
+      let user = wepy.getStorageSync('user')
+      // let pid = wepy.getStorageSync('pid')
+      if (e.from === 'menu') return false
+      if (user && user.userId) {
+        return {
+          title: e.target.dataset.title,
+          imageUrl: e.target.dataset.imageUrl,
+          // path: `/pages/goods/detail?id=${e.target.dataset.productId}&scene=${pid}_${user.userId}`
+          path: `/pages/goods/detail?id=${e.target.dataset.productId}&scene=${this.sceneData}`
+        }
+      }
+    }
+  }
+</script>

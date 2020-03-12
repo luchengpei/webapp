@@ -1,0 +1,516 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .ask-them-wrapper {
+    .ask-them {
+      padding-bottom: 122rpx;
+      .ask-them-banner {
+        background: #ffffff;
+        width: 100%;
+        height: 350rpx;
+        >image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .ask-them-connet {
+        background: #ffffff;
+        .the-input {
+          position: relative;
+          margin-left: 30rpx;
+          border-bottom: 1rpx solid $borderColor;
+          display: flex;
+          justify-content: left;
+          align-items: center;
+          font-size: $fontSize2;
+          .required {
+            position: relative;
+            &::after {
+              position: absolute;
+              right: -14rpx;
+              top: 29rpx;
+              font-size: $fontSize4;
+              content: '*';
+              color: red;
+            }
+          }
+          .title {
+            .title__inline {
+              height: 88rpx;
+              line-height: 88rpx;
+              width: 140rpx;
+              color: $black;
+              text-align: justify;
+              &::after {
+                width: 100%;
+                display: inline-block;
+                content: ''; //这三个都不可以少
+              }
+            }
+          }
+          >input {
+            margin: 0 30rpx 0 50rpx;
+            color: #a5a5a5;
+            height: 46rpx;
+            flex: 1;
+          }
+        }
+        .the-input:nth-last-child(1) {
+          border-bottom: 0rpx;
+        }
+        .section-wrapper {
+          >picker {
+            margin-left: 50rpx;
+            width: 72%;
+          }
+          .section {
+            font-size: $fontSize2;
+            color: #a5a5a5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            >image {
+              width: 26rpx;
+              height: 28rpx;
+            }
+            margin-right: 29rpx;
+          }
+          .section-location {
+            margin-left: 50rpx;
+            width: 68%;
+          }
+        }
+        .form-item-wrap {
+          margin-left: 30rpx;
+          font-size: $fontSize2;
+          .upload-wrap {
+            padding-bottom: 20rpx;
+          }
+          .title-wrap {
+            display: flex;
+          }
+          .title {
+            .title__inline {
+              height: 88rpx;
+              line-height: 88rpx;
+              width: 140rpx;
+              color: $black;
+              text-align: justify;
+              &::after {
+                width: 100%;
+                display: inline-block;
+                content: ''; //这三个都不可以少
+              }
+            }
+          }
+          .textarea-wrap {
+            width: 100%;
+            padding-bottom: 20rpx;
+            border-bottom: 1px solid $borderColor;
+            >textarea {
+              font-size: $fontSize2;
+              overflow: auto;
+              color: #a5a5a5;
+              min-height: 170rpx;
+              width: 690rpx;
+            }
+          }
+          .describe {
+            position: relative;
+            &::after {
+              position: absolute;
+              right: -14rpx;
+              top: 29rpx;
+              font-size: $fontSize4;
+              content: '*';
+              color: red;
+            }
+          }
+          .describe:after {
+            position: absolute;
+            right: -14rpx;
+            top: 29rpx;
+            font-size: $fontSize4;
+            content: '*';
+            color: red;
+          }
+        }
+        .reply {
+          .reply-content {
+            font-size: $fontSize3;
+            color: $black;
+            padding: 28rpx 30rpx;
+          }
+        }
+      }
+      .ask-them-bottom {
+        height: 92rpx;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        >view {
+          flex: 1;
+          text-align: center;
+          color: $black;
+          font-size: $fontSize2;
+          line-height: 92rpx;
+          background: #ffffff;
+        }
+        >view:nth-child(2) {
+          background: #159dfc;
+          color: #ffffff;
+        }
+      }
+    }
+    .pop-location {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.6);
+      >van-area {
+        animation: animate 0.5s;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        overflow: hidden;
+      }
+      @keyframes animate {
+        from {
+          height: 0px;
+        }
+        to {
+          height: 528rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="ask-them-wrapper">
+    <view class="ask-them" wx:if="{{domShow}}">
+      <view class="ask-them-banner">
+        <image src="/images/family/banner_xungen.png" mode="aspectFill"></image>
+      </view>
+      <view class="ask-them-connet">
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">姓名</view>
+          </view>
+          <input placeholder="{{isAdd?'(必填) 请输入姓名':''}}" placeholder-class="g-placeholder" maxlength="4" disabled="{{!isAdd}}" value="{{formData.name}}" @blur="nameFn('{{item}}')" />
+        </view>
+        <view class="the-input">
+          <view class="title">
+            <view class="title__inline">世系</view>
+          </view>
+          <input placeholder="{{isAdd?'(可不填) 请输入您的世系':''}}" placeholder-class="g-placeholder" maxlength="15" disabled="{{!isAdd}}" value="{{formData.lineageMap}}" @blur="lineageMapFn('{{item}}')" />
+        </view>
+        <view class="the-input">
+          <view class="title">
+            <view class="title__inline">字辈</view>
+          </view>
+          <input placeholder="{{isAdd?'(可不填) 请输入您的字辈':''}}" placeholder-class="g-placeholder" maxlength="15" disabled="{{!isAdd}}" value="{{formData.workGeneration}}" @blur="workGenerationFn('{{item}}')" />
+        </view>
+        <view class="the-input">
+          <view class="title">
+            <view class="title__inline">堂号</view>
+          </view>
+          <input placeholder="{{isAdd?'(可不填) 请输入您的堂号':''}}" placeholder-class="g-placeholder" maxlength="15" disabled="{{!isAdd}}" value="{{formData.dougou}}" @blur="dougouFn('{{item}}')" />
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title">
+            <view class="title__inline">现籍</view>
+          </view>
+          <view class="section section-location" @tap="sectionLocation">
+            <view class="data">
+              {{formData.location.length?formData.location[0]+formData.location[1]+formData.location[2]:isAdd?'请选择现籍':''}}
+            </view>
+            <image src="/images/right.png" wx:if="{{!formData.location.length&&isAdd}}"></image>
+          </view>
+          <view>
+            <TitleA class="family-created-basic-top" title="平台回复"></TitleA>
+          </view>
+        </view>
+        <view class="the-input">
+          <view class="title">
+            <view class="title__inline">祖籍</view>
+          </view>
+          <input placeholder="{{isAdd?'(可不填) 请输入您的祖籍':''}}" placeholder-class="g-placeholder" maxlength="15" disabled="{{!isAdd}}" value="{{formData.ancestral}}" @blur="ancestralFn('{{item}}')" />
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title">
+            <view class="title__inline">出生日期</view>
+          </view>
+          <picker mode="date" value="{{formData.stringDateOfBirth}}" disabled="{{!isAdd}}" bindchange="bindDateChange">
+            <view class="section">
+              <view class="data"> {{!formData.stringDateOfBirth?isAdd?'请选择出生日期':'':''}} {{formData.stringDateOfBirth}}
+              </view>
+              <image src="/images/right.png" wx:if="{{!formData.stringDateOfBirth&&isAdd}}"></image>
+            </view>
+          </picker>
+        </view>
+        <view class="form-item-wrap">
+          <view class="title-wrap">
+            <view class="title">
+              <view class="title__inline">备注</view>
+            </view>
+          </view>
+          <view class="textarea-wrap">
+            <textarea auto-height wx:if="{{!isPopLocation}}" bindblur="bindTextAreaBlur" disabled="{{!isAdd}}" maxlength="200" value='{{formData.srDescription}}' placeholder="{{isAdd?'(可不填) 请您输入备注':''}}" placeholder-class="g-placeholder"
+            />
+          </view>
+        </view>
+        <view class="form-item-wrap">
+          <view class="title">
+            <view class="title__inline">举证材料</view>
+          </view>
+          <view class="upload-wrap">
+            <SelectImg :uploadList.sync="proofMaterial" @uploadFile.user='uploadFile' :isClose.sync='isAdd' padding="0"></SelectImg>
+          </view>
+        </view>
+        <view class="reply" wx:if="{{!isAdd&&platformResponse}}">
+          <Title title="平台回复"></Title>
+          <view class="reply-content">
+            {{platformResponse}}
+          </view>
+        </view>
+      </view>
+      <view class="ask-them-bottom" wx:if="{{isAdd}}">
+        <view @tap="back">取 消</view>
+        <view @tap="submit">提 交</view>
+      </view>
+    </view>
+    <view class="pop-location" wx:if="{{isPopLocation}}">
+      <van-area area-list="{{areaList}}" @cancel="onCancel" @confirm="onConfirm" value="110106" />
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import SelectImg from '@/components/activity/upload'
+  import base from '@/mixins/base'
+  import Validator from '@/utils/Validator'
+  import Area from '@/utils/Area'
+  import Title from '@/components/common/title'
+  import family from '@/api/family'
+  export default class AskThem extends wepy.page {
+    constructor() {
+      super()
+      this.data.areaList = Area
+    }
+    config = {
+      navigationBarTitleText: '寻根问祖',
+      usingComponents: {
+        'van-area': '../../../components/vant/area/index'
+      }
+    }
+    components = {
+      SelectImg,
+      Title
+    }
+    data = {
+      region: [],
+      formData: {
+        name: '',
+        lineageMap: '',
+        areaList: '',
+        workGeneration: '',
+        dougou: '',
+        location: [],
+        stringDateOfBirth: '',
+        isSubmit: 0,
+        srDescription: '',
+        proofMaterial: '',
+        areaCode: '',
+        ancestral: ''
+      },
+      customItem: '全部',
+      list: [],
+      domShow: false,
+      array: [],
+      treeKey: 'child', // 树形节点key
+      indexCity: [0, 0, 0],
+      isAdd: false,
+      isPopLocation: false,
+      platformResponse: '',
+      proofMaterial: []
+    }
+    mixins = [base]
+    methods = {
+      // 关闭地址选择
+      onCancel() {
+        this.isPopLocation = false
+      },
+      // 确定地址选择
+      onConfirm(e) {
+        console.log(e)
+        this.formData.location = []
+        this.formData.location.push(e.detail.values[0].name)
+        if (e.detail.values[1]) {
+          this.formData.location.push(e.detail.values[1].name)
+          if (!e.detail.values[2]) {
+            this.formData.areaCode = e.detail.values[1].code
+          }
+        } else {
+          this.formData.location.push(' ')
+        }
+        if (e.detail.values[2]) {
+          this.formData.location.push(e.detail.values[2].name)
+          this.formData.areaCode = e.detail.values[2].code
+        } else {
+          this.formData.location.push('')
+        }
+        this.isPopLocation = false
+        this.$apply()
+      },
+      // 输入祖籍
+      ancestralFn(e) {
+        Validator.isCharacter(e.detail.value, this, '祖籍', false)
+        this.formData.ancestral = e.detail.value
+      },
+      // 选择地址
+      sectionLocation() {
+        if (!this.isAdd) return false
+        this.isPopLocation = true
+      },
+      // 获取名字
+      nameFn(e) {
+        Validator.isCharacter(e.detail.value, this, '名字')
+        this.formData.name = e.detail.value
+      },
+      // 获取字辈
+      workGenerationFn(e) {
+        this.formData.workGeneration = e.detail.value
+      },
+      // 获取堂号
+      dougouFn(e) {
+        Validator.isCharacter(e.detail.value, this, '堂号', false)
+        this.formData.dougou = e.detail.value
+      },
+      // 获取世系
+      lineageMapFn(e) {
+        this.formData.lineageMap = e.detail.value
+      },
+      // 返回上一页
+      back() {
+        wx.navigateBack({
+          delta: 1
+        })
+      },
+      // 获取举证材料
+      uploadFile(e) {
+        let imgData = ''
+        console.log(e)
+        e.map((item) => {
+          imgData += item.url + ','
+        })
+        this.formData.proofMaterial = imgData.substring(0, imgData.length - 1)
+      },
+      // 获取出生年月
+      bindDateChange(e) {
+        this.formData.stringDateOfBirth = e.detail.value
+      },
+      // 获取基本描述
+      bindTextAreaBlur(e) {
+        Validator.isCharacter(e.detail.value, this, '备注', false)
+        this.formData.srDescription = e.detail.value
+      },
+      submit() {
+        let params = Object.assign({}, this.formData)
+        this.submitValidation(params)
+        params.province = this.formData.location[0]
+        params.city = this.formData.location[1]
+        params.area = this.formData.location[2]
+        delete params.location
+        if (!this.isSubmit) return false
+        this.askThemSaveApi(params)
+      }
+    }
+    // 提交时表单校验
+    submitValidation(params) {
+      this.isSubmit = 1
+      for (let item of Object.keys(params)) {
+        switch (item) {
+          case 'name':
+            Validator.isCharacter(params[item], this, '名字')
+            break
+          case 'dougou':
+            Validator.isCharacter(params[item], this, '堂号', false)
+            break
+          case 'ancestral':
+            Validator.isCharacter(params[item], this, '祖籍', false)
+            break
+          case 'srDescription':
+            Validator.isCharacter(params[item], this, '备注', false)
+            break
+        }
+        if (!this.isSubmit) return false
+      }
+    }
+    askThemSaveApi(params) {
+      family.askThemSave(params).then((res) => {
+        if (res === '保存成功') {
+          wepy.navigateBack({
+            delta: 1
+          })
+        }
+      })
+    }
+    askThemInfo(seekingRootsId) {
+      family.askThemInfo(seekingRootsId).then((res) => {
+        this.formData.name = res.name
+        this.formData.lineageMap = res.lineageMap
+        this.formData.workGeneration = res.workGeneration
+        this.formData.dougou = res.dougou
+        this.formData.srDescription = res.srDescription
+        this.formData.stringDateOfBirth = res.dateOfBirth ? res.dateOfBirth.split(' ')[0] : ''
+        this.formData.proofMaterial = res.proofMaterial
+        this.formData.ancestral = res.ancestral
+        this.formData.location.push(res.province || '')
+        this.formData.location.push(res.city || '')
+        this.formData.location.push(res.area || '')
+        this.platformResponse = res.platformResponse
+        if (res.proofMaterial !== '') {
+          if (!res.imgList) {
+            this.proofMaterial.push({
+              url: res.proofMaterial
+            })
+          } else {
+            res.imgList.map((item) => {
+              this.proofMaterial.push({
+                url: item
+              })
+            })
+          }
+        }
+        this.$apply()
+        console.log(this.proofMaterial)
+      })
+    }
+    onShow() {}
+    onLoad(option) {
+      this.domShow = true
+      this.formData = {
+        name: '',
+        lineageMap: '',
+        workGeneration: '',
+        dougou: '',
+        location: [],
+        stringDateOfBirth: '',
+        isSubmit: 0,
+        srDescription: '',
+        proofMaterial: ''
+      }
+      if (!option.seekingRootsId) {
+        this.isAdd = true
+        return false
+      }
+      this.askThemInfo(option.seekingRootsId)
+    }
+  }
+</script>

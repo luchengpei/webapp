@@ -1,0 +1,44 @@
+<style lang='scss' scoped>
+  @import "../../scss/common";
+  .tag-wrap {
+    padding: 16rpx $margin;
+    background-color: rgb(255, 252, 236);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+    .icon {
+      color: #FFA200;
+      font-size: 36rpx;
+      margin-right: 8rpx;
+    }
+    .text {
+      font-size: $fontSize4;
+      flex: 1;
+      color: #FFA200;
+      margin-top: 3rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="tag-wrap">
+    <i class="iconfont icon-info icon" />
+    <text class="text">{{text}}</text>
+    <view class="tag__extra">
+      <slot />
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Tag extends wepy.component {
+    props = {
+      text: {
+        default: '公告'
+      }
+    }
+  }
+</script>

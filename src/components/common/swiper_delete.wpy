@@ -1,0 +1,158 @@
+<style lang="scss" scoped>
+  .swipe-item-wrapper {
+    position: relative;
+    left: 0;
+    &.animate {
+      -webkit-transition: left 0.3s ease-in-out;
+      transition: left 0.3s ease-in-out;
+    }
+    .swipe-actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      z-index: 1;
+      &.actions-left {
+        left: 0;
+      }
+      &.actions-right {
+        left: 100%;
+      }
+    }
+    .swipe-content {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      position: relative;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      background-color: white;
+      .swipe-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .swipe-btn {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      justify-content: center;
+      color: white;
+      font-size: 26rpx;
+      position: relative;
+      &.del {
+        width: 120rpx;
+        background-color: rgb(244, 51, 60);
+      }
+      &.edit {
+        background-color: rgb(16, 142, 233);
+      }
+      &.share {
+        width: 100rpx;
+        background-color: #ffaea9;
+      }
+      .hidden{
+        position: absolute;
+        left: 0;opacity: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="swipe-item-wrapper {{!stopAnimate ? 'animate' : ''}}" style="left:{{swipeData && swipeData.style ? swipeData.style + 'rpx' : '0'}}">
+    <view class="swipe-content" @touchstart="ts" @touchmove="tm" @touchend="te">
+      <slot></slot>
+    </view>
+    <view class="swipe-actions actions-right">
+      <view class="swipe-btn share" wx:if="{{hasShare}}" @tap="shareTap({{swipeData}})">
+        分享
+        <button class="hidden" data-title="{{swipeData.productName}}" data-image-url="{{swipeData.productThumbnail}}" data-product-id="{{swipeData.productId}}" open-type="share" ></button>
+      </view>
+      <view class="swipe-btn del" @tap.stop="handleRightBtnTap({{swipeData}})">删除</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class SwiperDelete extends wepy.component {
+    props = {
+      swipeData: {
+        type: Object,
+        default: null
+      },
+      index: {
+        type: Number,
+        default: 0
+      },
+      hasShare: {
+        type: Boolean,
+        default: false
+      },
+      stopAnimate: {
+        type: Boolean,
+        default: true,
+        twoWay: true
+      }
+    }
+    data = {
+      startX: null,
+      endX: null,
+      btnSumWidth: 120
+    }
+    onLoad() {
+      // this.btnSumWidth = this.hasShare ? 220 : 120
+    }
+    methods = {
+      ts(e) {
+        if (this.stopAnimate) return
+        if (e.touches.length === 1) {
+          this.startX = e.touches[0].clientX
+          this.endX = e.touches[0].clientX
+        }
+      },
+      tm(e) {
+        if (this.stopAnimate) return
+        if (e.touches.length === 1) {
+          this.endX = e.touches[0].clientX
+        }
+      },
+      te(e) {
+        this.btnSumWidth = this.hasShare ? 220 : 120
+        if (this.stopAnimate) return
+        if (e.changedTouches.length === 1) {
+          // 手指起始点位置与终点的差值
+          let distenceX = this.startX - this.endX
+          if (distenceX > 25) {
+            // 向左
+            this.swipeData.style = -this.btnSumWidth
+          } else if (distenceX < -25) {
+            // 向右
+            this.swipeData.style = 0
+          }
+        }
+      },
+      handleRightBtnTap(item) {
+        item = JSON.parse(JSON.stringify(item))
+        delete item.style
+        this.$emit('delItem', item)
+      },
+      shareTap(item) {
+        console.log('productId', item.productId)
+        wepy.setStorageSync('productId', item.productId)
+      }
+    }
+    initSwiper() {
+      this.swipeData.style = 0
+    }
+  }
+</script>

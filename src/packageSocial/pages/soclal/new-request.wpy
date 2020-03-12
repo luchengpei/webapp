@@ -1,0 +1,194 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  page {
+    width: 100%;
+    overflow: hidden;
+  }
+  .my-contacts {
+    margin-top: 30rpx;
+    background: $subMainColor;
+    box-sizing: border-box;
+     overflow: hidden;
+    .my-contacts-list:nth-child(1) {
+      border-top: 0rpx;
+    }
+    .my-contacts-list {
+      position: relative;
+      overflow: hidden;
+      border-top: 1rpx solid #e0e0e0;
+      padding: 20rpx 30rpx 20rpx 0;
+      margin-left: 30rpx;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .left {
+        display: flex;
+        >image {
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+        }
+        .content {
+          margin-left: 25rpx;
+          padding-top: 12rpx;
+          .name {
+            font-size: $fontSize2;
+            color: $black;
+          }
+          .introduce {
+            font-size: $fontSize4;
+            color: $gray;
+          }
+        }
+      }
+      .look {
+        display: flex;
+        >view {
+          margin-left: 20rpx;
+          width: 120rpx;
+          height: 60rpx;
+          background-color: #159dfc;
+          border-radius: 6rpx;
+          font-size: $fontSize4;
+          color: $subMainColor;
+          text-align: center;
+          line-height: 60rpx;
+        }
+        .refused {
+          background: #f7564c;
+        }
+        .refusedYes {
+          background: #f8f8f8;
+          color: $black;
+        }
+        >view:nth-child(1) {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="my-contacts">
+    <repeat for="{{listData}}" key="index" index="index" item="item">
+      <SwiperDelete :swipeData.sync="item" :index="index" :stopAnimate.sync="editBtnStatus" @delItem.user="deletedMessage">
+        <view class="my-contacts-list">
+          <view class="left">
+            <image mode="aspectFill" src="{{item.logo?item.logo:'/images/avatar.png'}}"></image>
+            <view class="content">
+              <view class="name">{{item.name}}</view>
+              <view class="introduce">请求和您交换微信</view>
+            </view>
+          </view>
+          <view class="look">
+            <view class="refusedYes" wx:if="{{item.applyStatus===2}}">已拒绝</view>
+            <view wx:if="{{item.applyStatus===0}}" @tap="pass('{{item}}')">同意</view>
+            <view class="refused" wx:if="{{item.applyStatus===0}}" @tap="refuse('{{item}}')">拒绝</view>
+          </view>
+        </view>
+      </SwiperDelete>
+    </repeat>
+  </view>
+</template>
+ 
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import Tips from '@/utils/Tips'
+  import enterprise from '@/api/enterprise'
+  import pagination from '@/mixins/pagination'
+  // import Empty from '@/components/common/empty'
+  import SwiperDelete from '@/components/common/swiper_delete'
+  export default class MyCollects extends wepy.page {
+    config = {
+      navigationBarTitleText: '新的请求',
+      enablePullDownRefresh: true
+    }
+    components = {
+      SwiperDelete
+    };
+    data = {
+      type: 2,
+      listData: [],
+      page: [],
+      editBtnStatus: 0
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      deletedMessage(item) {
+        this.deletedRequestApi(item.friendApplyId)
+      },
+      sikp() {
+        console.log(1)
+      },
+      pass(data) {
+        let params = {
+          friendApplyId: data.friendApplyId,
+          applyStatus: 1
+        }
+        this.setPassOrRefuseApi(params)
+      },
+      refuse(data) {
+        let params = {
+          friendApplyId: data.friendApplyId,
+          applyStatus: 2
+        }
+        this.setPassOrRefuseApi(params)
+      }
+    }
+    onShow() {
+      this.getApplyFriendApi()
+    }
+    onLoad(options) {}
+    async deletedRequestApi(params) {
+      try {
+        await enterprise.deletedRequest(params)
+        Tips.success('删除成功')
+        setTimeout(() => {
+          this.getApplyFriendApi()
+        }, 800)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    async setPassOrRefuseApi(params) {
+      try {
+        let res = await enterprise.setPassOrRefuse(params)
+        if (params.applyStatus === 1) {
+          Tips.success('已通过')
+        } else {
+          Tips.success('已拒绝')
+        }
+        this.getApplyFriendApi()
+        console.log(res)
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    async getApplyFriendApi() {
+      this.page = await enterprise.getApplyFriend()
+      await this.next()
+      this.listData = this.page.list
+      this.$apply()
+    }
+    // // 列表传参
+    // params() {
+    //   return {}
+    // }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.$apply()
+    }
+  }
+</script>

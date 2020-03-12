@@ -1,0 +1,93 @@
+<style lang='scss' scoped>
+  @import "../../scss/dis";
+</style>
+
+<template>
+  <block>
+    <view class="row" wx:if="{{key!=='noNeed' && obj.mustNeedLen.length<3}}">
+      <view class="point" />
+      <text class="tex-main" wx:if="{{obj.mustNeedLen.length === 0 && obj.oneNeedLen.length > 0 && key !== 'mustNeed'}}">满足任意一项条件即可成为会员</text>
+      <text class="tex-main" wx:elif="{{key ==='mustNeed'}}">必须满足</text>
+      <text class="tex-main" wx:else>满足其一</text>
+    </view>
+    <block wx:if="{{obj[key].memberCountType}}">
+      <view class="progress-wrap">
+        <text class="text-normal">您需要发展朋友人脉到达数量</text>
+        <text class="text-normal scale">{{obj.sonCount || 0}}/{{obj.memberCount || 0}}</text>
+        <view class="finish-icon-wrap-progress" wx:if="{{obj.sonCount >= obj.memberCount }}">
+          <i class="iconfont icon-order_ic_deal finish-icon"/>
+          <text>已完成</text>
+        </view>
+      </view>
+      <progress percent="{{obj.sonCount*100/obj.memberCount}}" stroke-width="4" border-radius="10" />
+    </block>
+    <block wx:if="{{obj[key].productType && obj.productAndTpExtendList.length>0 }}">
+      <block wx:for="{{obj.productAndTpExtendList}}" wx:for-item="item" wx:key="{{productTpExtendId}}" wx:for-index="index">
+        <view class="row buy-item">
+          <image class="goods-img" src="{{item.productThumbnail}}" />
+          <view class="text-wrap">
+            <text class="title ">{{item.productName}}</text>
+            <view class="btn-wrap">
+              <text class="price">￥ {{item.productTpPrice}}</text>
+              <block wx:if="{{obj.isPayProduct == 0 && obj.meetOne == 0 && obj.oneNeed.productType}}">
+                <button type="primary" class="buy-btn" @tap="onGoods({{item}})">去购买</button>
+              </block>
+              <block wx:if="{{obj.isPayProduct == 0 && obj.mustNeed.productType}}">
+                <button type="primary" class="buy-btn" @tap="onGoods({{item}})">去购买</button>
+              </block>
+              <view class="finish-icon-wrap" wx:if="{{obj.isPayProduct == 1}}">
+                <i class="iconfont icon-order_ic_deal finish-icon"/>
+                <text>已完成</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+    <block wx:if="{{obj[key].valPayType}}" >
+      <view class="row buy-item vip-content">
+        <view class="vip-wrap">
+          <text class="title">缴纳会员会费成为会员</text>
+          <text class="price">￥ {{obj.volPay || '0.00'}}</text>
+        </view>
+        <block wx:if="{{obj.isPay == 0 && obj.meetOne == 0 && obj.oneNeed.valPayType}}">
+          <button type="primary" class="buy-btn" @tap="onPayMember">去缴费</button>
+        </block>
+        <block wx:if="{{obj.isPay == 0 && obj.mustNeed.valPayType}}">
+          <button type="primary" class="buy-btn" @tap="onPayMember">去缴费</button>
+        </block>
+        <view class="finish-icon-wrap" wx:if="{{obj.isPay == 1}}">
+          <i class="iconfont icon-order_ic_deal finish-icon"/>
+          <text>已完成</text>
+        </view>
+      </view>
+    </block>
+  </block>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Goods from './goods'
+  export default class Condition extends wepy.component {
+    props = {
+      obj: {
+        default: {}
+      },
+      key: {
+        default: 'mustNeed'
+      }
+    }
+    components = {
+      Goods
+    }
+    methods = {
+      onPayMember() { // 缴费成为会员
+        this.$emit('onPayMember')
+      },
+      onGoods(item) {
+        const { productId, productTpExtendId } = item
+        wepy.navigateTo({url: `/pages/order/submit?n=1&g=${productId}&t=${productTpExtendId}&mode=member`})
+      }
+    }
+  }
+</script>

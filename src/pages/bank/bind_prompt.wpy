@@ -1,0 +1,63 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .prompt-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80rpx 30rpx 0 30rpx;
+    .icon-info {
+      font-size: 240rpx;
+      color: #F76260;
+      margin-bottom: 40rpx;
+    }
+    .prompt-title {
+      font-size: 32rpx;
+      color: $black;
+      margin-bottom: 40rpx;
+    }
+    .prompt-desc {
+      font-size: $fontSize4;
+      color: $gray;
+      text-indent: 40rpx;
+      margin-bottom: 110rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="prompt-wrap" style="{{configStyle}}">
+    <i class="iconfont icon-info"></i>
+    <view class="prompt-title">您还没实名认证！</view>
+    <view class="prompt-desc">尊敬的会员，您好！为了保证您的资金安全和您的会员权益，请前去绑定您的银行卡信息，否则不能使用提现功能，未绑定期间所产生的收益也将不计算在您的账户，请周知。</view>
+    <view class="g-button" hover-class="g-hover" @tap="toBind">去绑定</view>
+    <view class="g-button g-button__normal" hover-class="g-hover" @tap="goBack">以后再说</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  export default class BindPrompt extends wepy.page {
+    config = {
+      navigationBarTitleText: '提示'
+    }
+    components = {};
+    data = {
+    }
+    mixins = [base, router];
+    methods = {
+      toBind() {
+        wx.redirectTo({url: '/pages/bank/bind_card'})
+      },
+      goBack() {
+        wx.navigateBack({
+          delta: 1
+        })
+      }
+    }
+    onLoad(options, data) {
+  
+    }
+  }
+</script>

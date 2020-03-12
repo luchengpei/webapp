@@ -1,0 +1,168 @@
+<script>
+  import wepy from 'wepy'
+  import Util from '@/utils/Util'
+  import WxApi from '@/utils/WxApi'
+  const loginMap = [
+    '/pages/cart', // 购物车
+    '/pages/order/list', // 订单列表
+    '/pages/order/detail', // 订单详情
+    '/pages/mine/address', // 地址
+    '/pages/mine/address_detail', // 新增/编辑地址
+    '/pages/mine/agency', // 成为代理
+    '/pages/mine/favorite', // 收藏
+    '/pages/mine/cash_back', // 我的返现
+    '/pages/mine/group', // 我的团购
+    '/pages/mine/info', // 个人信息
+    '/pages/mine/wallet', // 我的收益
+    '/pages/mine/chain', // 我的接龙
+    '/pages/mine/store', // 我的店铺
+    '/pages/mine/activity', // 我的活动
+    '/pages/mine/commonweal', // 我的公益
+    '/pages/mine/feedback', // 意见反馈
+    '/pages/dis/member', // 会员中心
+    '/packageFamily/pages/family/ask-them-list', // 寻根问祖列表
+    '/packageFamily/pages/family/ask-them', // 寻根问祖表单
+    '/pages/family/family-management', // 家谱管理
+    '/packageFamily/pages/family/famliy-created', // 创建家谱
+    '/packageFamily/pages/family/join-family', // 加入家谱
+    '/pages/mine/message' // 消息
+  ]
+  export default class Router extends wepy.mixin {
+    data = {
+      canRoute: true,
+      tabs: wepy.$instance.globalData.tabs
+    }
+    methods = {
+        // 图片浏览 src图片路径 ,httpUrl图片路径前缀
+      _toImgLook(current, urls = []) {
+        let httpUrl = ''// 图片前缀
+        let _current = httpUrl + current
+        let _urls = Object.prototype.toString.call(urls) === '[object Array]' ? urls.map(v => { return httpUrl + v }) : [_current]
+        WxApi.wxLookImg(_current, _urls)
+      },
+      /**
+       * 轮播图跳转
+       */
+      bannerTo(page) {
+        if (page.indexOf('http') > -1) {
+          this.$root.$navigate(`/pages/web?url=${page}`)
+        } else {
+          this._routerTo('/' + page)
+        }
+      },
+      /**
+       * 跳转
+       */
+      routerTo(page) {
+        this._routerTo(page)
+      },
+      /**
+       * 重定向
+       */
+      redirectTo(page) {
+        // 判断是否登录&并且跳转的页面是否是需要登录的页面 （跳转拦截）
+        if (!Util.isLogin() && Util.isInArrayMap(page, loginMap)) {
+          wepy.navigateTo({
+            url: '/pages/login'
+          })
+          return
+        }
+        if (page.indexOf('/pages/index') > -1) {
+          wepy.reLaunch({
+            url: page
+          })
+        } else {
+          wepy.redirectTo({
+            url: page
+          })
+        }
+      },
+      switchTab(page) {
+        this._switchTab(page)
+      },
+      /**
+       * 客服
+       */
+      contactKf(kf) {
+        wepy.makePhoneCall({
+          phoneNumber: kf.telephone
+        })
+      }
+    }
+    // 路由跳转
+    _routerTo(page) {
+      // 判断是否登录&并且跳转的页面是否是需要登录的页面 （跳转拦截）
+      if (!Util.isLogin() && Util.isInArrayMap(page, loginMap)) {
+        wepy.navigateTo({
+          url: '/pages/login'
+        })
+        return
+      }
+      if (!page) return
+      // 判断是否tab页
+      let isTabPage = this._isTab(page)
+      if (isTabPage) { // tab页
+        wepy.switchTab({ url: page })
+      } else {
+        if (!this.canRoute) return
+        this.canRoute = false
+        wepy.navigateTo({
+          url: page
+        }).then(() => {
+          this.canRoute = true
+          this.$apply()
+        })
+      }
+    }
+    // 跳到Tab页
+    _switchTab(page) {
+      // 判断是否登录&并且跳转的页面是否是需要登录的页面 （跳转拦截）
+      if (!Util.isLogin() && Util.isInArrayMap(page, loginMap)) {
+        wepy.navigateTo({
+          url: '/pages/login'
+        })
+        return
+      }
+      wepy.switchTab({
+        url: page
+      })
+    }
+    _bannerTo(page) {
+      if (page.indexOf('http') > -1) {
+        this.$root.$navigate(`/pages/web?url=${page}`)
+      } else {
+        this._routerTo('/' + page)
+      }
+    }
+    /**
+     * 重定向
+     */
+    _redirectTo(page) {
+        // 判断是否登录&并且跳转的页面是否是需要登录的页面 （跳转拦截）
+      if (!Util.isLogin() && Util.isInArrayMap(page, loginMap)) {
+        wepy.navigateTo({
+          url: '/pages/login'
+        })
+        return
+      }
+      if (page.indexOf('/pages/index') > -1) {
+        wepy.reLaunch({
+          url: page
+        })
+      } else {
+        wepy.redirectTo({
+          url: page
+        })
+      }
+    }
+    // 判断是否Tab页
+    _isTab(page) {
+      // 去掉页面后面拼接的?以及首尾的斜杠/
+      const strPage = page.split('?')[0].replace(/^(\s|\/)+|(\s|\/)+$/g, '')
+      const tabs = this.tabs.filter(tab => {
+        return strPage === tab.pagePath
+      })
+      return tabs.length > 0
+    }
+}
+</script>

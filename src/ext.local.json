@@ -1,0 +1,62 @@
+{
+  "extEnable": true,
+  "extAppid": "wx8e4697d456f3c7fc",
+  "directCommit": false,
+  "ext": {
+    "platformAppId": "bonaYQMA7L8ZP8VET8657",
+    "companyId": 536,
+    "color": {
+      "mainColor": "#DA53FF",
+      "secondaryColor": "#DA53FF"
+    },
+    "tabBar": {
+      "companyId": 536,
+      "color": "#E6EBAC",
+      "selectedColor": "#56D2EB",
+      "list": [
+        {
+          "selectedIconPath": "https://rockmind-1259377074.cos.ap-guangzhou.myqcloud.com/20190715/8a05184473154f87807862e64d647a80.jpeg",
+          "text": "首页",
+          "iconPath": "https://rockmind-1259377074.cos.ap-guangzhou.myqcloud.com/20190715/a641fbca4c854adfb75c652079d2c383.png",
+          "pagePath": "pages/index",
+          "pageName": "首页"
+        },
+        {
+          "selectedIconPath": "https://rockmind-1259377074.cos.ap-guangzhou.myqcloud.com/20190715/31b79381d5bb416481610b6b692785dd.png",
+          "text": "测试",
+          "iconPath": "https://rockmind-1259377074.cos.ap-guangzhou.myqcloud.com/20190715/24c19bfe79fb49e9bcd0794134f8239d.png",
+          "pagePath": "pages/user",
+          "pageName": "用户"
+        }
+      ],
+      "projectId": 89
+    },
+    "projectId": 89
+  },
+  "window": {
+    "navigationBarBackgroundColor": "#f8aba6",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "小铺头",
+    "navigationStyle": "default",
+    "backgroundColor": "#fff",
+    "backgroundTextStyle": "dark",
+    "backgroundColorTop": "#fff",
+    "backgroundColorBottom": "#fff"
+  },
+  "tabBar": {
+    "color": "#a5a5a5",
+    "selectedColor": "#f8aba6",
+    "list": [
+      {
+        "text": "首页",
+        "pagePath": "pages/index",
+        "pageName": "首页"
+      },
+      {
+        "text": "测试",
+        "pagePath": "pages/user",
+        "pageName": "用户"
+      }
+    ]
+  }
+}

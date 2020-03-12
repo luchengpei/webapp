@@ -1,0 +1,77 @@
+<style lang="scss" scoped>
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+</style> 
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <ServiceOver></ServiceOver>
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <GoodsGroupItem :item="item"></GoodsGroupItem>
+      </repeat>
+      <Empty wx:if="{{list.length===0}}" title="暂无团购商品" subtitle="去其他页面看看"></Empty>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import group from '@/api/group'
+  import pagination from '@/mixins/pagination'
+  import base from '@/mixins/base'
+  import Empty from '@/components/common/empty'
+  import GoodsGroupItem from '@/components/group/group_item'
+  import ServiceOver from '@/components/common/service_over'
+  export default class GroupList extends wepy.page {
+    config = {
+      navigationBarTitleText: '拼  团',
+      enablePullDownRefresh: true
+    }
+    components = {
+      Empty,
+      GoodsGroupItem,
+      ServiceOver
+    };
+    data = {
+      list: null
+    }
+    mixins = [pagination, base]
+    // 获取团购
+    async getListData() {
+      this.page = await group.getGroupList()
+      await this.next()
+      this.list = this.page.list
+      this._timeDeal('endTimeStamp') // 倒计时
+      console.log('laoz的团购数据', this.list)
+      this.$apply()
+    }
+    // 列表传参
+    params() {
+      return {
+        userId: wepy.getStorageSync('user').userId || -1
+      }
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.list = this.page.list
+      this._timeDeal('endTimeStamp') // 倒计时
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.list = this.page.list
+      this._timeDeal('endTimeStamp') // 倒计时
+      this.$apply()
+    }
+    onShow() {
+      this._clearTimeDown()
+      this.getListData()
+    }
+    onUnload() {
+      this._clearTimeDown()
+    }
+  }
+</script>

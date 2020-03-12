@@ -1,0 +1,504 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .order-detail-page {
+    display: flex;
+    flex-direction: column;
+    background: $bgColor;
+    margin-bottom: 98rpx;
+    .order-status {
+      display: flex;
+      align-items: center;
+      font-size: $fontSize2;
+      height: 200rpx;
+      padding-left: 64rpx;
+      background: $mainColor;
+      margin-bottom: 20rpx;
+      color: #fff;
+      .remain-time {
+        font-size: $fontSize3;
+        color: #fff;
+        margin-left: 20rpx;
+      }
+    }
+    .order-address {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 40rpx;
+      background: #fff;
+      margin-bottom: 20rpx;
+      overflow: hidden;
+      .address-add {
+        height: 56rpx;
+        width: 56rpx;
+      }
+      .address-add-text {
+        flex: 1;
+        margin-left: 20rpx;
+        font-size: 30rpx;
+        color: $black;
+      }
+      .left {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        .customer-info {
+          margin-left: 34rpx;
+          font-size: $fontSize2;
+          line-height: 36rpx;
+          color: $black;
+          .name {}
+          .mobile {
+            margin-left: 20rpx;
+          }
+        }
+        .address {
+          display: flex;
+          margin-top: 20rpx;
+          .location-icon {
+            width: 24rpx;
+            height: 24rpx;
+            margin-top: 5rpx;
+          }
+          .location {
+            flex: 1;
+            margin-left: 10rpx;
+            font-size: $fontSize4;
+            line-height: 36rpx;
+            color: $gray;
+            display: -webkit-box;
+            word-break: break-all;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+      .right-arrow {
+        height: 24rpx;
+        width: 14rpx;
+      }
+      .border-line {
+        position: absolute;
+        height: 6rpx;
+        width: 782rpx;
+        bottom: 0;
+        left: -16rpx;
+      }
+    }
+    .order-info {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      margin-bottom: 20rpx;
+      .order-header {
+        padding: 0 40rpx;
+        height: 88rpx;
+        line-height: 88rpx;
+        .shop-name {
+          font-size: $fontSize3;
+          color: $mainColor;
+          padding-left: 20rpx;
+          border-left: 6rpx solid $mainColor;
+          height: 30rpx;
+        }
+      }
+      .order-goods-container {
+        padding-left: 40rpx;
+      }
+      .order-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: $fontSize2;
+        height: 88rpx;
+        margin-left: 40rpx;
+        padding-right: 40rpx;
+        border-bottom: 1rpx solid $borderColor;
+        &.remark {
+          .title {
+            flex: inherit;
+          }
+        }
+        &.delivery {
+          .subtitle {
+            font-size: $fontSize2;
+          }
+        }
+        .title {
+          flex: 1;
+          color: $black;
+        }
+        .subtitle {
+          color: $gray;
+        }
+        .right-arrow {
+          height: 24rpx;
+          width: 14rpx;
+          margin-left: 30rpx;
+        }
+        input {
+          flex: 1;
+          margin-left: 40rpx;
+          text-align: right;
+        }
+      }
+      .order-price {
+        height: 88rpx;
+        line-height: 88rpx;
+        margin-left: 40rpx;
+        padding-right: 40rpx;
+        justify-content: flex-end;
+        text-align: right;
+        text {
+          font-size: $fontSize2;
+          .price {
+            color: $priceRed;
+          }
+        }
+      }
+    }
+    .order-detail {
+      background: #fff;
+      padding: 30rpx 40rpx;
+      display: flex;
+      flex-direction: column;
+      text {
+        margin-top: 20rpx;
+        font-size: $fontSize3;
+        line-height: 42rpx;
+        color: $gray;
+        &:first-child {
+          margin-top: 0;
+        }
+      }
+    }
+    .order-btn-row {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 88rpx;
+      line-height: 88rpx;
+      background: #fff;
+      border-top: 1rpx solid $borderColor;
+      .btn {
+        box-sizing: border-box;
+        height: 56rpx;
+        line-height: 54rpx;
+        border: 1rpx solid $mainColor;
+        border-radius: 6rpx;
+        margin-left: 24rpx;
+        padding: 0 24rpx;
+        font-size: $fontSize4;
+        color: $mainColor;
+        min-width: 150rpx;
+        text-align: center;
+        &:last-child {
+          margin-right: 40rpx;
+        }
+      }
+    }
+  }
+  .iconfont {
+    color: #fff;
+    margin-right: 24rpx;
+  }
+</style>
+
+<template>
+  <view class="order-detail-page" style="{{configStyle}}">
+    <!-- 订单状态 -->
+    <view class="order-status">
+      <i class="iconfont icon-time" style="font-size: 36rpx;"></i>
+      <block wx:if="{{order.orderStatus === 0}}">待付款 <text class="remain-time">剩余 {{order.remainFormat || '00:15:00'}} 自动关闭</text></block>
+      <block wx:elif="{{order.orderStatus === 1 && order.isFund === 0}}">等待卖家发货</block>
+      <block wx:elif="{{order.orderStatus === 1 && order.isFund === 1 && order.refundStatus === 0}}">退款中</block>
+      <block wx:elif="{{order.orderStatus === 1 && order.isFund === 1 && order.refundStatus === 1}}">退款成功</block>
+      <block wx:elif="{{order.orderStatus === 2 && order.isFund === 0}}">卖家已发货</block>
+      <block wx:elif="{{order.orderStatus === 2 && order.isFund === 1 && detail.refundStatus === 0}}">退货中</block>
+      <block wx:elif="{{order.orderStatus === 2 && order.isFund === 1 && detail.refundStatus === 1}}">退货成功</block>
+      <block wx:elif="{{order.orderStatus === 3}}">已收货</block>
+      <block wx:elif="{{order.orderStatus === 4}}">交易完成</block>
+      <block wx:elif="{{order.orderStatus === 5}}">交易关闭</block>
+    </view>
+    <!-- 地址 -->
+    <view class="order-address">
+      <view class="left">
+        <view class="customer-info">
+          <text class="name">{{order.orderReceiver}}</text>
+          <text class="mobile">{{order.orderReceiverPhone}}</text>
+        </view>
+        <view class="address">
+          <image class="location-icon" src="{{imageUrl}}/ic-location.png" wx:if="{{imageUrl}}" />
+          <text class="location">{{order.province}}{{order.city}}{{order.area}}{{order.address}}</text>
+        </view>
+      </view>
+      <image class="border-line" mode="widthFix" src="https://static.laoganbu.cn//line.png"></image>
+    </view>
+    <!-- 商品明细 -->
+    <view class="order-info">
+      <view class="order-header bdr-b">
+        <text class="shop-name">商品明细</text>
+      </view>
+      <view class="order-goods-container">
+        <repeat for="{{order.orderProductList}}" key="index" index="index" item="item">
+          <OrderGoods :detail.sync="item" :mode.sync="mode" />
+        </repeat>
+      </view>
+      <!-- 配送方式 -->
+      <view class="order-row delivery bdr-b">
+        <text class="title">配送费</text>
+        <text class="subtitle" wx:if="{{order.orderPostageType === 1}}">包邮</text>
+        <text class="subtitle" wx:else>￥{{order.orderPostageCost}}</text>
+      </view>
+      <!-- 价格统计 -->
+      <view class="order-price">
+        <text>合计：<text class="price">¥{{order.payPrice||order.orderPrice}}</text></text>
+      </view>
+    </view>
+    <!-- 订单明细 -->
+    <view class="order-detail">
+      <text>订单号：{{order.productOrderNo}}</text>
+      <text>下单时间：{{order.createAt}}</text>
+      <text>支付方式：微信支付</text>
+      <text wx:if="{{order.payTime}}">付款时间：{{order.payTime}}</text>
+      <text wx:if="{{order.type === 1}}">订单类型：普通订单</text>
+      <text wx:elif="{{order.type === 2}}">订单类型：拼团订单</text>
+      <text wx:elif="{{order.type === 3}}">订单类型：限时购订单</text>
+      <text wx:elif="{{order.type === 4}}">订单类型：社区团购订单</text>
+      <text wx:elif="{{order.type === 5}}">订单类型：返现订单</text>
+    </view>
+    <!-- 订单详情按钮组  -->
+    <block wx:if="{{mode === 'default'}}">
+      <view class="order-btn-row  {{isIpx ? 'fix-ipx-btn' : ''}}">
+        <!-- 待付款 -->
+        <block wx:if="{{order.orderStatus === 0}}">
+          <view class="btn" @tap="cancelOrder">取消订单</view>
+          <view class="btn" @tap="pay">继续付款</view>
+        </block>
+        <!-- 待发货 -->
+        <block wx:if="{{order.orderStatus === 1}}">
+          <view class="btn" @tap="refundOrder" wx:if="{{order.isFund === 0 && order.type !== 7 && order.type !== 6}}">申请退款</view>
+          <view class="btn" @tap="cancelRefundOrder" wx:elif="{{order.isFund === 1 && order.refundStatus === 0}}">取消退款</view>
+          <view class="btn" @tap="contactKf({{kf}})">联系客服</view>
+          <!-- <view class="btn" @tap="urgeShipment">催促发货</view> -->
+        </block>
+        <!-- 已发货 -->
+        <block wx:if="{{order.orderStatus === 2}}">
+          <view class="btn" @tap="returnGoods" wx:if="{{order.isFund === 0}}">申请退货</view>
+          <view class="btn" @tap="goLogistics" wx:if="{{mode != 'chain'}}">查看物流</view>
+          <view class="btn" @tap="confirm" wx:if="{{mode != 'chain'}}">确认收货</view>
+        </block>
+        <!-- 已收货 -->
+        <block wx:if="{{order.orderStatus === 3}}">
+          <view class="btn" @tap="goLogistics">查看物流</view>
+          <view class="btn" @tap="delOrder">删除订单</view>
+        </block>
+        <!-- 已关闭 -->
+        <block wx:if="{{order.orderStatus === 4 || order.orderStatus === 5}}">
+          <view class="btn" @tap="delOrder">删除订单</view>
+        </block>
+      </view>
+    </block>
+    <!-- 接龙活动按钮组  -->
+    <block wx:if="{{mode === 'chain'}}">
+      <view class="order-btn-row  {{isIpx ? 'fix-ipx-btn' : ''}}">
+        <!-- 待付款 -->
+        <block wx:if="{{order.orderStatus === 0}}">
+          <!-- <view class="btn" @tap="cancelOrder">取消订单</view> -->
+          <view class="btn" @tap="pay">继续付款</view>
+        </block>
+        <!-- 待发货 -->
+        <block wx:if="{{order.orderStatus === 1}}">
+          <!-- <view class="btn" @tap="refundOrder" wx:if="{{order.isFund === 0}}">申请退款</view> -->
+          <!-- <view class="btn" @tap="cancelRefundOrder" wx:elif="{{order.isFund === 1 && order.refundStatus === 0}}">取消退款</view> -->
+          <view class="btn" @tap="contactKf({{kf}})">联系客服</view>
+        </block>
+        <!-- 已发货 -->
+        <block wx:if="{{order.orderStatus === 2}}">
+          <!-- <view class="btn" @tap="returnGoods" wx:if="{{order.isFund === 0}}">申请退货</view> -->
+        </block>
+        <!-- 已收货 -->
+        <block wx:if="{{order.orderStatus === 3}}">
+          <view class="btn" @tap="delOrder">删除订单</view>
+        </block>
+        <!-- 已关闭 -->
+        <block wx:if="{{order.orderStatus === 4 || order.orderStatus === 5}}">
+          <view class="btn" @tap="delOrder">删除订单</view>
+        </block>
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import order from '@/api/order'
+  import OrderGoods from '@/components/order/order_goods'
+  import Tips from '@/utils/Tips'
+  import Event from '@/utils/Event'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import Util from '@/utils/Util'
+  import { EC_ORDER_TYPE } from '@/utils/Constants'
+  import {
+    connect
+  } from 'wepy-redux'
+  import {
+    kfInit
+  } from '@/store/actions'
+  @connect({
+    kfIsInit(state) {
+      return state.common.kfIsInit
+    },
+    kf(state) {
+      return state.common.kf
+    }
+  }, {
+    kfInit
+  })
+  export default class OrderDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '订单详情'
+    }
+    components = {
+      OrderGoods
+    };
+    data = {
+      routeOptions: {},
+      order: {},
+      mode: 'default', // 普通订单default 接龙chain
+      oid: '',
+      timer: null  // 计时器
+    }
+    mixins = [base, router]
+    methods = {
+      async pay() {
+        try {
+          let _this = this
+          // let user = wepy.getStorageSync('user')
+          let oid = this.order.productOrderId
+          let orderNo = this.order.productOrderNo
+          // let wxdata = await order.pay(this.order.productOrderId, this.order.productOrderNo, user.openId)
+          let payInfo = await order.thirdPay({
+            orderNo: orderNo,
+            orderType: EC_ORDER_TYPE
+          })
+
+          wx.requestPayment({
+            'timeStamp': payInfo.timeStamp,
+            'nonceStr': payInfo.nonceStr,
+            'package': payInfo.wxPackage,
+            'signType': payInfo.signType,
+            'paySign': payInfo.paySign,
+            'success': function(res) {
+              // order.payStatus({
+              //   orderId: oid,
+              //   outTradeNo: orderNo
+              // })
+              wx.navigateTo({
+                url: `/pages/order/result?price=${_this.order.orderPrice}`
+              })
+            }
+          })
+        } catch (error) {
+          console.log('error', error)
+        }
+      },
+      cancelOrder() {
+        Tips.confirm('确定要取消订单吗？').then(() => {
+          order.cancel(this.order.productOrderId).then(() => {
+            this.getOrderDetail()
+          })
+        })
+      },
+      confirm() {
+        Tips.confirm('确定要确认收货吗？').then(() => {
+          order.confirm(this.order.productOrderId).then(() => {
+            Tips.toast('确认成功', () => this.onLoad(), 'none')
+          })
+        })
+      },
+      urgeShipment() {
+        this.$emit('urgeShipment', this.order.productOrderId)
+      },
+      delOrder() {
+        Tips.confirm('确定要删除订单吗？').then(() => {
+          order.delete(this.order.productOrderId).then(() => {
+            Tips.toast('删除成功', () => {
+              Event.emit(Event.ORDER_LIST_UPDATE)
+              wepy.navigateBack({
+                delta: 1 // 返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+              })
+            }, 'none')
+          })
+        })
+      },
+      goLogistics() {
+        wepy.navigateTo({
+          url: `/pages/order/logistics?oid=${this.order.productOrderId}`
+        })
+      },
+      refundOrder() {
+        Tips.confirm('确定要申请退款吗？').then(() => {
+          order.refund(this.order.productOrderId, 1).then(() => {
+            Tips.toast('申请成功', () => this.getOrderDetail(), 'none')
+          })
+        })
+      },
+      returnGoods() {
+        Tips.confirm('确定要申请退货吗？').then(() => {
+          order.refund(this.order.productOrderId, 2).then(() => {
+            Tips.toast('申请成功', () => this.getOrderDetail(), 'none')
+          })
+        })
+      },
+      cancelRefundOrder() {
+        Tips.confirm('确定要取消退款吗？').then(() => {
+          order.cancelRefund(this.order.productOrderId).then(() => {
+            Tips.toast('取消成功', () => this.getOrderDetail(), 'none')
+          })
+        })
+      }
+    }
+    async onLoad(options) {
+      if (!this.kfIsInit) this.methods.kfInit()
+      this.mode = options.mode || 'default'
+      this.oid = options.oid
+      this.getOrderDetail()
+    }
+    onUnload() {
+      Util.clearCounter(this.timer)
+    }
+    // 获取订单详情
+    async getOrderDetail() {
+      this.order = await order.detail(this.oid)
+      if (this.order.orderStatus === 0) { // 待付款倒计时
+        this.timer = setInterval(Util.counterDown.bind(
+          this,
+          this.order.failureTimeStamp * 1000,
+          (format) => this.counterCallBack(format), true), 1000)
+      }
+      this.$apply()
+    }
+    // 倒计时回调
+    counterCallBack(format) {
+      this.order.remainFormat = format
+      if (format) {
+        this.order.remainHour = format.split(':')[0]
+        this.order.remainSecond = format.split(':')[1]
+        this.order.remainMinute = format.split(':')[2]
+      } else {
+        this.order.timeText = '已结束'
+        Util.clearCounter(this.timer)
+      }
+      this.$apply()
+    }
+  }
+</script>

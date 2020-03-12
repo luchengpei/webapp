@@ -1,0 +1,182 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: $bgColor;
+    .avatar {
+      width: 160rpx;
+      height: 160rpx;
+      border-radius: 50%;
+      margin-top: 152rpx;
+    }
+    .tips {
+      margin-top: 62rpx;
+      font-size: $fontSize3;
+      color: $gray;
+    }
+    .btn {
+      width: 530rpx;
+      line-height: 84rpx;
+      height: 84rpx;
+      margin-top: 70rpx;
+      background: $mainColor;
+      color: #ffffff;
+      font-size: $fontSize2;
+      &.cancel {
+        margin-top: 20rpx;
+        background: $gray;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="login-container" style="{{configStyle}}">
+    <image class="avatar" src="{{step === 1 ? '/images/login_avatar.png' : wxUserInfo.userInfo.avatarUrl}}" mode="scaleToFill" lazy-load="false"></image>
+    <text class="tips">{{step === 1 ? '为了您后续的使用，请授权微信头像' : '请使用微信绑定的手机号一键登录'}}</text>
+    <button class="btn" wx:if="{{step === 1}}" lang="zh_CN" open-type="getUserInfo" @getuserinfo="getUserInfo">授权头像</button>
+    <button class="btn cancel" wx:if="{{step === 1}}" @tap="onCancel">暂不授权</button>
+    <button class="btn" wx:elif="{{step === 2}}" lang="zh_CN" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">手机号一键登录</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import auth from '@/api/auth'
+  import Tips from '@/utils/Tips'
+  import Event from '@/utils/Event'
+  import WxApi from '@/utils/WxApi'
+  import base from '@/mixins/base'
+  export default class Login extends wepy.page {
+    config = {
+      navigationBarTitleText: '登录'
+    }
+    mixins = [base]
+    components = {}
+    data = {
+      step: 1, // 步骤1 微信授权登录  步骤2 微信已授权需要绑定手机号
+      sessionKey: '', // 绑定手机号需要用到的uuid
+      wxUserInfo: null, // 微信授权信息
+      isPassword: false,
+      isWeChatLogin: false,
+      showPassword: false,
+      codeText: '获取验证码',
+      codeTime: 60,
+      interval: null,
+      disabled: false,
+      phone: '',
+      password: '',
+      code: '',
+      hasPhone: false,
+      isNew: true,
+      formData: {
+        phone: '',
+        password: '',
+        code: ''
+      }
+    }
+    async onLoad() {
+      this.code = await WxApi.wxLogin()
+      this.$apply()
+    }
+    methods = {
+      handlePwd() {
+        this.isPassword = !this.isPassword
+      },
+      inputChange(key, e) {
+        this.formData[key] = e.detail.value
+        this.$apply()
+      },
+      // 授权获取用户信息
+      async getUserInfo(res) {
+        this.wxUserInfo = res.detail
+        if (this.wxUserInfo.errMsg === 'getUserInfo:ok') {
+          let query = {
+            code: this.code.code,
+            infoJSON: this.wxUserInfo
+          }
+          console.log(JSON.stringify(query))
+          this.httpLogin(query)
+          this.$apply()
+        }
+      },
+      // 获取用户手机号
+      async getPhoneNumber(res) {
+        this.wxTellInfo = res.detail
+        if (this.wxTellInfo.errMsg === 'getPhoneNumber:ok') {
+          let query = {
+            encryptedData: this.wxTellInfo.encryptedData,
+            iv: this.wxTellInfo.iv,
+            uuid: this.sessionKey
+          }
+          console.log(JSON.stringify(query))
+          this.httpBindTell(query)
+        }
+      },
+      onCancel() {
+        wx.navigateBack({
+          delta: 1
+        })
+      }
+    }
+    // 登录
+    async httpLogin(query) {
+      console.log('login query', JSON.stringify(query))
+      try {
+        let res = await auth.login(query)
+        // 判断用户有么有绑定过手机
+        if (res.token) { // 绑定了手机，直接进入首页
+          wepy.setStorageSync('token', res.token)
+          wepy.setStorageSync('user', res)
+          this.bindIntroducer()
+          Tips.toast('登录成功', () => {
+            Event.emit('UPDATE_USERINFO')
+            wepy.navigateBack({
+              delta: 1
+            })
+          })
+        }
+        if (!res.token) { // 未绑定手机->绑定手机
+          this.step = 2
+          this.sessionKey = res.uuid
+          this.$apply()
+        }
+        return res
+      } catch (error) {
+        this.code = await WxApi.wxLogin()
+        this.$apply()
+      }
+    }
+    // 绑定手机
+    async httpBindTell(query) {
+      try {
+        const res = await auth.bindTell(query)
+        wepy.setStorageSync('token', res.token)
+        wepy.setStorageSync('user', res)
+        auth.couponsGive()
+        this.bindIntroducer()
+        Tips.toast('登录成功', () => {
+          Event.emit('UPDATE_USERINFO')
+          wepy.navigateBack({
+            delta: 1
+          })
+        })
+      } catch (error) {
+        this.step = 1
+        this.sessionKey = ''
+        this.$apply()
+        Tips.error('请求错误')
+      }
+    }
+    // 绑定上下级
+    bindIntroducer() {
+      auth.bindIntroducer({
+        introducerId: wepy.getStorageSync('inviteUser')
+      })
+    }
+  }
+</script>

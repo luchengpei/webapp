@@ -1,0 +1,226 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.validate-pwd-page{
+    height:100rpx;
+    background: white;
+}
+.title{
+  text-align: center;
+  color:$black;
+  font-size: $fontSize2
+}
+/* 支付密码框 */
+
+.pay_number {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #cfd4d3;
+  height: 70rpx;
+  /* border-radius:10rpx; */
+}
+
+.pay_number_interval {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  height: 70rpx;
+  border-left: 1px solid #cfd4d3;
+  /* border:none; */
+}
+
+/* 第一个格子输入框 */
+.content .noBorder{
+   border-left:none; 
+}
+
+
+/* 支付密码框聚焦的时候 */
+
+.get_focus {
+  border-color: orange;
+}
+
+/* 单个格式样式 */
+
+.password_dot {
+  flex: 1;
+  border-left: 1px solid #cfd4d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password_dot_interval {
+  flex: 1;
+  border: 1px solid #cfd4d3;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 单个格式样式（聚焦的时候） */
+
+.get_focus_dot {
+  flex: 1;
+  border-left: 1px solid orange;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.get_focus_dot_interval {
+  flex: 1;
+  border: 1px solid orange;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 模拟光标 */
+
+.cursor {
+  width: 1px;
+  height: 15px;
+  background-color: orange;
+  animation: focus 0.7s infinite;
+}
+
+/* 光标动画 */
+
+@keyframes focus {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* 格式中的点 */
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: #000;
+  border-radius: 50%;
+}
+
+/* 输入框 */
+
+.input_container {
+  // height: 0;
+  width: 0;
+  // min-height: 0;
+  position: relative;
+  text-indent: -999em;
+  left: -100%;
+}
+.content{
+    height:98rpx;
+    width: 632rpx;
+    margin: 40rpx auto
+}
+
+</style>
+<template>
+    <view class="validate-pwd-page">
+        <view class='content'>
+            <!-- 输入框（表格） -->
+            <view  @tap="setFocus" class="{{(interval?'pay_number':'pay_number_interval')}} {{focusClass?'get_focus':''}}"
+            >
+            <view  wx:for="{{valueNum}}" wx:key="{{index}}"
+            class="{{focusClass?(interval?'get_focus_dot':'get_focus_dot_interval'):(interval?'password_dot':'password_dot_interval')}} {{index==0?'noBorder':''}}"
+            >
+                <view wx:if="{{(valueLength==item-1)&&focusClass}}" class="cursor"></view>
+                <view wx:if="{{valueLength>=item}}" class="{{see?'':'dot'}}">{{see?valArr[index]:""}}</view>
+            </view>
+            </view>
+            <!-- 输入框（隐藏） -->
+            <input value="{{inputValue}}" focus="{{getFocus}}" maxlength="6" type="{{number}}" class='input_container' placeholder="1445" @input="getValue" @focus="getFocusFn" @blur="blur" />
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import nRouter from '@/mixins/new_router'
+import router from '@/mixins/router'
+// import gold from '@/api/gold'
+export default class ValidatePwd extends wepy.page {
+  mixins = [base, nRouter, router]
+  data = {
+    interval: true,
+    getFocus: false,
+    focusClass: false,
+    valueNum: [1, 2, 3, 4, 5, 6],
+    valueLength: 0,
+    inputValue: '',
+    valArr: [],
+    see: false,
+    dataList: [],
+    type: null
+  }
+  methods = {
+    setFocus() {
+      this.getFocus = !this.getFocus
+      this.$apply()
+    },
+    getFocusFn() {
+      this.focusClass = true
+      this.$apply()
+    },
+    blur() {
+      this.focusClass = false
+      this.$apply()
+    },
+    getValue(data) {
+      let valArr = []
+      let now_val = data.detail.value
+      for (let i = 0; i < 6; i++) {
+        valArr.push(now_val.substr(i, 1))
+      }
+      let valueLength = data.detail.value.length
+      this.valueLength = valueLength
+      this.valArr = valArr
+      this.inputValue = now_val
+      this.$emit('passWord', this.inputValue)
+    }
+  }
+  async reLoad(ops) {
+    const userId = wepy.getStorageSync('user').userId
+    let params = {
+      userId: userId,
+      barList: [],
+      password: this.inputValue
+    }
+    ops.dataList.forEach(row => {
+      params.barList.push({
+        goldBarNo: row.goldBarNo,
+        num: row.selectNum
+      })
+    })
+    // if (ops.type === 'sell') {
+    //   try {
+    //     await gold.sellBuilonOrder(params)
+    //     wepy.reLaunch({ url: `/packageGold/pages/pay-result`})
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // } else {
+    //   try {
+    //     params.addressId = ops.address.addressId
+    //     await gold.subExtractBar(params)
+    //     wepy.reLaunch({ url: `/packageGold/pages/pay-result`})
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // }
+  }
+  onLoad() {
+  }
+}
+</script>

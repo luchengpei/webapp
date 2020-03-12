@@ -1,0 +1,68 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .my-cash-back-page-container {
+    width: 100%;
+    background: $bgColor;
+  }
+</style>
+
+<template>
+  <view class="my-cash-back-page-container">
+    <block wx:if="{{1 > 0}}">
+      <repeat for="{{[1, 2 ,3]}}" key="index" index="index" item="item">
+        <CashBackItem mode="mine"/>
+        <!-- <OrderItem :detail="item" /> -->
+      </repeat>
+    </block>
+    <block wx:else>
+      <Empty title="暂无返现订单" subtitle="" />
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Empty from '@/components/common/empty'
+  import CashBackItem from '@/components/goods/cash_back_item'
+  import order from '@/api/order'
+  import base from '@/mixins/base'
+  import pagination from '@/mixins/pagination'
+  export default class MyCashBackPage extends wepy.component {
+    components = {
+      Empty: Empty,
+      CashBackItem: CashBackItem
+    }
+    data = {
+      firstLoading: true
+    }
+    mixins = [base, pagination];
+    methods = {}
+    async onLoad() {
+      await this.getList()
+    }
+    /**
+     * 获取订单列表
+     */
+    async getList() {
+      this.page = order.chain()
+      await this.next()
+    }
+    /**
+     * 监听上拉加载事件
+     */
+    async handleReachBottom() {
+      await this.next()
+    }
+    /**
+     * 监听下拉刷新
+     */
+    async handlePullDownRefresh() {
+      await this.reload()
+    }
+    init() {
+      this.$emit('onSetTitle', '我的返现')
+      if (!this.firstLoading) return
+      this.firstLoading = false
+    }
+  }
+</script>

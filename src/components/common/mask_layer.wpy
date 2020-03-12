@@ -1,0 +1,34 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .mask-layer {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: black;
+    -webkit-filter:opacity(.6);
+    z-index: 10000;
+  }
+</style>
+
+<template>
+  <!-- 遮罩层 -->
+  <view class="mask-layer" wx:if="{{display}}" @tap="tap"></view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class MaskLayer extends wepy.component {
+    props = {
+      display: {},
+      zIndex: {}
+    };
+    methods = {
+      tap() {
+        this.$emit('tap')
+      }
+    };
+    onLoad() {}
+  }
+</script>

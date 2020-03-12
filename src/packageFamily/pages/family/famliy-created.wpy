@@ -1,0 +1,511 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .family-created {
+    padding-bottom: 122rpx;
+    .family-created-basic-top {
+      margin-top: 30rpx;
+    }
+    .family-created-basic {
+      padding-left: 30rpx;
+      background: #ffffff;
+      margin-bottom: 30rpx;
+      .the-input {
+        border-bottom: 1rpx solid #e0e0e0;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        font-size: $fontSize2;
+        .required {
+          position: relative;
+          &::after {
+            position: absolute;
+            right: -14rpx;
+            top: 29rpx;
+            font-size: $fontSize4;
+            content: '*';
+            color: red;
+          }
+        }
+        .title {
+          .title__inline {
+            height: 88rpx;
+            line-height: 88rpx;
+            width: 140rpx;
+            color: $black;
+            text-align: justify;
+            &::after {
+              width: 100%;
+              display: inline-block;
+              content: ''; //这三个都不可以少
+            }
+          }
+        }
+        >input {
+          margin: 0 30rpx 0 50rpx;
+          color: #a5a5a5;
+          height: 46rpx;
+          flex: 1;
+        }
+      }
+      .the-input:nth-last-child(1) {
+        border-bottom: 0rpx;
+      }
+      .section-wrapper {
+        >picker {
+          width: 72%;
+          margin-left: 50rpx;
+        }
+        .section {
+          font-size: $fontSize2;
+          color: #a5a5a5;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .section-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-right: 8rpx;
+          }
+          >image {
+            width: 26rpx;
+            height: 28rpx;
+          }
+          margin-right: 30rpx;
+        }
+      }
+      .textarea {
+        padding: 18rpx 0;
+        font-size: 32rpx;
+        .title {
+          width: 140rpx;
+          color: $black;
+          text-align: justify;
+          text-align-last: justify;
+        }
+        >textarea {
+          margin-top: 8rpx;
+          height: 170rpx;
+        }
+      }
+    }
+    .family-created-family {
+      padding-left: 30rpx;
+      background: #ffffff;
+      .the-input {
+        border-bottom: 1rpx solid #e0e0e0;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        font-size: $fontSize2;
+        .required {
+          position: relative;
+          &::after {
+            position: absolute;
+            right: -14rpx;
+            top: 29rpx;
+            font-size: $fontSize4;
+            content: '*';
+            color: red;
+          }
+        }
+        .title {
+          .title__inline {
+            height: 88rpx;
+            line-height: 88rpx;
+            width: 140rpx;
+            color: $black;
+            text-align: justify;
+            &::after {
+              width: 100%;
+              display: inline-block;
+              content: ''; //这三个都不可以少
+            }
+          }
+        }
+        >input {
+          margin: 0 30rpx 0 50rpx;
+          color: #a5a5a5;
+          height: 46rpx;
+          flex: 1;
+        }
+      }
+      .the-input:nth-last-child(1) {
+        border-bottom: 0rpx;
+      }
+      .section-wrapper {
+        .section {
+          width: 68%;
+          margin-left: 50rpx;
+          font-size: $fontSize2;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #a5a5a5;
+          .section-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-right: 8rpx;
+          }
+          >image {
+            width: 26rpx;
+            height: 28rpx;
+          }
+          margin-right: 30rpx;
+        }
+      }
+      .form-item-wrap {
+        font-size: $fontSize2;
+        border-bottom: 1rpx solid $borderColor;
+        &:last-child {
+          border-bottom: none;
+        }
+        .upload-wrap {
+          padding-bottom: 20rpx;
+        }
+        .title-wrap {
+          display: flex;
+        }
+        .title {
+          .title__inline {
+            height: 88rpx;
+            line-height: 88rpx;
+            width: 140rpx;
+            color: $black;
+            text-align: justify;
+            &::after {
+              width: 100%;
+              display: inline-block;
+              content: ''; //这三个都不可以少
+            }
+          }
+        }
+        .textarea-wrap {
+          width: 100%;
+          padding-bottom: 20rpx;
+          >textarea {
+            font-size: $fontSize2;
+            overflow: auto;
+            color: #a5a5a5;
+            min-height: 170rpx;
+            width: 690rpx;
+          }
+        }
+        .describe {
+          position: relative;
+          &::after {
+            position: absolute;
+            right: -14rpx;
+            top: 29rpx;
+            font-size: $fontSize4;
+            content: '*';
+            color: red;
+          }
+        }
+        .describe:after {
+          position: absolute;
+          right: -14rpx;
+          top: 29rpx;
+          font-size: $fontSize4;
+          content: '*';
+          color: red;
+        }
+      }
+    }
+    .family-created-bottom {
+      height: 92rpx;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      flex: 1;
+      line-height: 92rpx;
+      text-align: center;
+      font-size: $fontSize2;
+      background: #159dfc;
+      color: #ffffff;
+    }
+    .pop-location {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.6);
+      >van-area {
+        animation: animate 0.5s;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        overflow: hidden;
+      }
+      @keyframes animate {
+        from {
+          height: 0px;
+        }
+        to {
+          height: 528rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="family-created">
+    <TitleA class="family-created-basic-top" title="基本信息"></TitleA>
+    <view class="family-created-basic">
+      <view class="the-input">
+        <view class="title required">
+          <view class="title__inline">姓名</view>
+        </view>
+        <input placeholder="(必填) 请输入姓名" maxlength="4" value="{{formData.name}}" @blur="nameFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title">
+          <view class="title__inline">世系</view>
+        </view>
+        <input placeholder="(可不填) 请输入您的世系" maxlength="15" value="{{formData.lineageMap}}" @blur="lineageMapFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title">
+          <view class="title__inline">字辈</view>
+        </view>
+        <input placeholder="(可不填) 请输入您的字辈" maxlength="15" value="{{formData.workGeneration}}" @blur="workGenerationFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title">
+          <view class="title__inline">堂号</view>
+        </view>
+        <input placeholder="(可不填) 请输入您的堂号" maxlength="15" value="{{formData.dougou}}" @blur="dougouFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input section-wrapper">
+        <view class="title">
+          <view class="title__inline">性别</view>
+        </view>
+        <picker mode="selector" bindchange="genderFn" value="{{index}}" range="{{genderArray}}">
+          <view class="section">
+            <view class="section-content">
+              {{genderArray[formData.sex]?genderArray[formData.sex]:'请选择性别'}}
+            </view>
+            <image src="/images/right.png"></image>
+          </view>
+        </picker>
+      </view>
+    </view>
+    <TitleB title="家谱信息"></TitleB>
+    <view class="family-created-family">
+      <view class="the-input">
+        <view class="title required">
+          <view class="title__inline">家谱名称</view>
+        </view>
+        <input placeholder="(必填）请输入家谱名称" maxlength="20" value="{{formData.genealogyName}}" @blur="familyNameFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input section-wrapper">
+        <view class="title">
+          <view class="title__inline">祖籍</view>
+        </view>
+        <view class="section" @tap="sectionLocation">
+          {{formData.location.length?'':'请选择祖籍'}}
+          <view class="section-content">
+            {{formData.location[0]}} {{formData.location[1]}} {{formData.location[2]}}
+          </view>
+          <image src="/images/right.png"></image>
+        </view>
+      </view>
+      <view class="form-item-wrap">
+        <view class="title">
+          <view class="title__inline">背景图</view>
+        </view>
+        <SelectImg :uploadList.sync="genealogyImage" @uploadFile.user='uploadFile' upLoadNum="1" padding="0"></SelectImg>
+      </view>
+      <view class="form-item-wrap">
+        <view class="title-wrap">
+          <view class="title">
+            <view class="title__inline">备注</view>
+          </view>
+        </view>
+        <view class="textarea-wrap">
+          <textarea auto-height wx:if="{{!isPopLocation}}" bindblur="bindTextAreaBlur" maxlength="200" value='{{formData.genealogyIntroduction}}' placeholder="(可不填) 请输入备注" placeholder-class="g-placeholder" />
+        </view>
+      </view>
+    </view>
+    <view class="pop-location" wx:if="{{isPopLocation}}">
+      <van-area area-list="{{areaList}}" @cancel="onCancel" @confirm="onConfirm" value="110106" />
+    </view>
+    <cover-view wx:if="{{!isPopLocation}}" class="family-created-bottom" @tap="submit">确定</cover-view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import SelectImg from '@/components/activity/upload'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import Title from '@/components/common/title'
+  import Validator from '@/utils/Validator'
+  import router from '@/mixins/router'
+  import Area from '@/utils/Area'
+  export default class familyCreated extends wepy.page {
+    constructor() {
+      super()
+      this.data.areaList = Area
+    }
+    config = {
+      navigationBarTitleText: '我的家谱创建',
+      usingComponents: {
+        'van-area': '../../../components/vant/area/index'
+      }
+    }
+    components = {
+      SelectImg,
+      TitleA: Title,
+      TitleB: Title
+    }
+    data = {
+      genderArray: ['男', '女'],
+      region: [],
+      isSubmit: 0,
+      formData: {
+        name: '',
+        lineageMap: '',
+        workGeneration: '',
+        location: [],
+        genealogyIntroduction: '',
+        genealogyName: '',
+        sex: 0,
+        genealogyImage: '',
+        areaCode: ''
+      },
+      customItem: '全部',
+      list: [],
+      array: [],
+      treeKey: 'child', // 树形节点key
+      indexCity: [0, 0, 0],
+      areaList: [],
+      isPopLocation: false,
+      genealogyImage: []
+    }
+    mixins = [base, router]
+    methods = {
+      // 关闭地址选择
+      onCancel() {
+        this.isPopLocation = false
+      },
+      // 确定地址选择
+      onConfirm(e) {
+        console.log(e)
+        this.formData.location = []
+        this.formData.location.push(e.detail.values[0].name)
+        if (e.detail.values[1]) {
+          this.formData.location.push(e.detail.values[1].name)
+          if (!e.detail.values[2]) {
+            this.formData.areaCode = e.detail.values[1].code
+          }
+        } else {
+          this.formData.location.push(' ')
+        }
+        if (e.detail.values[2]) {
+          this.formData.location.push(e.detail.values[2].name)
+          this.formData.areaCode = e.detail.values[2].code
+        } else {
+          this.formData.location.push('')
+        }
+        this.isPopLocation = false
+        this.$apply()
+      },
+      sectionLocation() {
+        this.isPopLocation = true
+        this.$apply()
+      },
+      // 获取名字
+      nameFn(e) {
+        Validator.isCharacter(e.detail.value, this, '名字')
+        this.formData.name = e.detail.value
+      },
+      // 获取字辈
+      workGenerationFn(e) {
+        // Validator.isCharacter(e.detail.value, this, '字辈', false)
+        this.formData.workGeneration = e.detail.value
+      },
+      // 获取堂号
+      dougouFn(e) {
+        Validator.isCharacter(e.detail.value, this, '堂号', false)
+        this.formData.dougou = e.detail.value
+      },
+      // 获取性别
+      genderFn(e) {
+        this.formData.sex = e.detail.value
+      },
+      // 获取世系
+      lineageMapFn(e) {
+        // Validator.isCharacter(e.detail.value, this, '世系', false)
+        this.formData.lineageMap = e.detail.value
+      },
+      // 获取家谱名称
+      familyNameFn(e) {
+        Validator.isCharacter(e.detail.value, this, '家谱名称')
+        this.formData.genealogyName = e.detail.value
+      },
+      // 家谱图片
+      uploadFile(e) {
+        let imgData = ''
+        e.map((item) => {
+          imgData += item.url + ','
+        })
+        this.formData.genealogyImage = imgData.substring(0, imgData.length - 1)
+      },
+      // 获取出生年月
+      bindDateChange(e) {
+        this.formData.stringDateOfBirth = e.detail.value
+      },
+      // 获取家谱介绍
+      bindTextAreaBlur(e) {
+        Validator.isCharacter(e.detail.value, this, '备注', false)
+        this.formData.genealogyIntroduction = e.detail.value
+      },
+      submit() {
+        let params = Object.assign({}, this.formData)
+        this.submitValidation(params)
+        params.province = this.formData.location[0]
+        params.city = this.formData.location[1]
+        params.area = this.formData.location[2]
+        params.sex = this.formData.sex === '0' ? '1' : '2'
+        delete params.location
+        if (!this.isSubmit) return false
+        this.familySaveApi(params)
+      }
+    }
+    familySaveApi(params) {
+      family.familySave(params).then((res) => {
+        wepy.navigateBack({
+          delta: 1
+        })
+      })
+    }
+    // 提交时表单校验
+    submitValidation(params) {
+      this.isSubmit = 1
+      for (let item of Object.keys(params)) {
+        switch (item) {
+          case 'name':
+            Validator.isCharacter(params[item], this, '名字')
+            break
+          case 'dougou':
+            Validator.isCharacter(params[item], this, '堂号', false)
+            break
+          case 'genealogyName':
+            Validator.isCharacter(params[item], this, '家谱名称')
+            break
+          case 'genealogyIntroduction':
+            Validator.isCharacter(params[item], this, '备注', false)
+            break
+        }
+        if (!this.isSubmit) return false
+      }
+    }
+    onLoad(option) {}
+  }
+</script>

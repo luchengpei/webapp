@@ -1,0 +1,63 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .my-info-page-container {
+    width: 100%;
+    background: $bgColor;
+    .pannel {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 88rpx;
+      border-bottom: 1rpx solid $borderColor;
+      background: #fff;
+      padding: 0 40rpx;
+      &:last-child {
+        border: none;
+      }
+      text {
+        font-size: 32rpx;
+        &.title {
+          flex: 1;
+          color: $black;
+        }
+        &.subtitle {
+          color: $gray;
+        }
+      }
+      .right-arrow {
+        margin-right: 40rpx;
+        height: 24rpx;
+        width: 14rpx;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="my-info-page-container" style="{{configStyle}}">
+    <view class="pannel">
+      <text class="title">昵称</text>
+      <text class="subtitle">{{user.username}}</text>
+    </view>
+    <view class="pannel">
+      <text class="title">手机号</text>
+      <text class="subtitle">{{user.telephone}}</text>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class Info extends wepy.page {
+    config = {
+      navigationBarTitleText: '个人信息'
+    }
+    data = {
+      user: wepy.getStorageSync('user')
+    }
+    mixins = [base]
+    components = {};
+    onLoad(options) {}
+  }
+</script>

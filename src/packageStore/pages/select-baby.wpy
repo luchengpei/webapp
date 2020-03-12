@@ -1,0 +1,179 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .select-baby-page {
+    width: 100%;
+    padding: 40rpx 0 92rpx 0;
+    .baby-list {
+      //   height: 166rpx;
+      width: 100%;
+      box-sizing: border-box;
+      background: white; // border: 1rpx solid red;
+      margin-bottom: 1rpx;
+      padding: 25rpx 0 0 30rpx;
+      .wrap {
+        height: 100%;
+        padding: 0 30rpx 30rpx 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between; // padding-bottom: 25rpx;
+        .avatar {
+          width: 100rpx;
+          height: 100rpx;
+          >image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%
+          }
+        }
+        .baby-info {
+          flex: 1;
+          margin-left: 25rpx;
+          .baby-name {
+            font-size: $fontSize2;
+            color: #444444
+          }
+          .baby-sex {
+            font-size: $fontSize4;
+            color: #999;
+            margin-top: 8rpx
+          }
+        }
+        .circle {
+          width: 46rpx;
+          height: 46rpx;
+          >image {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+  #select-baby-page{
+    padding: 40rpx 0 170rpx 0;
+    width: 100%;
+  }
+  .bt-b {
+    border-bottom: 1rpx solid #DADBDF;
+  }
+  .sure-wrap {
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    position: fixed;
+    background-color: #fff;
+  }
+  .sure {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background: $mainColor;
+    color: #FFFFFF;
+    font-size: $fontSize3;
+    left: 0;
+    bottom: 0;
+    height: 92rpx;
+  }
+  #iphone-x-pb {
+    padding-bottom: 66rpx;
+  }
+  .tip {
+    text-decoration: underline;
+    display: flex;
+    justify-content: center;
+    font-size: 28rpx;
+    color: #5c8ffc;
+    position: relative;
+    top: -190rpx;
+  }
+</style>
+
+<template>
+  <view class="select-baby-page" style="{{configStyle}}" id="{{isIphoneX ? 'select-baby-page' : ''}}">
+    <view class="baby-list" wx:for="{{list}}" wx:key="{{key}}" wx:if="{{list.length}}">
+      <view class="wrap {{index!==list.length-1?'bt-b':''}}">
+        <view class="avatar">
+          <image src="{{item.babyPortrait}}" mode="aspectFill" lazy-load="false" wx:if="{{item.babyPortrait}}">
+          </image>
+          <image src="/images/avatar.jpg" mode="aspectFill" lazy-load="false" wx:else></image>
+        </view>
+        <view class="baby-info">
+          <view class="baby-name">
+            {{item.babyName}}
+          </view>
+          <view class="baby-sex">
+            {{item.babySex===1?'男':'女'}}
+          </view>
+        </view>
+        <view class="circle" @tap="select({{index}})">
+          <image src="/images/store/checkbox_on.png" mode="aspectFill" wx:if="{{item.isSelect}}" lazy-load="false">
+          </image>
+          <image src="/images/store/checkbox_off.png" mode="aspectFill" wx:else lazy-load="false">
+          </image>
+        </view>
+      </view>
+    </view>
+    <Empty wx:if="{{list.length===0}}" :fixed="fixed" title="暂无宝贝嗷" subtitle="赶紧去添加宝贝嗷" />
+    <view wx:if="{{list.length===0}}" class="tip" @tap="addBaby">
+      去添加宝贝
+    </view>
+    <view class="sure-wrap" id="{{isIphoneX ? 'iphone-x-pb' : ''}}">
+      <view class="sure" @tap="sure">
+        {{list.length?'确定':'返回'}}
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Empty from '@/components/common/empty'
+  import base from '@/mixins/base'
+  export default class SelectBaby extends wepy.page {
+    config = {
+      navigationBarTitleText: '选择宝贝'
+    }
+    components = {
+      Empty
+    }
+    mixins = [base]
+    data = {
+      list: [],
+      isIphoneX: false,
+      selectBabyList: [],
+      fixed: false
+    }
+    methods = {
+      sure() {
+        this.selectBabyList = this.list.filter(row => row.isSelect)
+        wepy.setStorageSync('selectBaby', this.selectBabyList)
+        wepy.navigateBack({
+          delta: 1
+        })
+      },
+      select(index) {
+        this.list[index].isSelect = !this.list[index].isSelect
+        this.$apply()
+      },
+      addBaby() {
+        wepy.navigateTo({
+          url: `/packageStore/pages/add-baby?from=lcp`
+        })
+      }
+    }
+    onLoad(ops) {
+      this.list = ops.babyList ? JSON.parse(ops.babyList) : []
+      this.selectBabyList = wepy.getStorageSync('selectBaby').length ? wepy.getStorageSync('selectBaby') : []
+      this.list.forEach(row => {
+        this.selectBabyList.forEach(item => {
+          if (row.babyId === item.babyId) {
+            row.isSelect = item.isSelect
+          }
+        })
+      })
+      this.isIphoneX = wepy.getStorageSync('isIpx')
+      this.$apply()
+    }
+  }
+</script>

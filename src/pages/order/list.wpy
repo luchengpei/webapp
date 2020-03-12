@@ -1,0 +1,175 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .orders-list-page-container {
+    width: 100%;
+    background: $bgColor;
+    margin-top: 88rpx;
+  }
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <view class="orders-list-page-container">
+      <Tab :tab.sync="tab" @change.user="switchTab" />
+      <block wx:if="{{page.list.length > 0}}">
+        <repeat for="{{page.list}}" key="index" index="index" item="item">
+          <OrderItem :detail="item" @cancelOrder.user="cancelOrder" @confirmOrder.user="confirmOrder" @urgeShipment.user="urgeShipment" @deleteOrder.user="deleteOrder" @goLogistics.user="goLogistics" @refundOrder.user="refundOrder" @returnGoods.user="returnGoods"
+            @cancelRefundOrder.user="cancelRefundOrder"/>
+        </repeat>
+      </block>
+      <block wx:if="{{page.list.length === 0}}">
+        <Empty title="暂无订单" subtitle="" />
+      </block>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Tab from '@/components/common/tab'
+  import OrderItem from '@/components/order/order_item'
+  import Separator from '@/components/common/separator'
+  import Empty from '@/components/common/empty'
+  import order from '@/api/order'
+  import base from '@/mixins/base'
+  import pagination from '@/mixins/pagination'
+  import Tips from '@/utils/Tips'
+  import Event from '@/utils/Event'
+  export default class OrderList extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的订单',
+      enablePullDownRefresh: true
+    }
+    components = {
+      Tab,
+      OrderItem,
+      Separator,
+      Empty
+    };
+    data = {
+      firstLoading: true,
+      tab: {
+        list: [{
+          id: '-1',
+          title: '全部'
+        },
+        {
+          id: '0',
+          title: '待付款'
+        },
+        {
+          id: '1',
+          title: '待发货'
+        },
+        {
+          id: '2',
+          title: '待收货'
+        },
+        {
+          id: '3',
+          title: '已完成'
+        }
+        ],
+        selectedId: ''
+      },
+      page: {
+        list: null
+      },
+      pages: {}
+    }
+    mixins = [base, pagination];
+    methods = {
+      switchTab(tab) {
+        // 先判断缓存中是否存在商品列表
+        // if (this.pages[tab.selectedId]) {
+        //   this.page = this.pages[tab.selectedId]
+        //   this.$apply()
+        // } else {
+        Tips.loading()
+        this.page.list = null
+        this.page = order.list()
+        this.reload()
+        // }
+      },
+      cancelOrder(oid) {
+        order.cancel(oid).then(() => {
+          this.getList()
+        })
+      },
+      confirmOrder(oid) {
+        order.confirm(oid).then(() => {
+          this.getList()
+        })
+      },
+      urgeShipment(oid) {
+        order.urgeShipment(oid).then(() => {
+          Tips.toast('已经催促商家发货啦')
+          this.getList()
+        })
+      },
+      deleteOrder(oid) {
+        order.delete(oid).then(() => {
+          this.getList()
+        })
+      },
+      goLogistics(oid) {
+        wepy.navigateTo({
+          url: `/pages/order/logistics?oid=${oid}`
+        })
+      },
+      refundOrder(oid, type) {
+        order.refund(oid, type).then(() => {
+          Tips.toast('申请成功', () => this.getList(), 'none')
+        })
+      },
+      returnGoods(oid, type) {
+        order.refund(oid, type).then(() => {
+          Tips.toast('申请成功', () => this.getList(), 'none')
+        })
+      },
+      cancelRefundOrder(oid) {
+        order.cancelRefund(oid).then(() => {
+          Tips.toast('取消成功', () => this.getList(), 'none')
+        })
+      }
+    }
+    async onLoad(options) {
+      this.oid = options.oid
+      Event.listen(Event.ORDER_LIST_UPDATE, this.getList.bind(this), this)
+      this.tab.selectedId = this.oid ? this.oid + '' : '-1'
+      await this.getList()
+    }
+    /**
+     * 列表请求参数
+     */
+    params() {
+      return {
+        orderStatus: this.tab.selectedId
+      }
+    }
+    // 获取订单列表
+    async getList() {
+      this.page = order.list()
+      await this.next()
+    }
+    // 上拉加载
+    async onReachBottom() {
+      console.log('reachbottom')
+      await this.next()
+      console.log('reachbottom after')
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+    }
+    // 类onShow
+    onRoute() {
+      if (this.firstLoading) return
+      Event.emit(Event.ORDER_LIST_UPDATE)
+    }
+  }
+</script>

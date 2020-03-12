@@ -1,0 +1,75 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  page {
+    background: #ffffff;
+  }
+  .genealogy-details {
+    padding: 30rpx 30rpx 0 30rpx;
+    >image {
+      width: 690rpx;
+      height: 330rpx;
+      border-radius: 12rpx;
+    }
+    .title {
+      margin-top: 30rpx;
+      font-size: $fontSize2;
+      color: $black;
+      text-align: center;
+    }
+    .time {
+      text-align: center;
+      font-size: $fontSize4;
+      color: $gray;
+      margin: 20rpx 0;
+    }
+    .wxParse-inline {
+      font-size: 30rpx;
+      color: $black;
+    }
+  }
+</style>
+
+<template>
+  <view class="genealogy-details">
+    <import src="../../../components/wxparse/wxParse.wxml" />
+    <image src="{{genealogyData.coverChart}}" mode="aspectFill"></image>
+    <view class="title">{{genealogyData.title}}</view>
+    <view class="time">{{genealogyData.createTime}}</view>
+    <Html2wxml :parserName="name" :parserContent.sync="introduction"></Html2wxml>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import Html2wxml from '@/components/common/html2wxml'
+  export default class GenealogyDetails extends wepy.page {
+    config = {
+      navigationBarTitleText: '字辈谱详情'
+    }
+    data = {
+      genealogyData: '',
+      introduction: ''
+    }
+    components = {
+      Html2wxml
+    }
+    mixins = [base]
+    methods = {}
+    async GenealogyOrHallDetails(id) {
+      try {
+        let res = await family.getGenealogyOrHallDetails(id)
+        this.genealogyData = res
+        this.introduction = res.content
+        this.$apply()
+        this.$invoke('Html2wxml', 'htmlParserNotice')
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onLoad(option) {
+      this.GenealogyOrHallDetails(option.workGenerationId)
+    }
+  }
+</script>

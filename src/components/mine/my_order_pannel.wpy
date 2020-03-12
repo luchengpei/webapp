@@ -1,0 +1,132 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .my-order-container {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    margin-top: 20rpx;
+    .top-bar {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 88rpx;
+      .my-order {
+        flex: 1;
+        margin-left: 40rpx;
+        padding-left: 10rpx;
+        height: 30rpx;
+        line-height: 30rpx;
+        border-left: 6rpx solid $mainColor;
+        font-size: 28rpx;
+        color: $mainColor;
+      }
+      .see-all {
+        font-size: 28rpx;
+        color: #a5a5a5;
+        margin-right: 10rpx;
+      }
+      i {
+        font-size: 24rpx;
+      }
+    }
+    .status-bar {
+      height: 196rpx;
+      display: flex;
+      .status-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        .num {
+          top:30rpx;
+          left:55px;
+          position: absolute;
+          border-radius: 20rpx;
+          background: #f12c20;
+          font-size: 24rpx;
+          color: #fff;
+          min-width:15rpx;
+          height:35rpx;
+          padding-left: 10rpx;
+          padding-right: 10rpx;
+          text-align:center;
+        }
+        image {
+          margin-top: 40rpx;
+          width: 72rpx;
+          height: 72rpx;
+        }
+        text {
+          margin-top: 16rpx;
+          font-size: 28rpx;
+          line-height: 36rpx;
+          color: $black;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="my-order-container">
+    <view class="top-bar">
+      <OrderTitle :title="title">
+        <block slot="right">
+          <text class="see-all" @tap="routerTo('/pages/order/list')">全部订单</text>
+          <i class="iconfont icon-arrow"></i>
+        </block>
+      </OrderTitle>
+    </view>
+    <view class="status-bar">
+      <view class="status-item" @tap="routerTo('/pages/order/list?oid=0')">
+        <view class="num" wx:if="{{numOrder.waitPay&&numOrder.waitPay>0&&numOrder.waitPay<99}}">{{numOrder.waitPay}}</view>
+        <view class="num" wx:if="{{numOrder.waitPay>99}}">99+</view>
+        <i class="iconfont icon-mine_ic_pay" style="font-size: 80rpx;"></i>
+        <text>待付款</text>
+      </view>
+      <view class="status-item" @tap="routerTo('/pages/order/list?oid=1')">
+       <view class="num" wx:if="{{numOrder.waitSend&&numOrder.waitSend>0&&numOrder.waitSend<99}}">{{numOrder.waitSend}}</view>
+        <view class="num" wx:if="{{numOrder.waitSend>99}}">99+</view>
+        <i class="iconfont icon-mine_ic_deliver" style="font-size: 80rpx;"></i>
+        <text>待发货</text>
+      </view>
+      <view class="status-item" @tap="routerTo('/pages/order/list?oid=2')">
+        <view class="num" wx:if="{{numOrder.waitGet&&numOrder.waitGet>0&&numOrder.waitGet<99}}">{{numOrder.waitGet}}</view>
+        <view class="num" wx:if="{{numOrder.waitGet>99}}">99+</view>
+        <i class="iconfont icon-mine_ic_receive" style="font-size: 80rpx;"></i>
+        <text>待收货</text>
+      </view>
+      <view class="status-item" @tap="routerTo('/pages/order/list?oid=3')">
+        <!-- <view class="num" wx:if="{{!numOrder.ready}}">{{numOrder.ready}}</view> -->
+        <view class="num" wx:if="{{numOrder.ready&&numOrder.ready>0&&numOrder.ready<99}}">{{numOrder.ready}}</view>
+        <view class="num" wx:if="{{numOrder.ready>99}}">99+</view>
+        <i class="iconfont icon-mine_ic_complete" style="font-size: 80rpx;"></i>
+        <text>已完成</text>
+      </view>
+    </view>
+  </view>
+</template>
+ 
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  import SectionTitle from '@/components/common/title'
+
+  export default class MyOrderPannel extends wepy.component {
+    props={
+      numOrder: {}
+    }
+    data = {
+      title:'商品订单'
+    }
+    components = {
+      OrderTitle: SectionTitle
+    }
+    mixins = [base, router]
+    methods = {}
+    onLoad() {}
+}
+</script>

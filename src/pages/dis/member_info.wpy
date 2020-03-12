@@ -1,0 +1,139 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+@import '../../scss/dis';
+.member-container {
+  width: 100%;
+  background: $bgColor;
+  margin-top: 90rpx;
+}
+</style>
+
+<template>
+  <import src="../../components/wxparse/wxParse.wxml"/>
+  <view class="member-container upgrade-wrap" style="{{configStyle}}">
+    <block wx:if="{{tab.list.length>0}}">
+      <Tab :tab.sync="tab" @change.user="switchTab"/>
+      <MemberHeader :obj.sync="activeItem"/>
+      <block wx:if="{{activeItem.noNeedLen.length<3 && (activeItem.mustNeedLen.length>0 || activeItem.oneNeedLen.length>0)}}">
+        <view class="buy-wrap">
+          <view class="condition-wrap">
+            <view class="line"/>
+            <view class="gray">会员升级条件</view>
+            <view class="line"/>
+          </view>
+          <view class="content">
+            <block wx:if="{{activeItem.mustNeedLen.length>2}}">
+              <ConditionNoInfo
+                @onPayMember.user="onPayMember"
+                :obj.sync="activeItem"
+                key="mustNeed"
+              />
+            </block>
+            <block wx:else>
+              <view class="cell" wx:if="{{activeItem.mustNeedLen.length>0}}">
+                <ConditionMustInfo
+                  @onPayMember.user="onPayMember"
+                  :obj.sync="activeItem"
+                  key="mustNeed"
+                />
+              </view>
+              <view class="cell" wx:if="{{activeItem.oneNeedLen.length>0}}">
+                <ConditionOneInfo
+                  @onPayMember.user="onPayMember"
+                  :obj.sync="activeItem"
+                  key="oneNeed"
+                />
+              </view>
+            </block>
+          </view>
+        </view>
+      </block>
+      <block wx:if="{{activeItem.levelDesc}}">
+        <view class="introduce-wrap">
+          <view class="condition-wrap">
+            <view class="line"/>
+            <view class="gray">会员详情介绍</view>
+            <view class="line"/>
+          </view>
+          <view class="content">
+            <Html2wxml
+              :parserName="activeItem.levelName"
+              :parserContent.sync="levelDesc"
+            ></Html2wxml>
+          </view>
+        </view>
+      </block>
+    </block>
+    <block wx:else>
+      <Empty title="暂无数据" subtitle=""/>
+    </block>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import dis from '@/api/dis'
+import Util from '@/utils/Util'
+import base from '@/mixins/base'
+import Tab from '@/components/common/tab'
+import MemberHeader from '@/components/dis/member_header'
+import Condition from '@/components/dis/condition_info'
+import Empty from '@/components/common/empty'
+import Html2wxml from '@/components/common/html2wxml'
+
+export default class MemberInfo extends wepy.page {
+  config = {
+    navigationBarTitleText: '会员介绍'
+  };
+  components = {
+    Tab,
+    MemberHeader,
+    Empty,
+    Html2wxml,
+    ConditionOneInfo: Condition,
+    ConditionMustInfo: Condition,
+    ConditionNoInfo: Condition
+  };
+  data = {
+    activeItem: null,
+    list: [],
+    tab: {
+      list: [],
+      selectedId: 0
+    },
+    levelDesc: ''
+  };
+  mixins = [base]
+  methods = {
+    switchTab(tab) {
+      this.activeItem = this.tab.list[tab.selectedId]
+      this.levelDesc = this.activeItem.levelDesc
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+  };
+  getLevelList() {
+    dis.getLevelList().then(res => {
+      let arr = []
+      for (let i = 0; i < res.length; i++) {
+        const item = res[i]
+        arr.push({
+          title: item.levelName,
+          id: i,
+          ...Util.getMember(item),
+          ...item
+        })
+      }
+      this.activeItem = arr[0]
+      this.tab.list = arr
+      this.tab.selectedId = 0
+      this.levelDesc = this.activeItem.levelDesc
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    })
+  }
+  onShow() {
+    this.getLevelList()
+  }
+}
+</script>

@@ -1,0 +1,119 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .order-goods {
+    padding: 30rpx 0;
+    display: flex;
+    border-bottom: 1rpx solid $borderColor;
+    .goods-image {
+      width: 150rpx;
+      height: 150rpx;
+      border-radius: 6rpx;
+      background: $gray;
+    }
+    .goods-info {
+      flex: 1;
+      margin-left: 36rpx;
+      margin-right: 40rpx;
+      .goods-title {
+        font-size: $fontSize2;
+        line-height: 46rpx;
+        color: $black;
+        display: -webkit-box;
+        word-break: break-all;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .goods-sku-row {
+        display: flex;
+        justify-content: space-around;
+        margin: 8rpx 0;
+        .goods-sku {
+          flex: 1;
+          font-size: $fontSize4;
+          color: $gray;
+        }
+        .goods-tags {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          >text {
+            padding: 0 8rpx;
+            height: 28rpx;
+            line-height: 28rpx;
+            text-align: center;
+            font-size: $fontSize5;
+            color: #fff;
+            border-radius: 5rpx;
+            background: $mainColor;
+            margin-left: 8rpx;
+          }
+        }
+      }
+      .goods-price-row {
+        display: flex;
+        justify-content: space-around;
+        .goods-price {
+          flex: 1;
+          font-size: $fontSize2;
+          line-height: 42rpx;
+          color: $priceRed;
+        }
+        .goods-num {
+          font-size: 32rpx;
+          line-height: 42rpx;
+          color: $black;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <!-- 分割线 -->
+  <view class="order-goods">
+    <image class="goods-image" src="{{detail.productThumbnail}}" @tap.stop="routerTo('/pages/goods/detail?id={{detail.productId}}')" wx:if="{{mode === 'default'}}"/>
+    <image class="goods-image" src="{{detail.productThumbnail}}" wx:else/>
+    <view class="goods-info">
+      <text class="goods-title" @tap.stop="routerTo('/pages/goods/detail?id={{detail.productId}}')" wx:if="{{mode === 'default'}}">{{detail.productName}}</text>
+      <text class="goods-title" wx:else>{{detail.productName}}</text>
+      <view class="goods-sku-row">
+        <text class="goods-sku">{{detail.skus}}</text>
+        <view class="goods-tags">
+          <text wx:if="{{detail.isShowMemberPrice === 1}}">会员价￥{{detailExtend.memberPrice || detail.memberPrice}}</text>
+          <text wx:if="{{detail.orderType === 5}}">返</text>
+        </view> 
+      </view>
+      <view class="goods-price-row">
+        <text class="goods-price" wx:if="{{detail.skus}}">¥{{detail.skusPrice || detail.productPrice}}</text>
+        <text class="goods-price" wx:else>¥{{detail.productPrice}}</text>
+        <text class="goods-num">X{{detail.buyNum || detail.buyingNum}}</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  export default class OrderGoods extends wepy.component {
+    mixins = [router]
+    props = {
+      detail: {
+        type: Object,
+        default: {}
+      },
+      detailExtend: {
+        type: Object,
+        default: {}
+      },
+      orderType: {
+        default: 1
+      }
+    };
+    mixins=[base]
+    methods = {};
+  }
+</script>

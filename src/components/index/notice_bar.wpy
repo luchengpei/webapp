@@ -1,0 +1,41 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+</style>
+
+<template>
+  <NoticeBar barType='vertical' :dataList.sync='dataList' @handleTap.user='handleTapNotice'>
+  </NoticeBar>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import goods from '@/api/goods'
+  import NoticeBar from '@/components/common/notice_bar'
+  export default class NoticeBarIndex extends wepy.component {
+    mixins = [base, router]
+    props = {};
+    data = {
+      title: '搜索商品',
+      dataList: []
+    }
+    components = {
+      NoticeBar
+    }
+    methods = { // 初始化
+      async init() {
+        let res = await goods.getCarousel()
+        this.dataList = res
+        this.$apply()
+      },
+      // 公告栏点击事件
+      handleTapNotice(data) {
+        wepy.navigateTo({
+          url: `/pages/notice_details?noticeId=${data.noticeId}`
+        })
+      }
+    }
+    onLoad() {}
+  }
+</script>

@@ -1,0 +1,215 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+   .iconfont {
+      font-size: 40rpx;
+      color: $mainColor;
+    }
+     .iconfont-no {
+      font-size: 40rpx;
+      color: $borderColor;
+    }
+  .main{
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    padding-top: 30rpx;
+    box-sizing: border-box;
+  }
+  .content{
+    height: 200rpx;
+    width: 100%;
+    background: #f2faff;
+    display: flex;
+    align-items: center;
+    .left{
+      flex: 1;
+      display: flex;
+      .money{
+        width: 200rpx;
+        font-size: 72rpx;
+        color:#F11717;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .text{
+        flex: 1;
+        .title{
+          font-size: 28rpx;
+           color:#444444;
+           overflow: hidden;
+           font-weight: bold;
+        }
+        .discript{
+          font-size: 20rpx;
+          color:#999999;
+          overflow: hidden;
+          margin: 4rpx 0 4rpx 0;
+        }
+      }
+    }
+    .right{
+      position: relative;
+      width: 200rpx;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-left: 1px dashed $borderColor;
+      box-sizing: border-box;
+      .cicle{
+        position:absolute;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border-radius: 16px;
+        z-index: 1;
+      }
+      .top{
+        left: -8px;
+        top: -8px;
+      }
+      .bottom{
+       left: -8px;
+       bottom: -8px;
+      }
+    }
+    //
+    .button{
+      width: 120rpx;
+      height: 60rpx;
+      line-height: 60rpx;
+      text-align: center;
+      background: $mainColor;
+       border-radius: 6rpx;
+      color: #fff;
+      font-size: 24rpx;
+    }
+    .img{
+      width: 40rpx;
+      height: 40rpx;
+      image{
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .cuopon{
+    background: #fff;
+    // padding-bottom: 16rpx;
+  }
+  .mt{
+    margin-bottom: 18rpx
+  }
+</style>
+
+<template>
+    <view class="cuopon" style="{{configStyle}}">
+      <view  wx:for="{{list}}" wx:key="{{index}}" class="main {{index+1===list.length?'mt':''}}">
+        <view class="content">
+          <view class="left">
+            <view class="money" style="{{status==='ago'?'color:#999999':''}}">
+              <view wx:if="{{item.faceValue.length<5 && item.scenes !== 4}}" style="font-size:36rpx;margin-bottom:20rpx;">￥</view> 
+                <view wx:if="{{item.faceValue.length>4 &&  item.scenes !== 4}}" style="font-size:36rpx;margin-bottom:0rpx;">￥</view> 
+                <view  wx:if="{{item.faceValue.length<5}}">{{item.faceValue}}</view>
+                <view wx:if="{{item.faceValue.length>4}}" style="font-size:36rpx;">{{item.faceValue}}</view>
+                <view wx:if="{{item.faceValue.length<5 && item.scenes === 4}}" style="font-size:32rpx;margin:20rpx 0 0 4rpx;">小时</view> 
+                <view wx:if="{{item.faceValue.length>4 && item.scenes === 4}}"  style="font-size:32rpx;margin:20rpx 0 0 4rpx;">小时</view> 
+            </view>
+            <view class="text">
+              <view class="title">{{item.couponsName}}</view>
+              <view class="discript">{{item.userRange}} 
+                <view style='margin-left:8rpx;display:inline;' wx:if='{{item.useThreshold === 2 && item.scenes === 4}}'>满{{item.fullReductionPrice}}小时可用</view>
+              </view>
+              
+              <view class="time discript" wx:if = '{{ item.scenes !== 4}}'>有效期{{item.validStopTime}}</view>
+              <view class="time discript" wx:if = '{{ item.scenes === 4}}'>有效期{{item.validStartTime}} - {{item.validEndTime}}</view>
+              <!-- {{type}} -->
+            </view>
+          </view>
+          <view class="right">
+              <view class="button"  wx:if="{{status==='use'}}"  style="{{status==='ago'?'background:#999999':''}}" @tap="toHopage">去使用</view>
+              <view class="button"  wx:if="{{status==='buy'}}"  style="{{status==='ago'?'background:#999999':''}}" @tap="tap({{item}},{{index}})">去使用</view>
+              <view class="button"  wx:if="{{status==='ago'}}"  style="background:#999999">失效</view>
+              <view class="button"  wx:if="{{type==='get'}}" @tap="getCoupons({{item}})" style="{{item.show?'':'background:#999999'}}">领取</view>
+              <!-- <view class="img" wx:if="{{status==='select'}}"> 
+                  <i class="iconfont icon-info_kick" wx:if="{{item.select}}"></i>
+                  <image  wx:if="{{!item.select}}" src="http://static.laoganbu.cn//ic-check.png"></image>
+              </view> -->
+              <view class="top cicle"></view>
+              <view class="bottom cicle"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import nRouter from '@/mixins/new_router'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  import coupon from '@/api/coupon'
+  import Tips from '@/utils/Tips'
+  export default class CouponItem extends wepy.component {
+    props = {
+      status: { // ago过期  get领取   select选择  use去使用
+        default: 'select'
+      },
+      list: { // 列表
+        default: []
+      },
+      selectData: { // 选择的值
+        default: '',
+        twoWay: true
+      },
+      type: {
+        type: String
+      }
+    }
+    mixins=[nRouter, router, base]
+    methods = {
+      // 事件判断
+      tap(val, i) {
+        if (this.status === 'use') {
+          this._redirectTo('/pages/index?p=index')
+  
+          return 0
+        }
+        if (this.status === 'get') {
+          this.$emit('getCoupon', val)
+          return 0
+        }
+        if (this.status === 'buy') {
+          this.list[i].select = !this.list[i].select
+          this.list.map((v, index) => {
+            if (index !== i) {
+              v.select = false
+            }
+          })
+          this.selectData = this.list[i]
+          this.$emit('select', this.selectData)
+          return 0
+        }
+        if (this.status === 'ago') {
+          console.log('-----------^^^^^------------邓紫棋 用过')
+          return 0
+        }
+      },
+      async getCoupons(item) {
+        if (!item.show) return false
+        let pid = wepy.getStorageSync('pid')
+        const params = {
+          couponsId: item.couponsId,
+          getMethod: 1,
+          issuedId: pid
+        }
+        await coupon.getCoupons(params)
+        Tips.toast('领取成功', null, 'none')
+      },
+      toHopage() {
+        this._redirectTo('/pages/index?p=index')
+      }
+    }
+    onLoad() {}
+  }
+</script>

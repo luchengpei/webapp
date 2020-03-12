@@ -1,0 +1,242 @@
+<style lang="scss" scoped>
+    @import '../../scss/common';
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+  .goods-recommend-page-container {
+    width: 100%;
+    background: $bgColor;
+    .goods-item {
+      border-bottom: 1rpx solid $borderColor;
+      border-top: 1rpx solid $borderColor;
+      background: #fff;
+      margin-bottom: 30rpx;
+      .top-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 88rpx;
+        padding: 0 30rpx;
+        font-size: 28rpx;
+        border-bottom: 1rpx solid $borderColor;
+        .deadline {
+          color: $mainColor;
+        }
+      }
+      .main-box {
+        position: relative;
+        display: flex;
+        padding: 30rpx;
+        .goods-pic {
+          width: 150rpx;
+          height: 150rpx;
+          border-radius: 8rpx;
+        }
+        .goods-info {
+          position: relative;
+          flex: 1;
+          padding-left: 50rpx;
+          .cart {
+            position: absolute;
+            right: 0;
+            bottom: 15rpx;
+            width: 70rpx;
+            height: 60rpx;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1rpx solid $mainColor;
+            border-radius: 6rpx;
+            .icon {
+              width: 34rpx;
+              height: 32rpx;
+            }
+          }
+          .line-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .quantity-box {
+            height: 100rpx;
+          }
+          .name {
+            font-size: 34rpx;
+            color: $black;
+            line-height: 50rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
+          .intro {
+            font-size: 24rpx;
+            line-height: 46rpx;
+            color: $gray;
+          }
+          .price {
+            padding: 10rpx 0;
+            font-size: 34rpx;
+            color: $priceRed;
+          }
+          .price-o {
+            font-size: 24rpx;
+            color: #999;
+            text-decoration: line-through;
+          }
+          .num {
+            font-size: 20rpx;
+            color: #999999;
+          }
+          .labels {
+            text-align: right;
+            .item {
+              display: inline-block;
+              padding: 0 20rpx;
+              height: 28rpx;
+              line-height: 28rpx;
+              text-align: center;
+              background: $mainColor;
+              color: #fff;
+              font-size: 20rpx;
+              margin-right: 10rpx;
+              border-radius: 4rpx;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+      <view class="goods-recommend-page-container">
+    <view class="goods-list" wx:if="{{list.length > 0}}">
+      <repeat for="{{list}}" index="index" item="item" key="key">
+        <view class="goods-item">
+          <view class="top-box">
+            <view>包邮 隔天7点送到家门口</view>
+            <view class="deadline" wx:if="{{item.relayStatus === 2}}">已结束</view>
+            <view class="deadline" wx:elif="{{item.relayStatus === 1 && item.remainFormat}}">距结束 {{item.remainFormat}}</view>
+            <view class="deadline" wx:elif="{{item.relayStatus === 0}}">未开始</view>
+          </view>
+          <view class="main-box" @tap="routerTo('/pages/goods/chain_detail?chainId={{item.communityRelayId}}&hid={{headId}}&productId={{item.communityRelayProductId}}')">
+            <image class="goods-pic" src="{{item.productThumbnail}}"></image>
+            <view class="goods-info">
+              <view class="cart">
+                <image class="icon" src="{{imageUrl}}/cart2.png" wx:if="{{imageUrl}}" />
+              </view>
+              <view class="name">{{item.productName}}</view>
+              <view class="line-box">
+                <view class="labels" wx:if="{{item.purchaseLimit > 0}}">
+                  <view class="item">限购{{item.purchaseLimit}}件</view>
+                </view>
+                <view class="intro">{{item.tpNames}}</view>
+              </view>
+              <view class="line-box">
+                <view class="price">￥{{item.groupByPrice}}</view>
+              </view>
+              <view class="line-box">
+                <view class="price-o">￥{{item.productTpPrice}}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </repeat>
+    </view>
+    <Empty title="暂无接龙活动" subtitle="" wx:else/>
+  </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import chain from '@/api/chain'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import Util from '@/utils/Util'
+  import Empty from '@/components/common/empty'
+  export default class Chain extends wepy.page {
+    config = {
+      navigationBarTitleText: '今日推荐'
+    }
+    components = {
+      Empty
+    };
+    data = {
+      id: null,
+      headId: 0,
+      chainId: 0,
+      list: {}
+    }
+    mixins = [base, router, pagination]
+    onLoad(options) {
+      this.headId = options.hid
+      this.chainId = options.chainId
+      this.getList()
+    }
+     // 获取接龙列表
+    async getList() {
+      if (!this.chainId) return
+      this.page = chain.list()
+      await this.reload()
+      this.list = this.page.list
+      this.$apply()
+      this.sid = setInterval(this.countDown.bind(this), 1000)
+    }
+    params() {
+      return {
+        communityRelayId: this.chainId
+      }
+    }
+    // 倒计时
+    countDown() {
+      let d = this.list
+      for (let i = 0; i < d.length; i++) {
+        let t = Util.dateToTimeStamp(d[i].endTime) - (new Date().getTime())
+        if (t > 0) {
+          let format = ''
+          format = Util.countFormat(t)
+          d[i].remainFormat = format
+        } else {
+          d[i].remainFormat = ''
+        }
+      }
+      this.list = d
+      this.$apply()
+    }
+    // 清除计时器
+    clear() {
+      if (this.sid) {
+        clearInterval(this.sid)
+      }
+    }
+    onUnload() {
+      this.clear()
+    }
+    async onReachBottom() {
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+     // 分享
+    onShareAppMessage(e) {
+      const sceneData = Util.generateScene({
+        projectId: wepy.getStorageSync('pid'),
+        inviteUser: this.headId,
+        productId: '',
+        type: '',
+        activityId: '',
+        headId: ''
+      })
+      return {
+        title: '今日推荐',
+        path: `/pages/goods/chain?scene=${sceneData}&hid=${this.headId}&chainId=${this.chainId}`
+      }
+    }
+  }
+</script>

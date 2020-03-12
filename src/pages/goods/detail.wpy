@@ -1,0 +1,1062 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+  .goods-detail-page-container {
+    width: 100%;
+    background: $bgColor;
+    .miss-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 600rpx;
+      background: #fff;
+      margin-bottom: 20rpx;
+      image {
+        height: 223rpx;
+        width: 288rpx;
+      }
+      text {
+        font-size: 30rpx;
+        margin-top: 10rpx;
+        color: $gray;
+      }
+    }
+    .miss-goods-list-container {
+      .see-other {
+        padding: 0 40rpx;
+        height: 88rpx;
+        line-height: 88rpx;
+        border-bottom: 1rpx solid #e5e5e5;
+        background: #fff;
+        text {
+          padding-left: 15rpx;
+          height: 30rpx;
+          font-size: $fontSize3;
+          color: $mainColor;
+          border-left: 6rpx solid $mainColor;
+        }
+      }
+    }
+    .swiper-container {
+      height: 750rpx;
+      width: 100%;
+      .swiper-image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .goods-info {
+      width: 100%;
+      background: #fff;
+      .goods-title {
+        display: block;
+        margin: 0 40rpx;
+        padding-top: 20rpx;
+        font-size: $fontSize2;
+        line-height: 52rpx;
+        color: $black;
+      }
+      .goods-price {
+        display: flex;
+        flex-direction: row;
+        margin: 20rpx 40rpx;
+        .price {
+          flex: 1;
+          flex-direction: column;
+          .price-info {
+            .sale-price {
+              font-size: 58rpx;
+              line-height: 46rpx;
+              color: $priceRed;
+            }
+            .mark-price {
+              margin-top: 5rpx;
+              margin-left: 10rpx;
+              font-size: $fontSize4;
+              line-height: 46rpx;
+              color: $gray;
+              text-decoration: line-through;
+            }
+          }
+          .member-price {
+            display:inline-block;
+            background-color: $mainColor;
+            height: 28rpx;
+            font-size: $fontSize5;
+            color:#fff;
+            padding:2rpx 8rpx;
+            border-radius: 5rpx;
+          }
+        }
+        .btn-group {
+          display: flex;
+          flex-direction: row;
+          margin-right: 10rpx;
+          .btn-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            margin-left: 48rpx;
+            .share-icon {
+              width: 46rpx;
+              height: 46rpx;
+            }
+            .btn-text {
+              font-size: $fontSize5;
+              color: $gray;
+              margin-bottom: 12rpx;
+            }
+            .hide-btn {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 65rpx;
+              height: 90rpx;
+              opacity: 0;
+            }
+          }
+        }
+      }
+      .extral-info {
+        display: flex;
+        margin-left: 40rpx;
+        padding-right: 40rpx;
+        height: 88rpx;
+        line-height: 88rpx;
+        flex-direction: row;
+        justify-content: space-between;
+        border-top: 1rpx solid $borderColor; // border-bottom: 1rpx solid $borderColor;  
+        overflow: hidden;
+        .vip-text {
+          color: #ff9c00;
+        }
+        .extral-item {
+          font-size: $fontSize4;
+          color: $mainColor;
+        }
+      }
+      .sku-pannel {
+        display: flex;
+        height: 88rpx;
+        line-height: 88rpx;
+        margin: 0 40rpx;
+        align-items: center;
+        .choose {
+          flex: 1;
+          font-size: 32rpx;
+          color: $black;
+          display: flex;
+          align-items: center;
+          overflow: hidden;
+          .title {
+            width: 150rpx;
+          }
+          .intro {
+            font-size: 26rpx;
+            flex: 1;
+            color: $gray;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+        .right-arrow {
+          height: 24rpx;
+          width: 14rpx;
+        }
+      }
+      .goods-attr {
+        display: flex;
+        height: 68rpx;
+        padding: 0 40rpx;
+        border-top: 1rpx solid #d1d1d1;
+        border-bottom: 1rpx solid #d1d1d1;
+        background: #f9f9f9;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        .attr-item {
+          display: flex;
+          flex-direction: row;
+          .tick-icon {
+            width: 32rpx;
+            height: 32rpx;
+          }
+          text {
+            margin-left: 10rpx;
+            font-size: $fontSize4;
+            color: $gray;
+          }
+        }
+      }
+    }
+    .goods-detail {
+      margin-top: 30rpx;
+      background: #fff;
+      .pannel {
+        padding: 0 40rpx;
+        height: 88rpx;
+        line-height: 88rpx;
+        border-bottom: 1rpx solid #e5e5e5;
+        text {
+          padding-left: 15rpx;
+          height: 30rpx;
+          font-size: $fontSize3;
+          color: $mainColor;
+          border-left: 6rpx solid $mainColor;
+        }
+      }
+    }
+  }
+  .counter-row {
+    background: $subMainColor;
+    height: 88rpx;
+    display: flex;
+    padding: 0 40rpx;
+    align-items: center;
+    .counter-tag {
+      height: 30rpx;
+      padding: 0 20rpx;
+      font-size: $fontSize5;
+      color: #fff;
+      background: $mainColor;
+      border-radius: 4rpx;
+    }
+    .counter-text {
+      flex: 1;
+      font-size: $fontSize2;
+      color: $black;
+      text-align: right;
+    }
+    .counter-time {
+      display: flex;
+      color: #333333;
+      height: 36rpx;
+      padding-left: 20rpx;
+      align-items: center;
+      .time {
+        display: inline-block;
+        min-width: 36rpx;
+        height: 36rpx;
+        font-size: $fontSize4;
+        color: #fff;
+        text-align: center;
+        background: #333333;
+        padding: 5rpx;
+        border-radius: 4rpx;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <import src="../../components/wxparse/wxParse.wxml" />
+    <!-- 商品详情 -->
+    <ServiceOver></ServiceOver>
+    <view class="goods-detail-page-container" wx:if="{{init}}">
+      <block wx:if="{{!valid}}">
+        <!-- 商品失效 -->
+        <view class="miss-container">
+          <image src="/images/goods-miss.png" wx:if="{{imageUrl}}" />
+          <text>这件商品不见啦！</text>
+          <text>去逛逛其他商品吧</text>
+        </view>
+        <!-- 商品失效，底部列表 -->
+        <view class="miss-goods-list-container">
+          <view class="see-other">
+            <text>看看其他</text>
+          </view>
+          <GoodsList :list.sync="list" mode="index" />
+        </view>
+      </block>
+      <block wx:if="{{valid}}">
+        <!-- 商品轮播图 -->
+        <swiper class="swiper-container" indicator-dots indicator-color="#4d4d4d" indicator-active-color="#fff" autoplay circular>
+          <block wx:for="{{product.productImg}}" wx:key="index">
+            <swiper-item>
+              <image class="swiper-image" mode="aspectFill" src="{{item}}" @tap="preview({{product.productImg}} ,{{index}})"></image>
+            </swiper-item>
+          </block>
+        </swiper>
+        <!-- 砍价 -->
+        <block wx:if="{{mode === 'cash_back'}}">
+          <view class="counter-row">
+            <view class="counter-tag" wx:if="{{cashBack.activityTag}}">{{cashBack.activityTag}}</view>
+            <text class="counter-text">{{cashBack.timeText}}</text>
+            <view class="counter-time" wx:if="{{cashBack.remainFormat}}">
+              <text class="time">{{cashBack.remainHour}}</text>
+              <text>:</text>
+              <text class="time">{{cashBack.remainSecond}}</text>
+              <text>:</text>
+              <text class="time">{{cashBack.remainMinute}}</text>
+            </view>
+          </view>
+        </block>
+        <!--限时购 -->
+        <block wx:if="{{mode === 'flash_sale'}}">
+          <view class="counter-row">
+            <view class="counter-tag">{{flashSale.activityTag}}</view>
+            <text class="counter-text" wx:if="{{flashSale.flashSaleStatus===0}}">距开始</text>
+            <text class="counter-text" wx:if="{{flashSale.flashSaleStatus===1}}">距结束</text>
+            <view class="counter-time">
+              <repeat for="{{flashSale.flashSaleStatus===1?flashSale.timeDown:flashSale.timeStart}}" key="index" index="index" item="item">
+                <text wx:if="{{index!==0}}">:</text>
+                <text class="time">{{item}}</text>
+              </repeat>
+            </view>
+          </view>
+        </block>
+        <!--拼团 -->
+        <block wx:if="{{mode === 'group_sale'}}">
+          <view class="counter-row">
+            <view class="counter-tag">{{groupSale.groupBuyingPersonNum}}人拼团</view>
+            <text class="counter-text">距结束</text>
+            <view class="counter-time">
+              <repeat for="{{groupSale.timeDown}}" key="index" index="index" item="item">
+                <text wx:if="{{index!==0}}">:</text>
+                <text class="time">{{item}}</text>
+              </repeat>
+            </view>
+          </view>
+        </block>
+        <!-- 商品基础信息 -->
+        <view class="goods-info">
+          <!-- 商品名称 -->
+          <block wx:if="{{mode === 'default'||mode === 'flash_sale'||mode === 'group_sale'}}">
+            <text class="goods-title">{{product.productName}}</text>
+          </block>
+          <block wx:elif="{{mode === 'cash_back'}}">
+            <text class="goods-title">{{cashBack.productName}}</text>
+          </block>
+          <view class="goods-price">
+            <block wx:if="{{mode === 'default'}}">
+              <view class="price">
+                <view class="price-info">
+                  <text class="sale-price">¥{{minPrice}}</text>
+                  <text class="mark-price">¥{{product.productCrossLinePrice}}</text>
+                </view>
+                <view class="member-price" wx:if="{{product.isShowMemberPrice===1}}">会员价￥{{product.memberPrice}}</view>
+              </view>
+            </block>
+            <block wx:elif="{{mode === 'cash_back'}}">
+              <view class="price">
+                <view class="price-info">
+                  <text class="sale-price">¥{{cashBack.bargainPrice}}</text>
+                  <text class="mark-price">¥{{product.productCrossLinePrice}}</text>
+                </view>
+                <!-- <view class="member-price" wx:if="{{product.isShowMemberPrice===1}}">会员价￥{{product.memberPrice}}</view> -->
+              </view>
+            </block>
+            <!-- 限时购 -->
+            <block wx:elif="{{mode === 'flash_sale'}}">
+              <view class="price">
+                <view class="price-info">
+                  <text class="sale-price">¥{{flashSale.flashSalePrice}}</text>
+                  <text class="mark-price">¥{{product.productCrossLinePrice}}</text>
+                </view>
+                <!-- <view class="member-price" wx:if="{{product.isShowMemberPrice===1}}">会员价￥{{product.memberPrice}}</view> -->
+              </view>
+            </block>
+            <!-- 团购 -->
+            <block wx:elif="{{mode === 'group_sale'}}">
+              <view class="price">
+                <view class="price-info">
+                  <text class="sale-price">¥{{groupSale.groupBuyingPrice}}</text>
+                  <text class="mark-price">¥{{product.productCrossLinePrice}}</text>
+                </view>
+                <!-- <view class="member-price" wx:if="{{product.isShowMemberPrice===1}}">会员价￥{{product.memberPrice}}</view> -->
+              </view>
+            </block>
+            <view class="btn-group">
+              <!-- <view class="btn-item" wx:if="{{mode === 'default'}}" @tap="store">
+                <i class="iconfont icon-detail_ic_shop mainColor" style="font-size: 46rpx;"></i>
+                <text class="btn-text">加入店铺</text>
+              </view> -->
+              <view class="btn-item" @tap="shareButton">
+                <i class="iconfont icon-detail_ic_share mainColor" style="font-size: 46rpx;"></i>
+                <text class="btn-text">分享</text>
+              </view>
+              <!-- 点击分享后的弹框 -->
+              <ShareBottom :display.sync="shareIsDisplay" :id.sync="productId" :mode.sync="mode" :goodInfo.sync="goodsInfo">
+                <!-- 匿名插槽 -->
+                <button class="hide-btn" style="height:100%;" data-product-id="{{product.productId}}" data-product-name="{{product.productName}}" data-product-img="{{product.productThumbnail}}" open-type="share"></button>
+              </ShareBottom>
+            </view>
+          </view>
+          <view class="extral-info vip-text" wx:if="{{mode === 'default' && isVip}}">
+            <view class="extral-item">会员</view>
+            <view class="extral-item">预计每件收益：{{product.commision}}</view>
+          </view>
+          <view class="extral-info" wx:if="{{mode === 'default'}}">
+            <view class="extral-item">运费：{{(goodsInfo.postage && goodsInfo.postage.name) || ''}}</view>
+            <view class="extral-item">销量：{{product.buyingNum}}</view>
+            <view class="extral-item">剩余：{{product.inventoryNum || 0}}</view>
+          </view>
+          <view class="extral-info" wx:if="{{mode === 'chain'}}">
+            <view class="extral-item">运费：{{(goodsInfo.postage && goodsInfo.postage.name) || ''}}</view>
+            <view class="extral-item">销量：{{product.buyingNum}}</view>
+            <view class="extral-item">剩余：{{product.inventoryNum || 0}}</view>
+          </view>
+          <view class="extral-info" wx:if="{{mode === 'cash_back' || mode === 'flash_sale'|| mode === 'group_sale'}}">
+            <view class="extral-item">运费：{{(goodsInfo.postage && goodsInfo.postage.name) || ''}}</view>
+            <view class="extral-item">销量：{{product.buyingNum}}</view>
+            <view class="extral-item" wx:if="{{mode === 'cash_back'}}">剩余：{{cashBack.productTpInventory || 0}}</view>
+            <view class="extral-item" wx:elif="{{mode === 'flash_sale'}}">剩余：{{flashSale.productTpInventory || 0}}</view>
+            <view class="extral-item" wx:elif="{{mode === 'group_sale'}}">剩余：{{groupSale.productTpInventory || 0}}</view>
+          </view>
+          <block wx:if="{{mode === 'default'||mode === 'flash_sale'||mode === 'group_sale'}}">
+            <view class="sku-pannel" wx:if="{{hasTp}}" @tap="chooseSpec">
+              <view class="choose">
+                <view class="title">选择规格</view>
+                <!-- <view class="intro" wx:if="{{firstNotChooseTpIndex !== -1}}">{{tpNames[firstNotChooseTpIndex]}}</view> -->
+                <view class="intro" wx:if="{{selectedStrHttp}}">{{selectedStrHttp}}</view>
+                <view class="intro">{{selectedStr}}</view>
+              </view>
+              <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" wx:if="{{imageUrl}}" />
+            </view>
+          </block>
+          <!--<view class="goods-attr" wx:if="{{product.productTags && product.productTags.length > 0}}">-->
+          <!--<view class="attr-item" wx:for="{{product.productTags}}" wx:for-item="item">-->
+          <!--<image class="tick-icon" src="{{imageUrl}}/ic-tick.png" />-->
+          <!--<text>{{item}}</text>-->
+          <!--</view>-->
+          <!--</view>-->
+          <view class="goods-attr">
+            <view class="attr-item">
+              <image class="tick-icon" src="{{imageUrl}}/ic-tick.png" wx:if="{{imageUrl}}" />
+              <text>7天包退</text>
+            </view>
+            <view class="attr-item">
+              <image class="tick-icon" src="{{imageUrl}}/ic-tick.png" wx:if="{{imageUrl}}" />
+              <text>正品保障</text>
+            </view>
+            <view class="attr-item">
+              <image class="tick-icon" src="{{imageUrl}}/ic-tick.png" wx:if="{{imageUrl}}" />
+              <text>48小时发货</text>
+            </view>
+            <!-- <view class="attr-item">
+                <image class="tick-icon" src="{{imageUrl}}/ic-tick.png" />
+                <text>免运费</text>
+              </view> -->
+          </view>
+        </view>
+        <!-- 商品详情 -->
+        <view class="goods-detail">
+          <view class="pannel">
+            <text>商品详情</text>
+          </view>
+          <view class="rich-text">
+            <Html2wxml :parserName="name" :parserContent.sync="productDesc"></Html2wxml>
+          </view>
+          <!-- <rich-text class="rich-text" nodes="{{product.productDesc}}"></rich-text> -->
+        </view>
+        <!-- 固定底部悬浮按钮 -->
+        <BottomBuyBar :groupSale.sync="groupSale" :flashSale.sync="flashSale" :mode.sync="mode" :isCollected.sync="isCollected" @collect.user="collect" @buy.user="buy" @plusCart.user="plusCart" :goods.sync="product" :minPrice.sync="minPrice" :buyNum.sync="buyNum"
+          :cartNum.sync="cartNum" :kf.sync="kf" :cashBack.sync="cashBack"/>
+      </block>
+      <!-- 底部弹出规格选择框 -->
+      <PopupBuyPannel :mode.sync="mode" :flashSale.sync="flashSale" :groupSale.sync="groupSale" :hasTp.sync="hasTp" @buy.user="popBuy" @plusCart.user="popPlusCart" :buyNum.sync="buyNum" :productTpExtendList.sync="productTpExtendList" :productTpList.sync="productTpList"
+        :product.sync="product" :minPrice.sync="minPrice" :userSelectTps.sync="userSelectTps" :tpNames.sync="tpNames" :firstNotChooseTpIndex.sync="firstNotChooseTpIndex" :selectedExtendTp="selectedExtendTp" :cashBack.sync="cashBack" :flashSale.sync="flashSale" :groupSale.sync="groupSale"/>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import goods from '@/api/goods'
+  import mine from '@/api/mine'
+  import flashSale from '@/api/flash'
+  import cashBack from '@/api/cashBack'
+  import group from '@/api/group'
+  import cart from '@/api/cart'
+  import router from '@/mixins/router'
+  import nRouter from '@/mixins/new_router'
+  import Event from '@/utils/Event'
+  import BottomBuyBar from '@/components/goods/bottom_buy_bar'
+  import PopupBuyPannel from '@/components/goods/popup_buy_pannel'
+  import GoodsList from '@/components/goods/goods_list'
+  import pagination from '@/mixins/pagination'
+  import Html2wxml from '@/components/common/html2wxml'
+  import ServiceOver from '@/components/common/service_over'
+  import ShareBottom from '@/components/goods/share_buttom' // 底部弹出选择分享海报
+  import Tips from '@/utils/Tips'
+  import Util from '@/utils/Util'
+  import {
+    connect
+  } from 'wepy-redux'
+  import {
+    cartInit,
+    kfInit
+  } from '@/store/actions'
+  // 商品类型
+  const goodsType = new Map([
+    ['1', 'default'],
+    ['2', 'chain'],
+    ['3', 'group_sale'],
+    ['4', 'flash_sale'],
+    ['5', 'cash_back']
+  ])
+  @connect({
+    cartList(state) {
+      return state.cart.list
+    },
+    cartNum(state) {
+      return state.cart.num
+    },
+    kfIsInit(state) {
+      return state.common.kfIsInit
+    },
+    kf(state) {
+      return state.common.kf
+    }
+  }, {
+    cartInit,
+    kfInit
+  })
+  export default class GoodsDetail extends wepy.page {
+    mixins = [base, router, pagination, nRouter]
+    config = {
+      navigationBarTitleText: '商品详情'
+    }
+    components = {
+      BottomBuyBar,
+      PopupBuyPannel,
+      GoodsList,
+      Html2wxml,
+      ShareBottom,
+      ServiceOver
+    };
+    data = {
+      init: false, // 初始化
+      firstLoading: true,
+      productId: '', // 商品ID
+      list: [], // 其他商品列表
+      page: {
+        list: []
+      },
+      goodsInfo: {}, // 商品接口返回值
+      productTpExtendList: [], // 商品规格（SKU）列表
+      productTpList: [], // 商品规格值列表
+      product: {}, // 商品详情
+      valid: true, // true 存在商品 false 不存在
+      minPrice: '',
+      selectTps: {}, // 规格id => name
+      userSelectTps: [], // 用户选择规格组 如初始三级分类[0,0,0]
+      tpNames: [], // 规格分类名数组
+      firstNotChooseTpIndex: 0, // 未选择规格名索引
+      selectedExtendTp: null, // 已选择规格组
+      buyNum: 1, // 购买件数
+      hasTp: true, // 是否含有规格
+      isCollected: false,
+      productDesc: '',
+      mode: 'default', // 模式 default普通商品 cash_back 返现
+      activityId: '', // 营销活动ID
+      selectedStrHttp: '', // 请求下来的规格
+      cashBack: {}, // 返现详情
+      flashSale: {}, // 限时购详情
+      groupSale: {}, // 团购详情
+      userGroupBuyingGroupId: '', // 开团团购id 分享进来才有
+      timer: null, // 计时器
+      timeInter: null, // 指定定时器
+      shareIsDisplay: false, // 底部分享，
+      isVip: false,
+      sceneData: null
+    }
+    methods = {
+      shareButton() {
+        this.shareIsDisplay = true
+        this.$apply()
+      },
+      // 选择规格
+      chooseSpec() {
+        if (this.groupSale.isSelfJoin === 1) {
+          Tips.error('你已开团,请邀请')
+          return 0
+        }
+        this.showPanel()
+      },
+      // 购买
+      buy() {
+        if (this.mode === 'group_sale') { // 团购
+          // 如无商品规格 或者 规格未选择 直接弹出
+          this.isSelectRule()
+        }
+        if (this.mode === 'flash_sale') { // 限时购
+          if (this.flashSale.flashSaleStatus === 0) {
+            Tips.error('当前活动暂未开始')
+            return 0
+          }
+          // 如无商品规格 或者 规格未选择 直接弹出
+          this.isSelectRule()
+        }
+        if (this.mode === 'default') {
+          // 如无商品规格 或者 规格未选择 直接弹出
+          this.isSelectRule()
+        } else if (this.mode === 'cash_back') {
+          this.showPanel('buy')
+          return false
+        }
+      },
+      // 加入购物车
+      plusCart() {
+        this.showPanel('plus_cart')
+      },
+      // 立即购买
+      popBuy() {
+        if (!this.isBindPhone()) return false
+        if (!this.checkOrder()) return false
+        this.goOrder()
+      },
+      // 加入购物车
+      popPlusCart() {
+        if (!this.isBindPhone()) return false
+        if (!this.checkOrder()) return false
+        this.doPlusCart()
+      },
+      // 收藏
+      collect(isCollected) {
+        this.handleCollect(isCollected)
+      },
+      // 加入店铺
+      store() {
+        mine.postStore({
+          productId: this.product.productId
+        }).then(res => {
+          Tips.toast('加入店铺成功', null, 'none')
+        })
+      },
+      // 预览图片
+      preview(list, index) {
+        if (!list || list.length === 0) return
+        const current = list.filter((item, i) => index === i)[0]
+        wepy.previewImage({
+          urls: list, // 需要预览的图片链接列表,
+          current: current
+        })
+      }
+    }
+    computed = {
+      // 拼接已选择规格字符串
+      selectedStr() {
+        let str = ''
+        if (this.userSelectTps.includes(0)) {
+          return str
+        } else {
+          str = []
+          this.userSelectTps.forEach((item) => {
+            str.push(this.selectTps[item + ''])
+          })
+          return str.join(',')
+        }
+      }
+    }
+    // 是否选择规格
+    isSelectRule() {
+      if (!this.hasTp || (this.hasTp && this.firstNotChooseTpIndex > -1)) {
+        this.showPanel('buy')
+      } else {
+        if (!this.isBindPhone()) return false
+        if (!this.checkOrder()) return false
+        this.goOrder()
+      }
+    }
+    async onLoad(options) {
+      this.isVip = wepy.getStorageSync('isVip') // 会员判断
+      this._clearTimeDown(this.timeInter)
+      this.userGroupBuyingGroupId = options.userGroupBuyingGroupId || '' // 开团团购id 分享进来才有
+      // 从分享进来 带scene 需要初始化项目
+      if (options.scene) {
+        await this.initProject(options)
+      }
+      if (!this.kfIsInit) this.methods.kfInit()
+      // 获取商品ID
+      if (options) {
+        const scene = Util.analyseQrcodeScene(options)
+        this.productId = options.id || scene.productId
+        this.mode = options.mode || (scene && scene.type && goodsType.get(scene.type)) || 'default'
+        this.activityId = options.activityId || (scene && scene.activityId)
+      }
+      this.initData()
+    }
+    // 初始化页面数据
+    initData() {
+      Event.emit(Event.GOODS_PANEL_CLOSE)
+      if (this.mode === 'cash_back') {
+        this.getCashBackInfo()
+      }
+      if (this.mode === 'flash_sale') {
+        this.getFlashSaleInfo()
+      }
+      if (this.mode === 'group_sale') {
+        this.getGroupSaleInfo()
+      }
+      this.getGooodsInfo()
+    }
+    // 获取商品详情
+    async getGooodsInfo() {
+      Tips.loading('加载中', () => {
+        this.init = true // 商品加载完成
+        this.$apply()
+      })
+      try {
+        this.goodsInfo = await goods.goodsInfo(this.productId)
+        this.product = this.goodsInfo.product
+        this.productDesc = this.product.productDesc
+        this.productTpList = this.goodsInfo.productTpList
+        // 检查商品是否含有规格
+        if (this.goodsInfo.productTpList && this.goodsInfo.productTpList.length > 0) {
+          this.hasTp = true
+          this.productTpExtendList = this.goodsInfo.productTpExtendList
+          this.productTpExtendList.sort((a, b) => a['productTpPrice'] - b['productTpPrice'])
+          this.minPrice = this.productTpExtendList && this.productTpExtendList.length > 0 ? this.productTpExtendList[0].productTpPrice : this.product.productPrice
+          this.initSpec()
+        } else {
+          this.hasTp = false
+          this.productTpExtendList = this.goodsInfo.productTpExtendList
+          this.minPrice = this.product.productPrice
+        }
+      } catch (error) {
+        this.goodsInfo = null
+        this.valid = false
+        this.getGoodsList()
+      }
+      // TODO 检查商品是否收藏
+      // this.checkCollection()
+      this.updateCartState()
+      this.loaded()
+      this.firstLoading = false
+      this.$apply()
+      this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    // 处理商品规格
+    initSpec() {
+      // 用户SKU选择数组等于规格数组长度，表示已经初始化
+      if (this.productTpList.length === this.userSelectTps.length) return
+      // 处理规格列表
+      let selectTps = {}
+      this.productTpList.forEach((item, index, arr) => {
+        item.forEach((citem, cindex, carr) => {
+          selectTps[citem.productTpId + ''] = citem.productTpValue
+        })
+        this.userSelectTps.push(0)
+        this.tpNames.push(item[0].tpCategoryName)
+      })
+      this.selectTps = selectTps
+      this.$apply()
+    }
+    // 显示商品规格选择
+    showPanel(action = 'choose_spec') {
+      const source = this.$root.$wxpage.route
+      const goods = null
+      Event.emit(Event.GOODS_PANEL_OPEN, {
+        goods,
+        source,
+        action
+      })
+    }
+    /**
+     * 跳转订单页
+     * n 购买数量
+     * g 商品id
+     * t 规格ID（SKU）
+     * mode 订单类型 不填或者default 普通 cash_back 返现
+     */
+    goOrder() {
+      let orderUrl = '/pages/order/submit'
+      let routerData = {
+        n: this.buyNum,
+        g: this.product.productId
+      }
+      if (this.mode === 'group_sale') { // 开团跳订单
+        if (this.hasTp) {
+          routerData = {
+            ...routerData,
+            mode: 'group_sale',
+            userGroupBuyingGroupId: this.groupSale.userGroupBuyingGroupId, // 开团ID
+            t: this.groupSale.productTpExtendId,
+            activityId: this.activityId
+          }
+        } else {
+          routerData = {
+            ...routerData,
+            mode: 'group_sale',
+            userGroupBuyingGroupId: this.groupSale.userGroupBuyingGroupId, // 开团ID
+            t: this.groupSale.productTpExtendId,
+            activityId: this.activityId
+          }
+        }
+      }
+      if (this.mode === 'flash_sale') { // 限时购跳订单
+        if (this.hasTp) {
+          routerData = {
+            ...routerData,
+            mode: 'flash_sale',
+            t: this.flashSale.productTpExtendId || 1,
+            activityId: this.activityId
+          }
+        } else {
+          routerData = {
+            ...routerData,
+            mode: 'flash_sale',
+            t: this.flashSale.productTpExtendId || 1,
+            activityId: this.activityId
+          }
+        }
+      }
+      if (this.mode === 'default') { // 默认
+        if (this.hasTp) {
+          routerData = {
+            ...routerData,
+            t: this.selectedExtendTp.productTpExtendId
+          }
+        } else {
+          routerData = {
+            ...routerData,
+            t: this.productTpExtendList[0].productTpExtendId
+          }
+        }
+      } else if (this.mode === 'cash_back') { // 砍现
+        routerData = {
+          ...routerData,
+          t: this.cashBack.productTpExtendId,
+          mode: 'cash_back',
+          activityId: this.cashBack.bargainActivityId
+        }
+      }
+      this._goRouter(orderUrl, routerData)
+    }
+    // 下单前选择
+    checkOrder() {
+      let key = ['default']
+      // 普通商品检查规格选择
+      if (key.includes(this.mode) && this.hasTp && this.firstNotChooseTpIndex > -1) {
+        wx.showToast({
+          title: '请选择规格',
+          icon: 'none'
+        })
+        return false
+      }
+      // 检查购买数量
+      if (this.buyNum <= 0) {
+        wx.showToast({
+          title: '请选择数量',
+          icon: 'none'
+        })
+        return false
+      }
+      // 检查库存
+      if ((this.mode === 'default' && this.hasTp && (!this.selectedExtendTp || this.selectedExtendTp.productTpInventory < this.buyNum)) || (!this.hasTp && (!this.product.inventoryNum || this.product.inventoryNum < this.buyNum))) {
+        wx.showToast({
+          title: '库存不足',
+          icon: 'none'
+        })
+        return false
+      }
+      return true
+    }
+    // 加入购物车
+    async doPlusCart() {
+      const param = {
+        productId: this.product.productId,
+        productTpExtendId: this.hasTp ? this.selectedExtendTp.productTpExtendId : this.productTpExtendList[0].productTpExtendId,
+        num: this.buyNum
+      }
+      Tips.loading()
+      await cart.add(param)
+      Event.emit(Event.GOODS_PANEL_CLOSE)
+      Tips.toast('添加成功', null, 'none')
+      this.updateCartState()
+    }
+    // 获取推荐商品列表
+    async getGoodsList() {
+      this.page = goods.indexGoods()
+      await this.reload()
+      this.list = this.page.list
+      this.$apply()
+    }
+    // 检查收藏状态
+    async checkCollection() {
+      if (!Util.isLogin()) return
+      let param = {
+        sourceType: 'goods',
+        sourceIds: this.product.productId
+      }
+      let d = await goods.checkCollection(param)
+      this.isCollected = d[this.product.productId].result
+      this.$apply()
+    }
+    // 更新购物车状态
+    async updateCartState() {
+      if (!Util.isLogin()) return
+      await this.methods.cartInit()
+    }
+    // 收藏
+    handleCollect(isCollected) {
+      const funcName = !isCollected ? 'addCollection' : 'delCollection'
+      goods[`${funcName}`]({
+        sourceType: 'goods',
+        [isCollected ? 'sourceIds' : 'sourceId']: this.product.productId
+      }).then(() => {
+        this.isCollected = !isCollected
+        this.$apply()
+      })
+    }
+    // 返现活动详情
+    async getCashBackInfo() {
+      try {
+        this.cashBack = await cashBack.detail(this.activityId)
+        this.timer = setInterval(Util.counterDown.bind(
+          this,
+          this.cashBack.bargainEndTime,
+          (format) => this.counterCallBack(format)), 1000)
+      } catch (error) {
+        this.cashBack = {}
+      }
+    }
+    // 规格字符串处理 ---限时购 团购
+    arrToStrProduct(data = '', value = 'selectedStrHttp', key = 'productTpValue') {
+      if (!data) return 0
+      this[value] = ''
+      let arr = []
+      data.map((v, i) => {
+        arr.push(v[key])
+        this[value] = arr.join(',')
+      })
+      this.$apply()
+    }
+    // 限时购活动详情
+    async getFlashSaleInfo() {
+      this.flashSale = await flashSale.detail({
+        productFlashSaleId: this.activityId
+      })
+      this.arrToStrProduct(this.flashSale.productTpList) // 规格处理
+      if (this.flashSale.flashSaleStatus === 0) { // 未开始
+        this._clearTimeDown(this.timeInter)
+        await this._countDown(this.flashSale.flashSaleBeginTimeStamp * 1000, (ss, inter) => {
+          this.timeInter = inter // 赋值定时器
+          if (ss === `00:00`) {
+            this._routerBack()
+          }
+          let arr = ss.split(':')
+          this.flashSale.timeStart = arr
+          this.$apply()
+        })
+      }
+      if (this.flashSale.flashSaleStatus === 1) { // 进行中
+        this._clearTimeDown(this.timeInter)
+        await this._countDown(this.flashSale.flashSaleEndTimeStamp * 1000, (ss, inter) => {
+          this.timeInter = inter // 赋值定时器
+          if (ss === `00:00`) {
+            this._routerBack()
+          }
+          let arr = ss.split(':')
+          this.flashSale.timeDown = arr
+          this.$apply()
+        })
+      }
+    }
+    // 团购活动详情
+    async getGroupSaleInfo() {
+      this.groupSale = await group.groupDetail({
+        groupBuyingActivityId: this.activityId, // 活动id
+        userGroupBuyingGroupId: this.userGroupBuyingGroupId // 当邀请的时候才带 - 拼团组件团id
+      })
+      this.arrToStrProduct(this.groupSale.productTpList) // 规格处理
+      this.groupSale.userGroupBuyingGroupId = this.groupSale.userGroupBuyingGroupId || ''
+      this._clearTimeDown(this.timeInter)
+      await this._countDown(this.groupSale.endTimeStamp * 1000, (ss, inter) => {
+        this.timeInter = inter // 赋值定时器
+        if (ss === `00:00`) {
+          this._routerBack()
+        }
+        let arr = ss.split(':')
+        this.groupSale.timeDown = arr
+        this.$apply()
+      })
+      this.$apply()
+    }
+    // 倒计时回调
+    counterCallBack(format) {
+      this.cashBack.remainFormat = format
+      if (format) {
+        this.cashBack.remainHour = format.split(':')[0]
+        this.cashBack.remainSecond = format.split(':')[1]
+        this.cashBack.remainMinute = format.split(':')[2]
+      } else {
+        this.cashBack.timeText = '已结束'
+        Util.clearCounter(this.timer)
+      }
+      this.$apply()
+    }
+    // page请求参数
+    params() {
+      return {
+        type: 0
+      }
+    }
+    // 触底加载
+    async onReachBottom() {
+      if (!this.valid) {
+        await this.next()
+        this.list = this.page.list
+        this.$apply()
+      }
+    }
+    onRoute() {
+      if (this.firstLoading) return
+      this.initData()
+    }
+    onShow() {
+      Util.clearCounter(this.timer)
+      this._clearTimeDown(this.timeInter)
+    }
+    onShareAppMessage(e) {
+      console.log('eee', e, this.mode)
+      const user = wepy.getStorageSync('user')
+      const pid = wepy.getStorageSync('pid')
+      const inviteUser = wepy.getStorageSync('inviteUser')
+      const productId = (e.target && e.target.dataset && e.target.dataset.productId) || this.productId
+      const paramsMap = new Map([
+        ['default', `id=${productId}&scene=${pid}_${user.userId || inviteUser}_${productId}_1`],
+        ['cash_back', `id=${productId}&scene=${pid}_${user.userId || inviteUser}_${productId}_5_${this.cashBack.bargainActivityId}_`],
+        ['group_sale', `id=${productId}&scene=${pid}_${user.userId || inviteUser}_${productId}_3_${this.groupSale.groupBuyingActivityId}_`],
+        ['flash_sale', `id=${productId}&scene=${pid}_${user.userId || inviteUser}_${productId}_4_${this.flashSale.productFlashSaleId}_`]
+      ])
+      // const buttonShareInfo = e.target.dataset  // 分享按钮传值
+      const shareInfoMap = new Map([
+        ['default', { shareTitle: this.product.productName, shareImg: this.product.productThumbnail }],
+        ['cash_back', { shareTitle: this.cashBack.shareTitle, shareImg: this.cashBack.shareImg }],
+        ['group_sale', { shareTitle: this.groupSale.shareTitle, shareImg: this.groupSale.shareImg }],
+        ['flash_sale', { shareTitle: this.flashSale.shareTitle, shareImg: this.flashSale.shareImg }]
+      ])
+      // console.log('[sharePaths] === ', `/pages/goods/detail?${paramsMap.get(this.mode)}`)
+      console.log('[shareObej] ====', {
+        title: shareInfoMap.get(this.mode).shareTitle,
+        imageUrl: shareInfoMap.get(this.mode).shareImg,
+        path: `/pages/goods/detail?${paramsMap.get(this.mode)}`
+      })
+  
+      return {
+        title: shareInfoMap.get(this.mode).shareTitle,
+        imageUrl: shareInfoMap.get(this.mode).shareImg,
+        path: `/pages/goods/detail?${paramsMap.get(this.mode)}&scene=${this.sceneData}`
+      }
+    }
+    onUnload() {
+      Util.clearCounter(this.timer)
+      this._clearTimeDown(this.timeInter)
+    }
+    onHide() {
+      Util.clearCounter(this.timer)
+      this._clearTimeDown(this.timeInter)
+    }
+  }
+</script>

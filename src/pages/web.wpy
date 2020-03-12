@@ -1,0 +1,30 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+
+</style>
+
+<template>
+  <web-view src="{{url}}"></web-view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Web extends wepy.page {
+    config = {
+      navigationBarTitleText: ''
+    }
+    components = {}
+    data = {
+      url: ''
+    }
+    methods = {
+    }
+    onLoad(options) {
+      if (options && options.url) {
+        this.url = options.url
+        this.$apply()
+      }
+    }
+  }
+</script>

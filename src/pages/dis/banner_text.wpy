@@ -1,0 +1,71 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+@import '../../scss/dis';
+ .upgrade-wrap {
+      background-color: #ffffff;
+      margin-bottom: $margin;
+      padding: $margin;
+      .img {
+        width: 200rpx; 
+        height: 167rpx;
+        display: block;
+        margin: 0 auto;
+      }
+      .title {
+        font-size: $fontSize3;
+        color: $mainColor;
+        padding-top: 15rpx;
+        text-align: center;
+      }
+}
+</style>
+
+<template>
+  <import src="../../components/wxparse/wxParse.wxml"/>
+  <view class="member-container upgrade-wrap" style="{{configStyle}}">
+      <block> 
+          <view class="introduce-wrap">
+            <view class="condition-wrap">
+              <view class="line"/>
+              <view class="gray">活动描述</view>
+              <view class="line"/>
+            </view>
+            <view class="content">
+              <Html2wxml
+                :parserName.sync="welfareName"
+                :parserContent.sync="welfareDesc"
+              ></Html2wxml>
+            </view>
+          </view>
+        </block>
+      
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Html2wxml from '@/components/common/html2wxml'
+import base from '@/mixins/base'
+export default class MemberWelfare extends wepy.page {
+  config = {
+    navigationBarTitleText: '活动介绍'
+  };
+  components = {
+    Html2wxml
+  };
+  data = {
+    obj: {},
+    welfareDesc: '',
+    welfareName: ''
+  };
+  mixins = [base]
+  onLoad(options) {
+    console.log(options.item, 'xxx')
+    this.obj = JSON.parse(options.item)
+    this.welfareDesc = this.obj.introduction
+    this.welfareName = '1'
+    this.$apply()
+    this.$invoke('Html2wxml', 'htmlParserNotice')
+  }
+}
+</script>

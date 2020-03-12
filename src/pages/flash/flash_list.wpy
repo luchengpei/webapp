@@ -1,0 +1,110 @@
+<style lang="scss" scoped>
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <Tab :tab="tab" @change.user="switchTab" />
+    <ServiceOver></ServiceOver>
+    <view style="margin-top:80rpx;">
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <GoodsFlashSaleItem :item.sync="item"></GoodsFlashSaleItem>
+      </repeat>
+      <Empty wx:if="{{list.length===0}}" title="暂无限时购商品" subtitle="去其他页面看看"></Empty>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import flash from '@/api/flash'
+  import GoodsFlashSaleItem from '@/components/flash/flash_sale_item'
+  import Tab from '@/components/common/tab'
+  import pagination from '@/mixins/pagination'
+  import Empty from '@/components/common/empty'
+  import base from '@/mixins/base'
+  import ServiceOver from '@/components/common/service_over'
+  export default class FlashList extends wepy.page {
+    config = {
+      navigationBarTitleText: '限时秒杀',
+      enablePullDownRefresh: true
+    }
+    components = {
+      Tab,
+      Empty,
+      GoodsFlashSaleItem,
+      ServiceOver
+    };
+    data = {
+      list: null,
+      tab: {
+        list: [{
+          id: '1',
+          title: '正在抢购'
+        },
+        {
+          id: '0',
+          title: '即将开始'
+        }
+        ],
+        selectedId: '1'
+      }
+    }
+  
+    methods = {
+      async switchTab() {
+        await this._clearTimeDown()
+        await this.getListData()
+        this.$apply()
+      }
+    }
+
+    mixins = [pagination, base]
+    // 获取限时购列表
+    async getListData() {
+      this.page = await flash.getFlashList()
+      await this.next()
+      this.list = this.page.list
+      this._timeDeal('flashSaleEndTimeStamp') // 倒计时
+      this._timeDeal('flashSaleBeginTimeStamp', 'timeStart') // 倒计时
+      console.log('laoz的限时购数据', this.list)
+      this.$apply()
+    }
+    // 列表传参
+    params() { // 获取限时购的参数
+      return {
+        status: this.tab.selectedId
+      }
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.list = this.page.list
+      this._timeDeal('flashSaleEndTimeStamp') // 倒计时
+      this._timeDeal('flashSaleBeginTimeStamp', 'timeStart') // 倒计时
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.list = this.page.list
+      this._timeDeal('flashSaleEndTimeStamp') // 倒计时
+      this._timeDeal('flashSaleBeginTimeStamp', 'timeStart') // 倒计时
+      this.$apply()
+    }
+    // async onLoad() {
+    //   await this._clearTimeDown()
+    //   await this.getListData()
+    // }
+    async onShow() {
+      this._clearTimeDown()
+      this.getListData()
+    }
+    onUnload() {
+      this._clearTimeDown()
+    }
+  }
+</script>

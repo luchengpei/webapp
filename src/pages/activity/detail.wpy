@@ -1,0 +1,791 @@
+<style lang="scss">
+  @import '../../scss/common';
+  .activity-detail {
+    height: 100%;
+    padding-bottom: 200rpx;
+  }
+  .image-box {
+    position: relative;
+    width: 100%;
+    height: 300rpx;
+    >image {
+      width: 100%;
+      height: 100%;
+      background: $imageBgColor;
+    }
+    .image-mask {
+      display: flex;
+      align-items: flex-end;
+      position: absolute;
+      height: 139rpx;
+      width: 100%;
+      left: 0;
+      bottom: 0;
+      padding: 0 30rpx 30rpx;
+      box-sizing: border-box;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0), $black);
+      >text {
+        width: 90rpx;
+        height: 28rpx;
+        border-radius: 5rpx;
+        font-size: 20rpx;
+        color: #fff;
+        text-align: center;
+        &.wait {
+          background-color: #fbd7a8;
+        }
+        &.start {
+          background-color: #a8b2fb;
+        }
+        &.end {
+          background-color: #888;
+        }
+      }
+      .count {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex: 1;
+        .item {
+          display: flex;
+          align-items: center;
+          .iconfont {
+            color: #fff;
+            font-size: 24rpx;
+            margin-left: 50rpx;
+          }
+          >text {
+            font-size: 24rpx;
+            color: #fff;
+            margin-left: 15rpx;
+          }
+        }
+      }
+    }
+  }
+  .info {
+    display: flex;
+    flex-direction: column;
+    padding: 0 30rpx;
+    background: #fff;
+    margin-bottom: 20rpx;
+    .top {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1rpx solid $borderColor;
+      font-size: 34rpx;
+      color: $black;
+      padding: 28rpx 0;
+      .setting {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20rpx;
+        .main-row {
+          display: flex;
+          align-items: center;
+          line-height: 46rpx;
+          .price {
+            font-size: 58rpx;
+            color: $priceRed;
+          }
+          .type {
+            flex: 1;
+            font-size: 24rpx;
+            margin-left: 30rpx;
+            margin-top: 20rpx;
+            color: $gray;
+          }
+          .choose {
+            font-size: 28rpx;
+            color: #a5a5a5;
+            >i {
+              font-size: 26rpx;
+            }
+          }
+        }
+        .cross-price {
+          font-size: 24rpx;
+          color: $gray;
+          text-decoration: line-through;
+        }
+      }
+    }
+    .middle {
+      display: flex;
+      flex-direction: column;
+      padding: 20rpx 30rpx 0 0;
+      .column {
+        display: flex;
+        align-items: center;
+        font-size: 24rpx;
+        line-height: 36rpx;
+        color: $gray;
+        >text {
+          margin-left: 10rpx;
+        }
+        .summary {
+          align-self: flex-start;
+        }
+        >i {
+          align-self: flex-start;
+        }
+      }
+    }
+    .bottom {
+      display: flex;
+      align-items: center;
+      height: 98rpx;
+      >image {
+        width: 36rpx;
+        height: 36rpx;
+        border-radius: 2rpx; // background: $imageBgColor;
+      }
+      >text {
+        margin-left: 18rpx;
+        font-size: 24rpx;
+        color: $gray;
+      }
+    }
+  }
+  .rich {
+    margin-top: 30rpx;
+    .content {
+      background: #fff;
+    }
+  }
+  .bottom-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    height: 92rpx;
+    width: 100%;
+    background: #fff;
+    .left {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      width: 280rpx;
+      background: #fff;
+      border-top: 1rpx solid $borderColor;
+      .wrapper {
+        position: relative;
+        color: #999;
+        >button {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          opacity: 0;
+        }
+      }
+    }
+    .right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      background: $mainColor;
+      text-align: center;
+      font-size: 36rpx;
+      height: 100%;
+      color: #fff;
+      position: relative;
+      .form-button {
+        button {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          color: #ffffff;
+          background: $mainColor;
+          left: 0;
+          top: 0;
+          z-index: 2000;
+        }
+      }
+      &.full {
+        background: #888;
+      }
+      &.finish {
+        background: #888;
+      }
+    }
+  }
+  .bottom-i {
+    font-size: 46rpx;
+  }
+  .partners {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20rpx;
+    background: #fff;
+    .list {
+      display: flex;
+      flex-wrap: wrap;
+      .user {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 20%;
+        >image {
+          width: 72rpx;
+          height: 72rpx;
+          margin-top: 25rpx;
+          border-radius: 50%;
+          overflow: hidden;
+          background: #444444;
+        }
+        >text {
+          margin-top: 10rpx;
+          padding-bottom: 20rpx;
+          font-size: 24rpx;
+          line-height: 36rpx;
+          color: $gray;
+        }
+      }
+    }
+  }
+  .info-select {
+    background: #ffffff;
+    display: flex;
+    padding: 30rpx;
+    justify-content: flex-start;
+    align-items: center; // border-bottom: 1rpx solid $borderColor;
+    .left-money {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      .price {
+        color: #F11717;
+        font-size: 58rpx;
+      }
+      .no-price-member{
+        display: flex;
+        flex-direction: row;
+        margin-left: 16rpx;
+        .no-price {
+          font-size: 24rpx;
+          position: relative;
+          color: #999999;
+          .line {
+            top: 50%;
+            width: 110%;
+            position: absolute;
+            height: 2rpx;
+            background: #999999;
+          }
+        }
+        .no-member{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20rpx;
+          margin-left: 14rpx;
+          background: $mainColor;
+          padding: 0 16rpx;
+          color:#fff;
+          border-radius: 6rpx;
+        }
+      }
+    }
+    .center-tip {
+      margin-left: 20rpx;
+      color: #999999;
+      font-size: 24rpx;
+    }
+    .right-select {
+      display: flex;
+      color: #999999;
+      font-size: 28rpx;
+      flex: 1;
+      justify-content: flex-end;
+      .select-img {
+        width: 20rpx;
+        height: 35rpx;
+        margin-left: 20rpx;
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+  .active-user {
+    width: 300rpx;
+    background: #ffffff;
+    .img-content {
+      margin-left: 20rpx;
+      display: flex;
+      .head-item {
+        width: 60rpx;
+        height: 60rpx;
+        border-radius: 60rpx;
+        margin-left:-10rpx;
+        overflow: hidden;
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+  image {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<template>
+  <view class="activity-detail page-container" style="{{configStyle}}">
+    <import src="../../components/wxparse/wxParse.wxml" />
+    <!-- 图片 -->
+    <view class="image-box">
+      <image src="{{activityMain.coverPic}}" mode="aspectFill"></image>
+      <view class="image-mask">
+        <!-- 活动状态 -->
+        <text class="wait" wx:if="{{activityMain.activityStatus === 1}}">未开始</text>
+        <text class="wait" wx:elif="{{activityMain.activityStatus === 2}}">报名中</text>
+        <text class="start" wx:elif="{{activityMain.activityStatus === 3}}">进行中</text>
+        <text class="end" wx:elif="{{activityMain.activityStatus === 4}}">已结束</text>
+        <view class="count">
+          <view class="item">
+            <i class="iconfont icon-eye"></i>
+            <text>{{activityMain.pageview}}</text>
+          </view>
+          <view class="item">
+            <i class="iconfont icon-people"></i>
+            <text>{{activityMain.application}}{{activityMain.playersLimit?'/'+activityMain.playersLimit:''}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 活动介绍 -->
+    <view class="info">
+      <view class="top">
+        <text>{{activityMain.title}}</text>
+      </view>
+          <!--票种  -->
+    <view class="info-select" wx:if="{{activitySetting.settingId}}" @tap="goTicket">
+      <view class="left-money">
+        <view class="price">{{activitySetting.price?'￥'+activitySetting.price:'免费'}}</view>
+        <view class="no-price-member">
+          <view class="no-price" wx:if="{{activitySetting.price}}">￥{{activitySetting.originPrice}}
+            <view class="line"></view>
+          </view>
+          <view class="no-member" wx:if='{{memberSwitch}}'>会员免费</view>
+        </view>
+      </view>
+      <view class="center-tip">[{{activitySetting.typeName}}]</view>
+      <view class="right-select">
+        <view class="select-text">选择</view>
+        <view class="select-img">
+          <image src="https://static.laoganbu.cn//ic-right-arrow.png"></image>
+        </view>
+      </view>
+    </view>
+      <view class="middle">
+        <view class="column">
+          <i class="iconfont icon-local"></i>
+          <text>活动地点：{{activityMain.address}}</text>
+        </view>
+        <view class="column">
+          <i class="iconfont icon-time"></i>
+          <text>活动时间：{{activityMain.startTime}} ~ {{activityMain.endTime}}</text>
+        </view>
+        <view class="column">
+          <i class="iconfont icon-call"></i>
+          <text>联系电话：{{activityMain.contactPhone}}</text>
+        </view>
+        <view class="column">
+          <i class="iconfont icon-info"></i>
+          <text>{{activityMain.summary}}</text>
+        </view>
+      </view>
+      <view class="bottom">
+        <image src="{{activitySubType.logo}}" mode="aspectFill"></image>
+        <text>{{activityMain.typeStr}}</text>
+      </view>
+    </view>
+    <!-- 参与人 -->
+    <TitleC title="参与人" wx:if="{{activityMain.showPlayers !== 0 && activity.joinUser.length !== 0}}">
+      <view slot="right" @tap="toJoinUser">
+        <view class="active-user">
+          <view class="img-content">
+            <repeat for="{{joinUser}}" key="index" index="index" item="item">
+              <view class="head-item" id="{{index-1!==userImg.length?'img-move':''}}">
+                <image src="{{item.avatar}}"></image>
+              </view>
+            </repeat>
+          </view>
+        </view>
+      </view>
+    </TitleC>
+    <!-- 富文本 -->
+    <view class="rich" wx:if="{{introduction!==''}}">
+      <TitleA title="活动介绍" />
+      <view class="content">
+        <Html2wxml :parserName="name" :parserContent.sync="introduction"></Html2wxml>
+      </view>
+    </view>
+    <!-- 评论 -->
+    <Comment :list.sync="commentList" @readyComment.user="readyComment"></Comment>
+    <!-- 底部按钮 -->
+    <view class="bottom-bar safe-area-bottom">
+      <view class="left">
+        <view class="wrapper" @tap="backToHome">
+          <i class="iconfont icon-tab_home_n bottom-i"></i>
+        </view>
+        <view class="wrapper">
+          <i class="iconfont icon-actity_ic_share bottom-i"></i>
+          <button open-type="share"></button>
+        </view>
+      </view>
+      <v1iew class="right">
+        <view class="right finish" wx-if="{{buttonMode==='proof'}}">已报名</view>
+        <view class="right" wx-if="{{buttonMode==='join-no-ticket'}}">
+          <view class="form-button">
+            <form name="no-pay" report-submit report-submit-timeout="1000" @submit="submitFormId('no')">
+              <button form-type="submit">立即加入</button>
+            </form>
+          </view>
+        </view>
+        <view class="right"  wx-if="{{buttonMode==='join-one-ticket'}}">
+          <view class="form-button">
+            <form name="no-pay" report-submit report-submit-timeout="1000" @submit="submitFormId('one')">
+              <button form-type="submit">立即加入</button>
+            </form>
+          </view>
+        </view>
+        <view class="right" wx-if="{{buttonMode==='join-any-ticket'}}">
+          <view class="form-button">
+            <form name="no-pay" report-submit report-submit-timeout="1000" @submit="submitFormId('any')">
+              <button form-type="submit">立即加入</button>
+            </form>
+          </view>
+        </view>
+        <!-- <view class="right" wx-if="{{buttonMode==='doing'}}">
+          <view class="form-button">
+            <form name="no-pay" report-submit report-submit-timeout="1000" @submit="submitFormId('do')">
+              <button form-type="submit">立即加入</button>
+            </form>
+          </view>
+        </view> -->
+        <view class="right finish" wx-if="{{buttonMode==='doing'}}">进行中</view>
+        <view class="right finish" wx-if="{{buttonMode==='no-begin'}}">未开始</view>
+        <view class="right finish" wx-if="{{buttonMode==='end'}}">已结束</view>
+        <view class="right full" wx-if="{{buttonMode==='over'}}">人数已满</view>
+        <view class="right full" wx-if="{{this.activity._activityStatus===1}}">报名未开始</view>
+      </v1iew>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import activity from '@/api/activity'
+import Util from '@/utils/Util'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+import Title from '@/components/common/title'
+import Html2wxml from '@/components/common/html2wxml'
+import Comment from '@/components/comment/comment_list'
+import store from '@/api/store'
+import Tips from '@/utils/Tips'
+export default class ActivityDetail extends wepy.page {
+  constructor() {
+    super()
+    // 活动报名与缴费
+    this.data.isPay = new Map([
+      ['0', 'pay'], // 缴费
+      ['1', 'no-pay'] // 不缴费
+    ])
+    // 活动票种类型
+    this.data.ticketType = new Map([
+      ['0', 'no-ticket'], // 无票种
+      ['1', 'one-ticket'], // 一个票种
+      ['2', 'any-ticket'] // 多票种
+    ])
+    // 当前活动状态
+    this.data.activeState = new Map([
+      ['1', 'no-start'], // 未开始
+      ['2', 'sign-up'], // 报名中
+      ['3', 'doing'], // 进行中
+      ['4', 'end'], // 已结束
+      ['5', 'fail'], // 活动失败
+      ['6', 'over'] // 已满人
+    ])
+    // 当前用户状态
+    this.data.userState = new Map([
+      ['0', 'no-join'], // 未加入
+      ['1', 'join'] // 已经加入
+    ])
+    this.data.buttonModeMap = new Map([
+      // [活动票种类型,当前活动状态,当前用户状态]
+      // 活动未开始
+      ['no-ticket,no-start,no-join', 'no-begin'],
+      ['one-ticket,no-start,no-join', 'no-begin'],
+      ['any-ticket,no-start,no-join', 'no-begin'],
+      // join-no-ticket(无票种加入)
+      ['no-ticket,sign-up,no-join', 'join-no-ticket'],
+      // join-one-ticket(一票种加入)
+      ['one-ticket,sign-up,no-join', 'join-one-ticket'],
+      // join-any-ticket(多票种加入)
+      ['any-ticket,sign-up,no-join', 'join-any-ticket'],
+      // end(活动结束)
+      ['one-ticket,end,no-join', 'end'],
+      ['no-ticket,end,no-join', 'end'],
+      ['any-ticket,end,no-join', 'end'],
+      // over(人数已满)
+      ['one-ticket,over,no-join', 'over'],
+      ['no-ticket,over,no-join', 'over'],
+      ['any-ticket,over,no-join', 'over'],
+      ['one-ticket,doing,no-join', 'doing'],
+      ['no-ticket,doing,no-join', 'doing'],
+      ['any-ticket,doing,no-join', 'doing'],
+      // proof(已加入)
+      ['one-ticket,doing,join', 'proof'],
+      ['no-ticket,doing,join', 'proof'],
+      ['any-ticket,doing,join', 'proof'],
+      ['one-ticket,sign-up,join', 'proof'],
+      ['no-ticket,sign-up,join', 'proof'],
+      ['any-ticket,sign-up,join', 'proof'],
+      ['one-ticket,over,join', 'proof'],
+      ['no-ticket,over,join', 'proof'],
+      ['any-ticket,over,join', 'proof'],
+      ['one-ticket,end,join', 'proof'],
+      ['no-ticket,end,join', 'proof'],
+      ['any-ticket,end,join', 'proof']
+    ])
+  }
+  config = {
+    navigationBarTitleText: '活动详情'
+  };
+  components = {
+    TitleA: Title,
+    TitleB: Title,
+    TitleC: Title,
+    Html2wxml,
+    Comment
+  };
+  data = {
+    buttonMode: '',
+    signPay: '',
+    levelName:'',
+    firstLoading: true,
+    activityId: '',
+    activity: {},
+    activityMain: {},
+    activitySetting: {},
+    activitySubType: {},
+    activityType: {},
+    activityStatus: '',
+    isJoined: false,
+    joinUser: [],
+    settingCount: 0,
+    introduction: '',
+    commentList: [],
+    memberSwitch: 0,
+    newIsMemberFress:false,
+  };
+  methods = {
+    toJoinUser() {
+      this._routerTo('/pages/activity/join_user')
+    },
+    // 已经评论点赞
+    readyComment() {
+      this.getDetail()
+      this.getCommentList()
+    },
+    goTicket() {
+      // 选票
+      if (this.buttonMode === 'join-one-ticket') {
+        Tips.error('当前活动只有一个票种')
+        return 0
+      }
+      if (this.buttonMode === 'join-any-ticket') {
+        this._routerTo(`/pages/activity/join?isMemberFree=${this.newIsMemberFress}`)
+        return 0
+      }
+      Tips.error('当前活动状态无法选票')
+    },
+    submitFormId(type = '', v) {
+      // 发送服务通知formId
+      console.log(
+        '-----------^^^^^------------服务通知formId',
+        v.detail.formId
+      )
+      this.next(type)
+      let reg = 'the formId is a mock one'
+      if (reg === v.detail.formId) {
+        return 0
+      }
+      console.log('type-----', type)
+
+      // 提交formId发送服务表单
+      activity.insertFormId({
+        formId: v.detail.formId
+      })
+    },
+    // 返回首页
+    backToHome() {
+      wepy.reLaunch({
+        url: '/pages/index?p=index'
+      })
+    }
+  };
+  // 下一步
+  next(type = '') {
+    if (!Util.isLogin()) {
+      wepy.navigateTo({
+        url: '/pages/login'
+      })
+      return 0
+    }
+    // 判断是否免费与需要报名
+    let payForm = new Map([
+      [
+        'pay,sign',
+        type => {
+          // 报名缴费->走报名
+          if (type === 'one') {
+            let params
+            this._routerTo(`/pages/activity/submit?isMemberFree=${this.newIsMemberFress}`)
+            return 0
+          }
+          this._routerTo(`/pages/activity/sign_up`)
+        }
+      ],
+      [
+        'no-pay,no-sign',
+        async () => {
+          // 不报名不缴费->走结果
+          await this.signUp()
+          this._routerTo(`/pages/activity/success`)
+        }
+      ],
+      [
+        'pay,no-sign',
+        () => {
+          // 缴费不报名->走缴费
+          this._routerTo(`/pages/activity/submit?isMemberFree=${this.newIsMemberFress}`)
+        }
+      ],
+      [
+        'no-pay,sign',
+        () => {
+          // 报名不缴费->走报名
+          this._routerTo(`/pages/activity/sign_up`)
+        }
+      ]
+    ])
+    if (type === 'no') {
+      // 无票
+      this.signUp()
+      this._routerTo(`/pages/activity/success`)
+    }
+    if (type === 'one') {
+      // 单票
+      // 缓存settingId
+      wepy.setStorageSync('settingId', this.activity.activitySetting.settingId)
+      payForm.get(this.signPay.join(',')).call(this, type)
+    }
+    if (type === 'any') {
+      // 多票 走选票
+      this._routerTo(`/pages/activity/join?isMemberFree=${this.newIsMemberFress}`)
+    }
+    if (type === 'do') {
+      wx.showToast({
+        title: '活动已开始,不能报名啦!',
+        icon: 'none',
+        duration: 2000 // 持续的时间
+      })
+    }
+  }
+  // 报名-无票或者不报名不缴费调用
+  async signUp() {
+    let query = {
+      applyInfo: '', // 表单字段
+      activityId: wepy.getStorageSync('activityId') // 活动ID
+    }
+    await activity.signUp(query)
+  }
+  // 状态判断
+  stateForButton(state) {
+    let isPay = this.isPay.get(state._isFree.toString())
+    wepy.setStorageSync('pay', isPay === 'pay' ? 'pay' : '') // 是否需要支付
+    let needSign = state._isSign
+    let ticketType = this.ticketType.get(state._settingCount.toString())
+    let activeState = this.activeState.get(state._activityStatus.toString())
+    let userState = this.userState.get(state._isJoin.toString())
+    let resStr = [ticketType, activeState, userState].join(',')
+    this.buttonMode = this.buttonModeMap.get(resStr) || 'fail'
+    this.signPay = [isPay, needSign]
+    this.$apply()
+  }
+  mixins = [router, base];
+  onShow() {
+    this.getCommentList()
+    this.getDetail()
+  }
+  onLoad(options) {
+    this.activityId = options.id || ''
+    wepy.setStorageSync('activityId', this.activityId) // 缓存活动ID
+    // this.getDetail()
+    // this.getCommentList()
+
+  }
+  onRoute() {
+    if (this.firstLoading) return
+    this.getDetail()
+  }
+  async getDetail() {
+    this.activity = await activity.detail(this.activityId)
+    
+    let data = await store.getUserInfo()
+    this.levelName  = data.levelName || ''
+    this.joinUser = this.activity.joinUser
+      ? this.activity.joinUser.slice(0, 5)
+      : []
+    wepy.setStorageSync('joinUser', this.activity.joinUser) // 缓存参与人
+    this.activityMain = this.activity.activityMain
+    this.memberSwitch = Number(this.activityMain.isMemberFree)
+
+    this.newIsMemberFress = Number(this.activityMain.isMemberFree) && this.levelName ? 1 : 0
+
+    this.activitySubType = this.activity.activitySubType
+    this.activitySetting = this.activity.activitySetting
+    this.settingCount = this.activity.settingCount
+    this.introduction = this.activityMain.introduction || ''
+    this.firstLoading = false
+    this.stateForButton(this.activity)
+    this.$apply()
+    this.$invoke('Html2wxml', 'htmlParserNotice')
+  }
+  // 获取评论留言
+  async getCommentList() {
+    let query = {
+      activityId: wepy.getStorageSync('activityId'),
+      sourceType: 4
+    }
+    let data = await activity.getComment(query)
+    this.commentList = data
+    this.$apply()
+  }
+  onShareAppMessage() {
+    return {
+      title: this.activityMain.shareTitle || this.activityMain.title,
+      path: `/pages/activity/detail?id=${this.activityMain.activityId}&scene=${this.sceneData}`,
+      imageUrl: this.activityMain.shareCoverpic,
+      success: res => {},
+      fail: () => {},
+      complete: () => {}
+    }
+  }
+}
+</script>

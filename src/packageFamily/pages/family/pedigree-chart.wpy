@@ -1,0 +1,61 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .spectrum-book {
+    padding: 30rpx 30rpx 0 30rpx;
+    >.book-img:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+    .book-img {
+      padding: 30rpx 30rpx;
+      border-radius: 10rpx;
+      background: #ffffff;
+      width: 630rpx;
+      height: 1004rpx;
+      margin-bottom: 40rpx;
+      >image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="spectrum-book">
+    <view class="book-img" wx:for="{{chartData}}" wx:key="{{index}}">
+      <image src="{{item.lineageImg}}"></image>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Html2wxml from '@/components/common/html2wxml'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  export default class SpectrumBook extends wepy.page {
+    config = {
+      navigationBarTitleText: '世系图'
+    }
+    data = {
+      chartData: []
+    }
+    components = {
+      Html2wxml
+    }
+    mixins = [base]
+    methods = {
+      // this.$invoke('Html2wxml', 'htmlParserNotice')
+    }
+    async getPedigreeChartApi() {
+      try {
+        let res = await family.pedigreeChart()
+        this.chartData = res
+        this.$apply()
+      } catch (error) {}
+    }
+    onLoad(option) {
+      this.getPedigreeChartApi()
+    }
+  }
+</script>

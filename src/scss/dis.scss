@@ -1,0 +1,195 @@
+@import './common';
+.upgrade-wrap {
+  .sub-btn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: #ffffff;
+    height: 92rpx;
+    line-height: 92rpx;
+    font-size: $title;
+    background-color: $mainColor;
+    border-radius: 0rpx;
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .top-wrap {
+    height: 510rpx;
+    background-color: #ffffff;
+    margin-bottom: $margin;
+    padding: $margin;
+    .img {
+      width: 200rpx;
+      height: 167rpx;
+    }
+    .title {
+      font-size: $fontSize3;
+      color: $mainColor;
+      padding-top: 15rpx;
+    }
+    .item-wrap {
+      background-color: $subColor;
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      .item-content {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+      }
+    }
+  }
+  .condition-wrap {
+    display: flex;
+    flex-direction: row;
+    height: 23rpx;
+    padding: 33rpx 0rpx 0rpx 0rpx;
+    align-items: center;
+    justify-content: center;
+    .line {
+      width: 98rpx;
+      height: 0.5rpx;
+      background-color: $gray;
+      opacity: 0.5;
+    }
+    .gray {
+      font-size: $fontSize4;
+      color: $gray;
+      margin: 0rpx 20rpx;
+    }
+  }
+  .buy-wrap {
+    background-color: #ffffff;
+    margin-bottom: 40rpx;
+    .tex-main {
+      font-size: $fontSize4;
+      color: $mainColor;
+    }
+    .text-normal {
+      font-size: $fontSize4;
+      color: $black;
+      line-height: 60rpx;
+    }
+    .content {
+      padding: 0rpx $margin $margin $margin;
+      .cell {
+        margin-top: $margin;
+        .point {
+          width: 10rpx;
+          height: 10rpx;
+          border-radius: 50%;
+          background-color: $mainColor;
+          margin-right: 10rpx;
+        }
+
+        .vip-content {
+          height: 101rpx;
+          align-items: center;
+        }
+      }
+      .finish-icon-wrap {
+        flex:1;
+        color: $priceRed;
+        font-size: $fontSize4;
+        text-align: right;
+        .finish-icon {
+          font-size: $fontSize4;
+          margin-right: 10rpx;
+        }
+      }
+      .info {
+        float: right;
+      }
+    }
+    .buy-item {
+      padding: 25rpx 0rpx;
+      align-items: normal;
+      justify-content: space-between;
+      border-bottom: 1px solid $borderColor;
+      .title {
+        font-size: $fontSize3;
+        color: $black;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .buy-btn {
+        height: 60rpx;
+        line-height: 60rpx;
+        text-align: center;
+        color: #ffffff;
+        font-size: $fontSize4;
+        margin: 0rpx;
+        background-color: $mainColor;
+      }
+      .price {
+        font-size: $title;
+        color: $priceRed;
+      }
+      .goods-img {
+        width: 150rpx;
+        height: 150rpx;
+        border-radius: $borderRadius;
+        margin-right: 30rpx;
+      }
+      .text-wrap {
+        flex:1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        .btn-wrap {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+      .vip-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+    }
+  }
+  .progress-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .scale {
+      flex:1;
+      text-align: right;
+      margin-right: 20rpx;
+    }
+    .finish-icon-wrap-progress {
+      color: $priceRed;
+      font-size: $fontSize4;
+      text-align: right;
+      .finish-icon {
+        font-size: $fontSize4;
+        margin-right: 10rpx;
+      }
+    }
+  }
+  .introduce-wrap {
+    background-color: #ffffff;
+    .content {
+      padding: 40rpx 0;
+      font-size: $fontSize3;
+      color: $black;
+    }
+  }
+}

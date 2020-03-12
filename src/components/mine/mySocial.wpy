@@ -1,0 +1,143 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .see-all {
+    font-size: 28rpx;
+    color: #a5a5a5;
+    margin-right: 10rpx;
+  }
+  .mine-section-wrap {
+    margin-top: 20rpx;
+    background: #fff;
+  }
+  .mine-section-wrap {
+    margin-top: 20rpx;
+    background: #fff;
+  }
+  .social-btn-wrap {
+    height: 196rpx;
+    display: flex;
+    .social-btn {
+      position: relative;
+      .circle {
+        position: absolute;
+        right: 20rpx;
+        top: 20rpx;
+        height: 30rpx;
+        text-align: center;
+        line-height: 30rpx;
+        background: red;
+        color: $subMainColor;
+        font-size: $fontSize4;
+        padding: 0 10rpx;
+        border-radius: 15rpx;
+      }
+      .icon {
+        width: 94rpx;
+        height: 94rpx;
+        border-radius: 50%;
+        background: $mainColor;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i {
+          color: #fff;
+          font-size: 52rpx;
+        }
+      }
+      >button {
+        position: absolute;
+        opacity: 0;
+        height: 196rpx;
+        width: 100%;
+      }
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      image {
+        width: 92rpx;
+        height: 92rpx;
+      }
+      text {
+        margin-top: 16rpx;
+        font-size: 28rpx;
+        line-height: 36rpx;
+        color: $black;
+      }
+    }
+  }
+</style>
+
+<template>
+   <view class="mine-section-wrap" >
+        <FamilyTitle title="我的社交"></FamilyTitle>
+        <view class="social-btn-wrap">
+            <view class="social-btn" @tap="skipFamily" wx:for="{{mySocialList.list}}" @tap="routerTo({{item.link}})">
+              <image src="{{item.icon}}"></image>
+              <text>{{item.name}}</text>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import Util from '@/utils/Util'
+  import SectionTitle from '@/components/common/title'
+  export default class SimplePannelList extends wepy.component {
+    components = {
+      FamilyTitle: SectionTitle
+    }
+    props = {
+      genealogyId:{
+          default:''
+      }
+    }
+    data={
+      mySocialList:{}
+    }
+    mixins = [router]
+    methods = {
+      init(){
+       
+        this.mySocialList = wepy.$appConfig.myFamilyList
+        this.$apply()
+      },
+       skipMyHome() {
+        if (!Util.isLogin()) {
+          Tips.toast('请登录', null, 'none')
+          return false
+        }
+        this._routerTo('/packageSocial/pages/soclal/my-home')
+      },
+      skipCollect() {
+        if (!Util.isLogin()) {
+          Tips.toast('请登录', null, 'none')
+          return false
+        }
+        this._routerTo('/packageSocial/pages/soclal/my-collect')
+      },
+      skipEnterprise() {
+        if (!Util.isLogin()) {
+          Tips.toast('请登录', null, 'none')
+          return false
+        }
+        this._routerTo('/packageSocial/pages/soclal/my-enterprise')
+      },
+      skipContacts() {
+        if (!Util.isLogin()) {
+          Tips.toast('请登录', null, 'none')
+          return false
+        }
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/my-contacts`
+        })
+      }
+    }
+    onLoad() {
+    }
+  }
+</script>

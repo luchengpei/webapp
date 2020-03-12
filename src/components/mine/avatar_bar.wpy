@@ -1,0 +1,479 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.main {
+  // width: 100%;
+  // background: $mainColor;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  // .bg {
+  //   height: 369rpx;
+  //   width: 100%;
+  //   position: absolute;
+  // }
+  .top-section {
+    width: 100%;
+    height: 400rpx;
+    background-color: $mainColor;
+    .bg {
+      height: 400rpx;
+      width: 100%;
+      position: absolute;
+    }
+    .head-wrap {
+      padding: 83rpx 0 0 63rpx;
+      display: flex;
+      .head-img {
+        position: relative;
+        .cover {
+          width: 160rpx;
+          height: 160rpx;
+          border: none;
+          border-radius: 50%;
+        }
+        .vip-text {
+          position: absolute;
+          top: 140rpx;
+          left: 0;
+          width: 160rpx;
+          height: 40rpx;
+          background: rgba(9, 102, 73, 1);
+          border-radius: 20rpx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: $fontSize3;
+          color: #fff;
+          font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        // .vip-img {
+        //   position: absolute;
+        //   top: 140rpx;
+        //   left: 0;
+        //   width: 160rpx;
+        //   height: 40rpx;
+        // }
+      }
+      .head-text {
+        margin: 24rpx 0 0 56rpx;
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        .text-name {
+          color: #fff;
+          font-size: $fontSize2;
+        }
+        .text-tel {
+          margin-top: 10rpx;
+          font-size: $fontSize4;
+          color: rgba(255, 255, 255, 0.5);
+        }
+        .text-btn {
+          width: 150rpx;
+          height: 60rpx;
+          background-color: #fff;
+          border-radius: 6rpx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: $fontSize4;
+          color: $mainColor;
+          margin-top: 25rpx;
+        }
+      }
+      .head-text-no {
+        margin: 52rpx 0 0 56rpx;
+      }
+    }
+  }
+}
+.avatar-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  .avatar-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    > image {
+      width: 160rpx;
+      height: 160rpx;
+      border-radius: 50%;
+    }
+  }
+  .vip {
+    position: absolute;
+    top: 150rpx;
+    font-size: 24rpx;
+    background: #f8ff84;
+    left: 50%;
+    color: #ff6c00;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    transform: translateX(-50%);
+    border-radius: 20rpx;
+    height: 40rpx;
+    line-height: 40rpx;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+  .nickname {
+    margin-top: 55rpx;
+    color: #fff;
+    font-size: 34rpx;
+    line-height: 36rpx;
+  }
+  .get-info {
+    position: absolute;
+    bottom: 124rpx;
+    left: 112rpx;
+    width: 500rpx;
+    height: 50rpx;
+    opacity: 0;
+    z-index: 100;
+  }
+  .bind-tip {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    bottom: 0;
+    left: 0;
+    height: 88rpx;
+    width: 100%;
+    line-height: 88rpx;
+    background-color: rgba(0, 0, 0, 0.2);
+    text {
+      margin-left: 40rpx;
+      font-size: 28rpx;
+      color: #fff;
+    }
+    .login {
+      margin-right: 40rpx;
+      width: 122rpx;
+      height: 58rpx;
+      line-height: 58rpx;
+      font-size: 28rpx;
+      text-align: center;
+      background: #fff;
+      border-radius: 10rpx;
+      color: $mainColor;
+    }
+  }
+}
+.gold-repo {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  .user-info {
+    margin-top: 53rpx;
+    padding: 0 30rpx;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    .avatar {
+      width: 140rpx;
+      height: 140rpx;
+      position: relative;
+      image {
+        width: 140rpx;
+        height: 140rpx;
+        border-radius: 50%;
+      }
+      .label {
+        width: 120rpx;
+        height: 28rpx;
+        font-size: $fontSize5;
+        color: #ff6c00;
+        background: #f8ff84;
+        border-radius: 6rpx;
+        text-align: center;
+        line-height: 28rpx;
+        position: absolute;
+        bottom: 0;
+        left: 10rpx;
+      }
+    }
+    .info {
+      margin-left: 48rpx;
+      width: 200rpx;
+      .name {
+        color: $subMainColor;
+        font-size: $fontSize2;
+        display: block;
+      }
+      .inpone {
+        color: $subMainColor;
+        opacity: 0.5;
+        font-size: $fontSize3;
+      }
+    }
+  }
+  .content-wrapper {
+    margin-top: 40rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .content-right {
+      text-align: center;
+      min-width: 348rpx;
+      .title {
+        color: $subColor;
+        font-size: $fontSize5;
+      }
+      .number {
+        font-size: $fontSize7;
+        color: $subMainColor;
+      }
+    }
+    .vertical {
+      width: 4rpx;
+      background: $subMainColor;
+      height: 90rpx;
+      opacity: 0.5;
+    }
+    .content-left {
+      min-width: 348rpx;
+      text-align: center;
+      .title {
+        color: $subColor;
+        font-size: $fontSize5;
+      }
+      .number {
+        font-size: $fontSize7;
+        color: $subMainColor;
+      }
+    }
+  }
+}
+.bottom {
+  margin-top: 40rpx;
+  height: 100rpx;
+  background: $subMainColor;
+  font-size: $fontSize4;
+  color: $black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .content {
+    min-width: 348rpx;
+    display: flex;
+    height: 40rpx;
+    justify-content: center;
+    align-items: center;
+    view {
+      color: #e48a16;
+    }
+  }
+  .vertical {
+    background: #efeff4;
+    height: 40rpx;
+    width: 4rpx;
+  }
+}
+</style>
+
+<template>
+  <view class="main" >
+    <view
+      class="top-section"
+    >
+      <image
+        class="bg"
+        src="../../images/store/mine_bg.png"
+      />
+      <view class="head-wrap">
+        <view class="head-img" @tap="infor()">
+          <image
+            class="cover"
+            src="{{user.avatar ? user.avatar : '/images/avatar.jpg'}}"
+          />
+          <view
+            class="vip-text"
+            wx:if='{{user.username}}'
+          >
+            {{user.levelName || 'vip'}}
+          </view>
+          <!-- <image
+            class="vip-img"
+            src="../images/store/mine_label_vip.png"
+          /> -->
+        </view>
+        <view class="head-text {{!user.username ? 'head-text-no': ''}}">
+          <text
+            class="text-name"
+            wx:if="{{!user.username}}"
+            @tap="routerTo('/pages/login')"
+          >点击登录/注册</text>
+          <text
+            class="text-name"
+            @tap="infor()"
+            wx:else
+          >{{user.nickname || user.username}}</text>
+          <view
+            class="text-tel"
+            wx:if="{{user.username}}"
+          >{{user.mobile}}</view>
+          <view
+            wx:if="{{user.username}}"
+            class="text-btn"
+            @tap="routerTo('/packageStore/pages/member-homepage')"
+          > 购买服务</view>
+        </view>
+
+      </view>
+    </view>
+    <!-- <image class="bg" src="/images/mine_page/mine_head_bg_mask.png" />
+    <view wx:if="{{isGold}}" class="avatar-container">
+      <view class="avatar-box" @tap="routerTo('/pages/login')" wx:if="{{!user.avatar}}">
+        <image class="avatar" src="{{user.avatar ? user.avatar : '/images/avatar.jpg'}}" />
+      </view>
+      <view class="avatar-box" wx:else @tap="clickUser()">
+        <image class="avatar" src="{{user.avatar ? user.avatar : '/images/avatar.jpg'}}" />
+        <view wx:if="{{levelName && applyStatus === 0}}" class="vip">{{levelName}}</view>
+      </view>
+      <text class="nickname" wx:if="{{!user.username}}" @tap="routerTo('/pages/login')">点击登录/注册</text>
+      <text class="nickname" wx:else>{{user.username}}</text>
+    </view>
+    <view wx:else class="gold-repo">
+      <view class="user-info" wx:if="{{user.username}}">
+        <view class="avatar">
+          <image src="{{user.avatar ? user.avatar : '/images/avatar.jpg'}}" />
+          <view class="label">黄金会员</view>
+        </view>
+        <view class="info">
+          <view class="name">{{user.username?user.username:'点击登录/注册'}}</view>
+          <view class="inpone">{{user.mobile}}</view>
+        </view>
+      </view>
+      <view class="user-info" wx:else>
+        <view class="avatar" @tap="routerTo('/pages/login')">
+          <image src="{{user.avatar ? user.avatar : '/images/avatar.jpg'}}" />
+          <view class="label">黄金会员</view>
+        </view>
+        <view class="info" @tap="routerTo('/pages/login')">
+          <view class="name">{{user.username?user.username:'点击登录/注册'}}</view>
+          <view class="inpone">{{user.mobile}}</view>
+        </view>
+      </view>
+      <view class="content-wrapper" @tap="routerTo('/packageGold/pages/property/mine')">
+        <view class="content-right">
+          <view class="title">资产总价值</view>
+          <view class="number">{{propertyInfoData.totalValue==0?0.00:propertyInfoData.totalValue}}</view>
+        </view>
+        <view class="vertical"></view>
+        <view class="content-left">
+          <view class="title">积分</view>
+          <view class="number">0</view>
+        </view>
+      </view>
+      <view class="bottom" @tap="routerTo('/packageGold/pages/property/mine')"s>
+        <view class="content">黄金保管箱<view>{{propertyInfoData.safekeepingWeight}}</view>克</view>
+        <view class="vertical"></view>
+        <view class="content">金条<view>{{propertyInfoData.goldBullionWeight}}</view>克</view>
+      </view>
+    </view> -->
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+import auth from '@/api/auth'
+import dis from '@/api/dis'
+import Util from '@/utils/Util'
+import store from '@/api/store'
+// import gold from '@/api/gold'
+import Event from '@/utils/Event'
+export default class AvatarBar extends wepy.component {
+  props = {
+    isGold: false
+  }
+  data = {
+    applyStatus: '',
+    user: wepy.getStorageSync('user'),
+    propertyInfoData: {}
+  }
+  mixins = [base, router]
+  methods = {
+    infor() {
+      if (!Util.isLogin()) {
+        // Tips.toast('请登录', null, 'none')
+        this._routerTo('/pages/login')
+        return false
+      }
+      this._routerTo('/packageStore/pages/personal-infor')
+    },
+    skipProperty() {
+      console.log(23)
+    },
+    init() {
+      this.update()
+      // this.propertyInfoApi()
+    },
+
+    async clickUser() {
+      wx.navigateTo({
+        url: '/pages/mine/info'
+      })
+    }
+  }
+  async getUserInfo(res) {
+    const user = await store.getUserInfo()
+    this.nickname = user.nickname
+    this.mobile = user.mobile
+    this.levelName = user.levelName
+    // console.log('执行了0000000000000000000000000000',user)
+    this.user = user
+    this.$apply()
+  }
+  async getLevel() {
+    await store.getUserInfo().then((res) => {
+      let user = wepy.getStorageSync('user')
+      user.avatar = res.avatar
+      user.levelName = res.levelName
+      user.nickname = res.nickname
+      user.mobile = res.mobile ? res.mobile.replace(/(\d{3})(\d{4})/, '$1 $2 ') : ''
+      wepy.setStorageSync('user', user)
+      this.user = wepy.getStorageSync('user')
+      this.$apply()
+    })
+  }
+  onLoad() {
+    Event.listen(Event.UPDATE_USERINFO, this.update.bind(this), this)
+    // Event.listen(Event.UPDATE_USERINFO, this.propertyInfoApi.bind(this), this)
+    this.$apply()
+  }
+  // async propertyInfoApi() {
+  //   try {
+  //     let res = await gold.propertyInfo()
+  //     this.propertyInfoData = res
+  //     this.$apply()
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+  update() {
+    this.user = wepy.getStorageSync('user')
+    this.$apply()
+    if (this.user.username) {
+      // this.getUserInfo()
+      this.getLevel()
+    }
+  }
+}
+</script>

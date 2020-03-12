@@ -1,0 +1,103 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .genealogy {
+    .genealogy-list {
+      background: $subMainColor;
+      margin-top: 30rpx;
+      padding: 28rpx 30rpx;
+      .title {
+        color: $black;
+        font-size: $fontSize2;
+        max-width: 690rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .content {
+        margin-top: 8rpx;
+        color: $imageBgColor;
+        font-size: $fontSize4;
+        line-height: 38rpx;
+        text-indent: 40rpx;
+        max-width: 690px;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        overflow: hidden;
+        white-space: normal;
+      }
+      .time {
+        color: $imageBgColor;
+        font-size: $fontSize4;
+        line-height: 38rpx;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="genealogy">
+    <view class="genealogy-list" wx:for="{{listData}}" wx:for-item="item" wx:key="item.title" @tap="sikp('{{item.workGenerationId}}')">
+      <view class="title">{{item.title}}</view>
+      <view class="content">{{item.generationDescription}}</view>
+      <view class="time">{{item.createTime}}</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import pagination from '@/mixins/pagination'
+  export default class Genealogy extends wepy.page {
+    config = {
+      navigationBarTitleText: '字辈谱',
+      enablePullDownRefresh: true
+    }
+    data = {
+      listData: [],
+      page: ''
+    }
+    mixins = [base, pagination]
+    methods = {
+      sikp(id) {
+        wepy.navigateTo({
+          url: `genealogy-details?workGenerationId=${id}`
+        })
+      }
+    }
+    async getList() {
+      try {
+        this.page = await family.getGenealogyOrHallList()
+        await this.next()
+        this.page.list.forEach((item) => {
+          item.createTime = item.createTime.split(' ')[0]
+        })
+        this.listData = this.page.list
+        this.$apply()
+      } catch (error) {}
+    }
+    params() {
+      return {
+        type: 1
+      }
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.$apply()
+    }
+    // 到达底部
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.$apply()
+    }
+    onLoad(option) {
+      this.getList()
+    }
+  }
+</script>

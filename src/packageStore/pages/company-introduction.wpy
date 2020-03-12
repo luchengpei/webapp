@@ -1,0 +1,61 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.hosted-page {
+  padding-bottom: 40rpx;
+}
+</style>
+<template>
+  <view>
+    <view
+      style="{{configStyle}}"
+      class="hosted-page"
+      wx:if='{{productDesc}}'
+    >
+      <import src="../../components/wxparse/wxParse.wxml" />
+      <view class="rich-text">
+        <Html2wxml
+          :parserName="name"
+          :parserContent.sync="productDesc"
+        ></Html2wxml>
+      </view>
+    </view>
+    <Empty
+      fixed="true"
+      title="暂无介绍"
+      subtitle=""
+      wx:else
+    ></Empty>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+// import Tips from '@/utils/Tips'
+import Html2wxml from '@/components/common/html2wxml'
+import Empty from '@/components/common/empty'
+import store from '@/api/store'
+export default class HostedService extends wepy.page {
+  config = {
+    navigationBarTitleText: '公司介绍'
+  }
+  mixins = [base]
+  components = {
+    Html2wxml,
+    Empty
+  }
+  data = {
+    name: 'jkl',
+    productDesc: ''
+  }
+  async getInfo() {
+    const data = await store.companyIntroduction()
+    console.log(data, 'data')
+    this.productDesc = data.companyProfile
+    this.$apply()
+    this.$invoke('Html2wxml', 'htmlParserNotice')
+  }
+  onLoad() {
+    this.getInfo()
+  }
+}
+</script>

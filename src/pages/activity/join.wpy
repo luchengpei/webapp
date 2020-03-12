@@ -1,0 +1,172 @@
+<style lang="scss">
+  @import '../../scss/common';
+  .join-list {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20rpx;
+    background: #fff;
+  }
+  .join {
+    display: flex;
+    align-items: center;
+    padding: 30rpx 30rpx 30rpx 0;
+    margin-left: 30rpx;
+    border-top: 1rpx solid $borderColor;
+    &:first-child {
+      border: none;
+    }
+    .info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .title {
+        font-size: 34rpx;
+        color: $black;
+      }
+      .subtitle {
+        font-size: 24rpx;
+        color: $gray;
+        margin-right: 20rpx;
+      }
+    }
+    .money {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      .now {
+        font-size: 34rpx;
+        color: #F7564C;
+      }
+      .origin {
+        font-size: 24rpx;
+        color: $gray;
+        text-decoration: line-through;
+      }
+    }
+    .select {
+      margin-left: 55rpx;
+      .circle {
+        border: 1rpx solid $borderColor;
+        width: 36rpx;
+        height: 36rpx;
+        border-radius: 20rpx
+      }
+    }
+  }
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 92rpx;
+    background: $mainColor;
+    color: #fff;
+    line-height: 92rpx;
+    font-size: 36rpx;
+    text-align: center;
+  }
+</style>
+
+<template>
+  <view class="activity-join" style="{{configStyle}}">
+    <view class="join-list">
+      <view class="join" wx:for="{{list}}" wx:for-item="item" wx:key="index" @tap="select({{item}})">
+        <view class="info">
+          <text class="title">{{item.typeName}}</text>
+          <text class="subtitle">{{item.remark}}</text>
+        </view>
+        <view class="money">
+          <text class="now">{{item.isFree === 1 ? '免费' : '¥' + item.price}}</text>
+          <text class="origin" wx:if="{{item.isFree !== 1}}">¥{{item.originPrice}}</text>
+        </view>
+        <view class="select">
+          <icon type="success" size="40rpx" color="#06a0ff" wx:if="{{selected.settingId === item.settingId}}"></icon>
+          <view class="circle" wx:else></view>
+        </view>
+      </view>
+    </view>
+    <view class="bottom-bar {{isIpx ? 'fix-ipx-btn' : ''}}"  @tap="next">参与</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Title from '@/components/common/title'
+  import activity from '@/api/activity'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  import Tips from '@/utils/Tips'
+  export default class ActivityJoin extends wepy.page {
+    config = {
+      navigationBarTitleText: '参与'
+    }
+    components = {
+      Title
+    }
+    data = {
+      list: [],
+      selected: '',
+      isMemberFree:''
+    }
+    mixins=[base, router]
+    methods = {
+      // 选票
+      select(val) {
+        this.selected = val
+        this.createMapKey()
+        this.$apply()
+      },
+      // 提交
+      next() {
+        let mapRouter = new Map([
+          ['form,pay', () => { // 报名缴费
+            this._routerTo(`/pages/activity/submit?isMemberFree=${this.isMemberFree}`)
+          }],
+          ['no-form,pay', () => { // 缴费不报名
+            this._routerTo(`/pages/activity/submit?isMemberFree=${this.isMemberFree}`)
+          }],
+          ['form,no-pay', () => { // 报名不缴费
+            this._routerTo(`/pages/activity/sign_up`)
+          }],
+          ['no-form,no-pay', async () => { // 不报名不缴费
+            let query = {
+              activityId: wepy.getStorageSync('activityId') // 活动ID
+            }
+            await activity.signUp(query)
+            await Tips.success('报名成功')
+            this._routerTo(`/pages/activity/success`)
+          }]
+        ])
+        mapRouter.get(this.selected._mapStr).apply()
+      }
+    }
+    //
+    createMapKey() {
+      this.selected._map = [0, 0]
+      this.selected._map[0] = this.selected.formId ? 'form' : 'no-form'
+      this.selected._map[1] = this.selected.isFree === 0 ? 'pay' : 'no-pay'
+      this.selected._mapStr = this.selected._map.join(',')
+      wepy.setStorageSync('settingId', this.selected.settingId)
+      wepy.setStorageSync('pay', this.selected.isFree === 0 ? 'pay' : '')// 是否需要支付
+      console.log('%c-----------^^^^^------------邓紫棋邓紫棋', 'color:#0bd40b', this.selected._mapStr)
+    }
+    async getTicket() {
+      let query = {
+        activityId: wepy.getStorageSync('activityId')
+      }
+      let data = await activity.getTicketList(query)
+      this.list = data
+      this.selected = data[0]
+      this.createMapKey()
+      this.$apply()
+    }
+    onLoad(options) {
+      console.log(options,'join')
+      this.isMemberFree =options.isMemberFree
+      this.$apply()
+      this.getTicket()
+    }
+  }
+</script>

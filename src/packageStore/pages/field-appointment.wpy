@@ -1,0 +1,135 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.hosted-page {
+  padding-bottom: 92rpx;
+}
+.fixed-btn {
+  height: 92rpx;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  .right {
+    width: 100%;
+    color: #ffffff;
+    background: $mainColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $fontSize3;
+  }
+}
+#iphone-x-pb {
+  padding-bottom: 66rpx;
+}
+#hosted-page-iphonex {
+  padding-bottom: 158rpx;
+}
+</style>
+<template>
+  <view>
+    <view
+      style="{{configStyle}}"
+      class="hosted-page"
+      id="{{isIphoneX ? 'hosted-page-iphonex' : ''}}"
+      wx:if='{{productDesc}}'
+    >
+      <import src="../../components/wxparse/wxParse.wxml" />
+      <view class="rich-text">
+        <Html2wxml
+          :parserName="name"
+          :parserContent.sync="productDesc"
+        ></Html2wxml>
+      </view>
+      <view
+        class="fixed-btn"
+        id="{{isIphoneX ? 'iphone-x-pb' : ''}}"
+      >
+        <view
+          class="right"
+          @tap="call"
+        >
+          立即预定
+        </view>
+      </view>
+    </view>
+    <Empty
+      fixed="true"
+      title="暂无介绍"
+      subtitle=""
+      wx:else
+    ></Empty>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+// import Tips from '@/utils/Tips'
+import Html2wxml from '@/components/common/html2wxml'
+import Empty from '@/components/common/empty'
+import store from '@/api/store'
+export default class HostedService extends wepy.page {
+  config = {
+    navigationBarTitleText: '场地预定'
+  }
+  mixins = [base]
+  components = {
+    Html2wxml,
+    Empty
+  }
+  data = {
+    isIphoneX: false,
+    name: 'jkl',
+    productDesc: '',
+    phone: '19927351936'
+  }
+  methods = {
+    call() {
+      wx.showActionSheet({
+        itemList: [this.phone, '呼叫', '复制'],
+        itemColor: '#444',
+        success: (res) => {
+          console.log(res.tapIndex)
+          if (res.tapIndex === 1) {
+            // Tips.success('0')
+            wx.makePhoneCall({
+              phoneNumber: this.phone //
+            })
+          } else if (res.tapIndex === 2) {
+            // Tips.success('0')
+
+            wx.setClipboardData({
+              data: this.phone,
+              success: function (res) {
+                console.log(res)
+                wx.getClipboardData({
+                  //  这个api是把拿到的数据放到电脑系统中的
+                  success: function (res) {
+                    console.log(res.data) // data
+                  }
+                })
+              }
+            })
+          }
+        }
+      })
+    }
+  }
+  async getInfo() {
+    this.isIphoneX = wepy.getStorageSync('isIpx')
+    const data = await store.hostedService({ type: 1 })
+    console.log(data, 'data')
+    this.productDesc = data.context
+    this.phone = data.phone
+    this.$apply()
+    this.$invoke('Html2wxml', 'htmlParserNotice')
+  }
+  onLoad() {
+    this.getInfo()
+  }
+}
+</script>

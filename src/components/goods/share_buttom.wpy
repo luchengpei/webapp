@@ -1,0 +1,103 @@
+// 购物面板组件
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .pannel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    transform: translateY(150%);
+    transition: all 0.4s ease;
+    z-index: 100001;
+    &.pannel-show {
+      transform: translateY(0);
+    }
+    .bottom-index {
+      .item {
+        height: 100rpx;
+        text-align: center;
+        color: #333333;
+        font-weight: bold;
+        line-height: 100rpx;
+        position: relative;
+        font-size: 30rpx;
+        border-bottom: 1rpx solid $borderColor;
+        .slot {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0.1;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view>
+    <MaskLayer :display.sync="display" @tap.user="close" />
+    <view class="pannel {{display ? 'pannel-show' : ''}}">
+      <view class="bottom-index">
+        <view wx:if="{{mode === 'default'&&goodInfo.posterIsEnabled===1}}" class="item" @tap="sharePoster">生成海报</view>
+        <view class="item">转发给朋友
+          <view class="slot">
+            <slot></slot>
+          </view>
+        </view>
+        <view class="item" @tap="close">取消</view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import nRouter from '@/mixins/new_router'
+  import MaskLayer from '@/components/common/mask_layer'
+  import base from '@/mixins/base'
+  export default class ShareButtom extends wepy.component {
+    props = {
+      display: {
+        default: false,
+        twoWay: true
+      },
+      id: {},
+      mode: { // 商品详情类型 default 普通 cash_back 返现 group_sale 团购 flash_sale 限时购
+        default: 'default'
+      },
+      goodInfo: {}
+    }
+    components = {
+      MaskLayer: MaskLayer
+    }
+    mixins = [base, nRouter]
+    data = {}
+    computed = {}
+    methods = {
+      close() {
+        this.closePannel()
+      },
+      // 分享海报
+      sharePoster() {
+        this.display = false
+        if (wepy.getStorageSync('token')) {
+          this._goRouter('/pages/goods/poster', {id: this.id})
+        } else {
+          this._goRouter('/pages/login')
+        }
+        this.$apply()
+      }
+    };
+    onLoad() {}
+    /**
+     * 关闭选项
+     */
+    closePannel() {
+      this.display = false
+      this.$apply()
+    }
+  }
+</script>

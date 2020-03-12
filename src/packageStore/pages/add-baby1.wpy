@@ -1,0 +1,193 @@
+<style lang='scss' scoped>
+@import '../../scss/common';
+.mod-baby {
+  width: 100%;
+  height: 100%;
+  .baby-wrap {
+    padding: 0rpx 20rpx;
+    margin-top: 26rpx;
+    .baby-info {
+      box-sizing: border-box;
+      overflow: hidden;
+      height: 160rpx;
+      border-radius: 10rpx;
+      background-color: #fff;
+      padding: 0 30rpx;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .baby-img {
+        display: flex;
+        justify-items: flex-start;
+        .cover {
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+        }
+        .baby-text {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          width: 255rpx;
+          margin-left: 30rpx;
+          .baby-name {
+            font-size: 34rpx;
+            color: #444444;
+          }
+          .baby-authentication {
+            width: 120rpx;
+            height: 28rpx;
+            background-color: #1182a4;
+            font-size: 20rpx;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5rpx;
+          }
+          .baby-age {
+            color: #999999;
+            font-size: 24rpx;
+          }
+        }
+      }
+      .baby-btn {
+        width: 120rpx;
+        height: 60rpx;
+        color: #ffffff;
+        background-color: #f7564c;
+        border-radius: 6rpx;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24rpx;
+      }
+    }
+  }
+  .add-baby {
+    width: 100%;
+    height: 92rpx;
+    background-color: #1182a4;
+    font-size: 28rpx;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+  }
+}
+</style>
+
+<template>
+  <view
+    class="mod-baby"
+    style="{{configStyle}}"
+  >
+    <view class="baby-wrap" 
+     wx:for="{{dataList}}"
+          wx:for-item="item"
+    >
+      <view class="baby-info">
+        <view class="baby-img">
+          <image
+            class="cover"
+            src="http://pic4.zhimg.com/50/v2-5ee31c6a4ecd54b0f1b7c415cd1ea43f_b.jpg"
+            mode="aspectFill"
+          />
+          <view class="baby-text">
+            <view class="baby-name">王二小</view>
+            <view class="baby-authentication">已认证</view>
+            <view class="baby-age">男孩</view>
+          </view>
+        </view>
+
+        <view class="baby-btn">
+          删除
+        </view>
+      </view>
+    </view>
+    <view class="add-baby">
+      + 添加宝贝
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import nRouter from '@/mixins/new_router'
+import pagination from '@/mixins/pagination'
+import Table from '@/components/common/table'
+import dis from '@/api/dis'
+export default class Commission extends wepy.page {
+  config = {
+    navigationBarTitleText: '添加宝贝'
+  }
+  mixins = [base, nRouter, pagination]
+  data = {
+    tableType: 'commission',
+    header: ['返佣人', '返佣金额'],
+    withdrawableAmount: 0,
+    cumulativeAmount: 0,
+    accountingAmount: 0,
+    yesterDayAmount: 0,
+    dataList:[{},{}],
+    list: [{
+      name: '项目1',
+      age: 18
+    }, {
+      name: '项目2',
+      age: 20
+    }, {
+      name: '项目',
+      age: 22
+    }, {
+      name: '项目',
+      age: 22
+    }, {
+      name: '项目',
+      age: 22
+    }]
+  }
+  components = {
+    Table
+  }
+  methods = {}
+
+  async onLoad(options) {
+    this.getCommission()
+    this.$apply()
+  }
+  async getCommission() {
+    this.page = dis.onCommission()
+    await this.next()
+    this.updateData()
+  }
+  updateData() {
+    this.list = this.page.list
+    const { nativeData } = this.page
+    this.withdrawableAmount = (nativeData.withdrawableAmount || 0).toFixed(2) // 可提现佣金
+    this.cumulativeAmount = (nativeData.cumulativeAmount || 0).toFixed(2) // 累计佣金
+    this.accountingAmount = (nativeData.accountingAmount || 0).toFixed(2) // 待审核佣金
+    this.yesterDayAmount = (nativeData.yesterDayAmount || 0).toFixed(2) // 昨日佣金
+    this.$apply()
+  }
+  // 列表传参
+  params() {
+    return {}
+  }
+  // 上拉加载
+  async onReachBottom() {
+    await this.next()
+    this.updateData()
+  }
+  // 下拉刷新
+  async onPullDownRefresh() {
+    await this.reload()
+    this.updateData()
+  }
+}
+</script>

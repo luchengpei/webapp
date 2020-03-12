@@ -1,0 +1,294 @@
+<style lang="scss" scoped>
+@import '../scss/common';
+.message {
+  position: fixed;
+  width: 84rpx;
+  height: 60rpx;
+  right: 40rpx;
+  top: 54rpx;
+  z-index: 10;
+  > image {
+    width: 84rpx;
+    height: 60rpx;
+  }
+  .point {
+    position: absolute;
+    width: 16rpx;
+    height: 16rpx;
+    background-color: #f7564c;
+    border-radius: 50%;
+    right: -4rpx;
+    top: -4rpx;
+  }
+}
+.mine-page {
+  width: 100%;
+  background: $bgColor;
+  overflow-x: hidden;
+  padding-bottom: 50rpx;
+  .mine-list {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #fff;
+    padding: 20rpx 0px;
+    .list-content {
+      width: 25%;
+      height: 160rpx;
+      border-right: 1rpx solid #dadbdf;
+      border-bottom: 1rpx solid #dadbdf;
+      box-sizing: border-box;
+      &:nth-child(4n) {
+        border-right: none;
+      }
+      &.last-row {
+        border-bottom: none;
+      }
+      .cover {
+        width: 60rpx;
+        height: 60rpx;
+        display: block;
+        margin: 0 auto;
+        margin-top: 22rpx;
+        margin-bottom: 22rpx;
+      }
+      .content-title {
+        font-size: 24rpx;
+        color: #444;
+        display: block;
+        text-align: center;
+      }
+    }
+    .list-content__hover {
+      opacity: 0.7;
+    }
+  }
+}
+.family-btn-wrap {
+  height: 196rpx;
+  display: flex;
+  .family-btn {
+    position: relative;
+    .circle {
+      position: absolute;
+      right: 20rpx;
+      top: 20rpx;
+      height: 30rpx;
+      text-align: center;
+      line-height: 30rpx;
+      background: red;
+      color: $subMainColor;
+      font-size: $fontSize4;
+      padding: 0 10rpx;
+      border-radius: 15rpx;
+    }
+    .icon {
+      width: 94rpx;
+      height: 94rpx;
+      border-radius: 50%;
+      background: $mainColor;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      i {
+        color: #fff;
+        font-size: 52rpx;
+      }
+    }
+    > button {
+      position: absolute;
+      opacity: 0;
+      height: 196rpx;
+      width: 100%;
+    }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    image {
+      width: 92rpx;
+      height: 92rpx;
+    }
+    text {
+      margin-top: 16rpx;
+      font-size: 28rpx;
+      line-height: 36rpx;
+      color: $black;
+    }
+  }
+}
+.mine-section-wrap {
+  margin-top: 20rpx;
+  background: #fff;
+}
+.simple-pannel-container {
+  width: 100%;
+  background: #fff;
+}
+.see-all {
+  font-size: 28rpx;
+  color: #a5a5a5;
+  margin-right: 10rpx;
+}
+.right-arrow {
+  height: 24rpx;
+  width: 14rpx;
+}
+</style>
+
+<template>
+  <view
+    class="mine-page"
+    style="{{configStyle}}"
+  >
+    <!-- <view class="message" @tap.stop="routerTo('/pages/mine/message')">
+          <image src="../images/mine_page/mine_ic_message.png"></image>
+          <view class="point" wx:if="{{count}}"></view>
+        </view> -->
+    <!-- 头像区域 -->
+    <repeat
+      for="{{mineList.list}}"
+      key="index"
+      index="index"
+      item="item"
+    >
+      <AvatarBar wx:if="{{item.controlName==='HeadDetail'}}" />
+      <BuyBackFrom
+        wx:elif="{{item.controlName ==='RepoOrder'}}"
+        :propertyInfoData.sync="propertyInfoData"
+      ></BuyBackFrom>
+      <MyOrderPannel
+        wx:elif="{{item.controlName ==='ProductOrder'}}"
+        title='商品订单'
+        :propertyInfoData.sync="propertyInfoData"
+        :numOrder.sync="numOrder"
+      ></MyOrderPannel>
+      <MyFamily
+        wx:elif="{{item.controlName ==='MyFamilyTree'}}"
+        :genealogyId.sync='genealogyId'
+      ></MyFamily>
+      <MySocial wx:elif="{{item.controlName ==='MySocial'}}"></MySocial>
+      <SimplePannelList
+        wx:elif="{{item.controlName ==='FeaturesList'}}"
+        :list="pannelList"
+      />
+    </repeat>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+import AvatarBar from '@/components/mine/avatar_bar'
+import MyOrderPannel from '@/components/mine/tc_order_pannel'
+import SectionTitle from '@/components/common/title'
+import SimplePannel from '@/components/mine/simple_pannel'
+import buyBackFrom from '@/components/mine/buy_back_from'
+import SimplePannelList from '@/components/mine/simple_pannel_list'
+import {
+  connect
+} from 'wepy-redux'
+import {
+  cartInit
+} from '@/store/actions'
+import Util from '@/utils/Util'
+// import Event from '@/utils/Event'
+import order from '@/api/order'
+import family from '@/api/family'
+import mine from '@/api/mine'
+import myFamily from '@/components/mine/myFamily'
+import mySocial from '@/components/mine/mySocial'
+import pagination from '@/mixins/pagination'
+@connect({
+  isInit(state) {
+    return state.cart.init
+  }
+}, {
+    cartInit
+  })
+export default class MinePage extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的'
+  };
+  mixins = [base, router, pagination];
+  components = {
+    AvatarBar: AvatarBar,
+    MyOrderPannel: MyOrderPannel,
+    SimplePannel: SimplePannel,
+    SimplePannelList: SimplePannelList,
+    FamilyTitle: SectionTitle,
+    FamilyTitleB: SectionTitle,
+    BuyBackFrom: buyBackFrom,
+    MyFamily: myFamily,
+    MySocial: mySocial
+  };
+  data = {
+    firstLoading: true,
+    pannelList: wepy.$appConfig.mineMenu,
+    count: 0,
+    numOrder: {},
+    genealogyId: '',
+    propertyInfoData: '',
+    mineList: []
+  };
+  methods = {
+  }
+  async onLoad() {
+    this.mineList = wepy.getStorageSync('personalCenter')
+    console.log(this.mineList, '23424')
+    wepy.$appConfig.mineMenu = wepy.getStorageSync('personalCenter').list.filter(item => item.controlName === 'FeaturesList')[0]
+    console.log(wepy.getStorageSync('personalCenter'))
+    wepy.$appConfig.mySocialList = wepy.getStorageSync('personalCenter').list.filter(item => item.controlName === 'MySocial')[0]
+    wepy.$appConfig.myFamilyList = wepy.getStorageSync('personalCenter').list.filter(item => item.controlName === 'MyFamilyTree')[0]
+    // Event.listen(Event.UPDATE_USERINFO, this.getOrders.bind(this), this)
+    if (Util.isLogin()) {
+      // this.getOrders()
+    }
+    if (Util.isLogin() && !this.isInit) await this.methods.cartInit()
+    if (!this.firstLoading) return
+    this.firstLoading = false
+    this.$apply()
+    this.$invoke('SimplePannelList', 'init')
+    this.$invoke('MySocial', 'init')
+    this.$invoke('MyFamily', 'init')
+  }
+  // 获取家谱ID
+  async getFamilyId() {
+    let res = await family.getFamilyId()
+    this.genealogyId = res ? res.genealogyId : ''
+    this.$apply()
+  }
+  async numOrderApi() {
+    this.numOrder = await order.getOrderTotel({
+      userId: wepy.getStorageSync('user').userId || -1
+    })
+    this.$apply()
+  }
+  onPullDownRefresh() {
+    this.$emit('onStopPullDown')
+  }
+  async getMessageCount() {
+    let res = await mine.getMessageCount()
+    this.count = res.count
+    this.$apply()
+  }
+  onReachBottom() { }
+  /**
+   * 回到页面事件
+   */
+  // onRoute() {
+  //   if (this.firstLoading) return
+  //   if (!Util.isLogin()) return
+  //   // this.getOrders()
+  // }
+  onShow() {
+    if (!Util.isLogin()) return false
+    // this.getFamilyId()
+    this.numOrderApi()
+    this.$invoke('AvatarBar', 'init')
+    this.getMessageCount()
+  }
+}
+</script>

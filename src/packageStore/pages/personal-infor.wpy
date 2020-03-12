@@ -1,0 +1,642 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.add-enterprise {
+  padding: 30rpx 0 92rpx 0;
+}
+.basic-info {
+  padding-left: 30rpx;
+  background: #ffffff;
+  margin-bottom: 30rpx;
+  .the-input {
+    height: 88rpx;
+    padding-right: 30rpx;
+    border-bottom: 1rpx solid #e0e0e0;
+    display: flex;
+    justify-content: left;
+    font-size: $fontSize2;
+    align-items: center;
+    .required {
+      position: relative;
+      &::after {
+        position: absolute;
+        right: -14rpx;
+        top: 29rpx;
+        font-size: $fontSize4;
+        content: '*';
+        color: red;
+      }
+    }
+    .required-backgr {
+      position: relative;
+      .title__inline {
+        width: 165rpx !important;
+      }
+      &::after {
+        position: absolute;
+        right: -20rpx;
+        top: 29rpx;
+        font-size: $fontSize4;
+        content: '*';
+        color: red;
+      }
+    }
+    .title {
+      .title__inline {
+        height: 88rpx;
+        line-height: 88rpx;
+        width: 140rpx;
+        color: $black;
+        text-align: justify;
+        &::after {
+          width: 100%;
+          display: inline-block;
+          content: ''; //这三个都不可以少
+        }
+      }
+      .nowrap {
+        white-space: nowrap;
+      }
+    }
+    .select-avatar {
+      width: 72%;
+      margin-left: 50rpx;
+      height: 50rpx;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      > image {
+        height: 64rpx;
+        width: 64rpx;
+        border-radius: 50%;
+      }
+      > i {
+        color: #aaa;
+        font-size: $fontSize4;
+      }
+    }
+    .background-pop {
+      width: 72%;
+      margin-left: 50rpx;
+      height: 50rpx;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      > i {
+        color: #aaa;
+        font-size: $fontSize4;
+      }
+      > view {
+        width: 54rpx;
+        height: 32rpx;
+        border-radius: 16rpx;
+        background: #f7564c;
+        font-size: $fontSize4;
+        color: $subMainColor;
+        text-align: center;
+        line-height: 32rpx;
+        margin-left: 28rpx;
+      }
+    }
+    > input {
+      margin: 0 30rpx 0 50rpx;
+      color: #a5a5a5;
+      height: 46rpx;
+      flex: 1;
+    }
+  }
+  .the-input:nth-last-child(1) {
+    border-bottom: 0rpx;
+  }
+  .section-wrapper {
+    > picker {
+      width: 72%;
+      > .section {
+        margin-left: 0;
+      }
+    }
+    .section {
+      margin-left: 50rpx;
+      width: 100%;
+      font-size: $fontSize2;
+      color: #a5a5a5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      > i {
+        font-size: $fontSize4;
+        color: #aaa;
+      }
+      margin-right: 6rpx;
+    }
+  }
+}
+.contact-info {
+  padding-left: 30rpx;
+  background: #ffffff;
+  margin-bottom: 30rpx;
+  .the-input {
+    border-bottom: 1rpx solid #e0e0e0;
+    display: flex;
+    justify-content: left;
+    font-size: $fontSize2;
+    align-items: center;
+    .switch {
+      margin-left: 40rpx;
+      width: 72%;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .required {
+      position: relative;
+      &::after {
+        position: absolute;
+        right: -14rpx;
+        top: 29rpx;
+        font-size: $fontSize4;
+        content: '*';
+        color: red;
+      }
+    }
+    .title {
+      .title__inline {
+        height: 88rpx;
+        line-height: 88rpx;
+        width: 140rpx;
+        color: $black;
+        text-align: justify;
+        &::after {
+          width: 100%;
+          display: inline-block;
+          content: ''; //这三个都不可以少
+        }
+      }
+    }
+    > input {
+      margin: 0 30rpx 0 50rpx;
+      color: #a5a5a5;
+      height: 46rpx;
+      flex: 1;
+    }
+  }
+  .the-input:nth-last-child(1) {
+    border-bottom: 0rpx;
+  }
+}
+.save-wrap {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  .save {
+    height: 92rpx;
+    width: 100%;
+    line-height: 92rpx;
+    text-align: center;
+    font-size: $fontSize3;
+    background: $mainColor;
+    color: $subMainColor;
+  }
+}
+#iphone-x-pb {
+  padding-bottom: 66rpx;
+}
+.avatar-wrapper {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(43, 39, 39, 0.77);
+  top: 0;
+  left: 0;
+  z-index: 10;
+  .avatar {
+    position: relative;
+    width: 591rpx;
+    background: #fff;
+    border-radius: 10rpx;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .title {
+      height: 60rpx;
+      padding: 30rpx 30rpx;
+      font-size: $fontSize2;
+    }
+    .content {
+      height: 300rpx;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 0 30rpx;
+      .item {
+        width: 108rpx;
+        height: 108rpx;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        > image {
+          border: 2rpx;
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+        }
+      }
+    }
+    .btn {
+      border-top: 1rpx solid $borderColor;
+      display: flex;
+      > view {
+        flex: 1;
+        text-align: center;
+        line-height: 100rpx;
+        font-size: $fontSize2;
+        color: $mainColor;
+      }
+      width: 100%;
+      height: 100rpx;
+    }
+  }
+}
+.pop-location {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+  > van-area {
+    animation: animate 0.5s;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    overflow: hidden;
+  }
+  @keyframes animate {
+    from {
+      height: 0px;
+    }
+    to {
+      height: 528rpx;
+    }
+  }
+}
+</style>
+
+<template>
+  <view class="add-enterprise_wrapper" style="{{configStyle}}">
+    <view class="add-enterprise">
+      <view class="basic-info">
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">昵称</view>
+          </view>
+          <input
+            placeholder="{{isEndit?'请填写昵称':''}}"
+            maxlength="20"
+            value="{{formData.nickname}}"
+            @blur="nameFn('{{item}}')"
+            placeholder-class="g-placeholder"
+          />
+        </view>
+        <view class="the-input">
+          <view class="title required">
+            <view class="title__inline">手机号</view>
+          </view>
+          <input
+            placeholder="{{isEndit?'请输入手机号':''}}"
+            maxlength="11"
+            disabled="{{!isEndit}}"
+            value="{{formData.mobile}}"
+            @blur="phoneFn('{{item}}')"
+            placeholder-class="g-placeholder"
+          />
+        </view>
+        <view class="the-input">
+          <view class="title ">
+            <view class="title__inline">邮箱</view>
+          </view>
+          <input
+            placeholder="{{isEndit?'请输入邮箱':''}}"
+            disabled="{{!isEndit}}"
+            value="{{formData.email}}"
+            @blur="emailFn('{{item}}')"
+            placeholder-class="g-placeholder"
+          />
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title ">
+            <view class="title__inline">性别</view>
+          </view>
+          <picker
+            mode="selector"
+            bindchange="typeFn"
+            disabled="{{!isEndit}}"
+            value="{{formData.gender}}"
+            range="{{genderArray}}"
+          >
+            <view class="section">
+              {{genderArray[formData.gender]?genderArray[formData.gender]:'请选择性别'}}
+              <i
+                class="iconfont icon-arrow"
+                wx:if="{{isEndit}}"
+              ></i>
+            </view>
+          </picker>
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title ">
+            <view class="title__inline">出生年月</view>
+          </view>
+          <picker
+            mode="date"
+            bindchange="birthdayFn"
+            value="{{formData.birthday}}"
+            end = '{{endTime}}'
+          >
+            <view class="section">
+              <view> {{formData.birthday ? formData.birthday : '请选择出生年月' }}</view>
+              <i
+                class="iconfont icon-arrow"
+                wx:if="{{isEndit}}"
+              ></i>
+            </view>
+          </picker>
+        </view>
+        <view class="the-input section-wrapper">
+          <view class="title ">
+            <view class="title__inline">通讯地址</view>
+          </view>
+          <view
+            class="section"
+            @tap="sectionLocation"
+          >
+            <view wx:if='{{!formData.location.length}}'>请填写地址</view>
+            <view
+              class="section-content"
+              wx:if='{{formData.location.length}}'
+            >
+              {{formData.location[0]}} {{formData.location[1]}} {{formData.location[2]}}
+            </view>
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+        <view class="the-input">
+          <input
+            style="margin-left:0"
+            placeholder="请填写详细地址"
+            maxlength="15"
+            disabled="{{!isEndit}}"
+            value="{{formData.address}}"
+            @blur="addressFn('{{item}}')"
+            placeholder-class="g-placeholder"
+          />
+        </view>
+      </view>
+      <view
+        class="save-wrap"
+        id="{{isIphoneX ? 'iphone-x-pb' : ''}}"
+      >
+        <view
+          class="save"
+          @tap="submit"
+        >
+          保存
+        </view>
+      </view>
+
+    </view>
+    <view
+      class="pop-location"
+      wx:if="{{isPopLocation}}"
+    >
+      <van-area
+        area-list="{{areaList}}"
+        @cancel="onCancel"
+        @confirm="onConfirm"
+        value="{{formData.areaCode}}"
+      />
+    </view>
+  </view>
+</template>
+ 
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+import WxApi from '@/utils/WxApi'
+import upload from '@/utils/FileHttp'
+import util from '@/utils/Util'
+import Tips from '@/utils/Tips'
+import Validator from '@/utils/Validator'
+import Empty from '@/components/common/empty'
+import store from '@/api/store'
+import Area from '@/utils/Area'
+export default class PersonalInfor extends wepy.page {
+  constructor() {
+    super()
+    this.data.areaList = Area
+  }
+  config = {
+    navigationBarTitleText: '个人信息',
+    usingComponents: {
+      'van-area': '../../components/vant/area/index'
+    }
+  }
+  components = {
+    Empty
+  }
+  data = {
+    isIphoneX: false,
+    isPopLocation: false,
+    endTime:'',
+    isEndit: true,
+    formData: {
+      // icon: '',
+      mobile: '',
+      email: '',
+      gender: '',
+      companyName: '',
+      location: [],
+      address: '',
+      areaCode: '',
+      companyProfile: '',
+      productCatalogue: '',
+      wechatNum: '',
+      userName: '',
+      type: 1,
+      tagJson: ''
+    },
+    genderArray: ['男', '女']
+  }
+  mixins = [base, router]
+  methods = {
+    emailFn(e) {
+      this.formData.email = e.detail.value
+      this.emailValidator(e.detail.value)
+    },
+    sectionLocation() {
+      this.isPopLocation = true
+    },
+    onCancel() {
+      this.isPopLocation = false
+    },
+    userNameFn(e) {
+      Validator.isCharacter(e.detail.value, this, '姓名')
+      this.formData.userName = e.detail.value
+    },
+    // 性别
+    typeFn(e) {
+      this.formData.gender = e.detail.value
+    },
+    // 生日
+    birthdayFn(e) {
+      this.formData.birthday = e.detail.value
+    //   if(util.dateToTimeStamp(e.detail.value) <= util.dateToTimeStamp(this.endTime)) return
+    // wx.showToast({
+    //   title: `选择日期不能超过当前日期`,
+    //   icon: 'none'
+    // })
+      console.log(e)
+      console.log(e.detail.value)
+      console.log(this.formData.birthday)
+    },
+    // 确定地址选择
+    onConfirm(e) {
+      this.formData.location = []
+      this.formData.location.push(e.detail.values[0].name)
+      if (e.detail.values[1]) {
+        this.formData.location.push(e.detail.values[1].name)
+        if (!e.detail.values[2]) {
+          this.formData.areaCode = e.detail.values[1].code
+        }
+      } else {
+        this.formData.location.push(' ')
+      }
+      if (e.detail.values[2]) {
+        this.formData.location.push(e.detail.values[2].name)
+        this.formData.areaCode = e.detail.values[2].code
+      } else {
+        this.formData.location.push('')
+      }
+      this.isPopLocation = false
+    },
+    // 昵称
+    nameFn(e) {
+      Validator.isCharacter(e.detail.value, this, '昵称')
+      this.formData.nickname = e.detail.value
+    },
+    // 获取手机号
+    phoneFn(e) {
+      Validator.isCharacter(e.detail.value, this, '手机号码')
+      this.formData.mobile = e.detail.value
+    },
+    // 通讯地址
+    addressFn(e) {
+      Validator.isCharacter(e.detail.value, this, '公司详细地址', false)
+      this.formData.address = e.detail.value
+    },
+    // 获取头像
+    async getAvatar() {
+      let resPath = await WxApi.wxChooseImg().catch(err => {
+        Tips.error('不支持当前图片')
+        return err
+      })
+      let res = await upload.uploadImg(resPath)
+      let uploadRes = res.map(v => {
+        return {
+          url: v
+        }
+      })
+      this.formData.icon = uploadRes[0].url
+      this.$apply()
+    },
+    submit() {
+      let params = Object.assign({}, this.formData)
+      params.province = this.formData.location[0] || ''
+      params.city = this.formData.location[1] || ''
+      params.area = this.formData.location[2] || ''
+      params.gender = Number(this.formData.gender) === 0 ? 1 : 2
+      this.submitValidation(params)
+      if (!this.isSubmit) return false
+      console.log(params, 'xxxxxxxxxxx......')
+      this.updateUser(params)
+    }
+  }
+
+  emailValidator(data) {
+    let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+    if (!data) return true
+    if (reg.test(data)) return true
+    wx.showToast({
+      title: `邮箱格式不正确`,
+      icon: 'none'
+    })
+    return false
+  }
+  async updateUser(params) {
+    try {
+      await store.updateUserInfo(params)
+      Tips.success('修改成功')
+      await store.getUserInfo({})
+
+      // wepy.setStorageSync('user', res)
+      wepy.navigateBack({
+        delta: 1
+      })
+    } catch (error) { }
+  }
+  async onShow() {
+    // const res = await store.getUserInfo({})
+    // this.getData(res)
+    // this.$apply()
+
+  }
+  // 数据处理
+  getData(data) {
+    this.formData.mobile = data.mobile
+    this.formData.location.push(data.province || '')
+    this.formData.location.push(data.city || '')
+    this.formData.location.push(data.area || '')
+    this.formData.address = data.address
+    this.formData.productCatalogue = data.productCatalogue
+    this.formData.gender = data.gender === 1 ? 0 : data.gender === 2 ? 1 : ''
+    this.formData.nickname = data.nickname
+    this.formData.birthday = data.birthday
+    this.formData.email = data.email
+    this.$apply()
+  }
+  // 提交时表单校验
+  submitValidation(params) {
+    this.isSubmit = 1
+    for (let item of Object.keys(params)) {
+      console.log(params)
+      switch (item) {
+        case 'nickname':
+          Validator.isCharacter(params[item], this, '昵称')
+          break
+        case 'mobile':
+          Validator.isMobile(params[item], '手机号', this)
+          break
+        case 'email':
+          if (!this.emailValidator(params[item])) this.isSubmit = 0
+          break
+      }
+      if (!this.isSubmit) return false
+    }
+  }
+  async onLoad(options) {
+    this.isIphoneX = wepy.getStorageSync('isIpx')
+    const res = await store.getUserInfo({})
+    // wepy.setStorageSync('user', res)
+    let date = new Date ()
+    this.endTime= date.getFullYear()+ '-' + (date.getMonth() + 1) + '-' + date.getDate()
+    this.getData(res)
+    this.$apply()
+  }
+}
+</script>

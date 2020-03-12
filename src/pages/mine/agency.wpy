@@ -1,0 +1,160 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .agent-page {
+    width: 100%;
+    background: $bgColor;
+  }
+  .agent-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12rpx;
+    margin: 40rpx;
+  }
+  .kefu {
+    display: flex;
+    align-items: center;
+    .avatar-box {
+      width: 140rpx;
+      height: 140rpx;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 32rpx;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .kefu-info {
+      display: flex;
+      flex-direction: column;
+      color: $black;
+      font-weight: 700;
+      .kefu-name {
+        font-size: $fontSize2;
+        line-height: 36rpx;
+      }
+      .kefu-phone {
+        margin-top: 20rpx;
+        font-size: 30rpx;
+        line-height: 36rpx;
+      }
+    }
+  }
+  .concat-btn-group {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 32rpx;
+    padding-bottom: 35rpx;
+    .concat-btn {
+      width: 280rpx;
+      height: 70rpx;
+      line-height: 70rpx;
+      font-size: 30rpx;
+      text-align: center;
+      border-radius: 4rpx;
+      color: #fff;
+      &.wechat {
+        background: #52b516;
+      }
+      &.mobile {
+        background: #e65921;
+      }
+    }
+  }
+  .how-to {
+    display: flex;
+    flex-direction: column;
+    margin: 0 40rpx;
+    text {
+      color: #666666;
+      font-size: $fontSize4;
+      line-height: 36rpx;
+      margin-bottom: 22rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="agent-page" style="{{configStyle}}">
+    <view class="agent-card">
+      <view class="kefu">
+        <view class="avatar-box">
+          <image src="{{imageUrl}}/ic-kefu.png" wx:if="{{imageUrl}}" />
+        </view>
+        <view class="kefu-info">
+          <view class="kefu-name">{{kfInfo.name}}</view>
+          <view class="kefu-phone">{{kfInfo.telephone}}</view>
+        </view>
+      </view>
+      <view class="concat-btn-group">
+        <view class="concat-btn wechat" @tap="copy">加微信</view>
+        <view class="concat-btn mobile" @tap="call">电话聊</view>
+      </view>
+    </view>
+    <view class="how-to">
+      <text>如何成为代理商？</text>
+      <text>1、添加客服人员微信或拨打客服电话</text>
+      <text>2、咨询代理相关业务</text>
+      <text>3、下载并注册【代理大师】app</text>
+      <text>4、成功成为代理商</text>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import Util from '@/utils/Util'
+  import {
+    connect
+  } from 'wepy-redux'
+  import {
+    kfInit
+  } from '@/store/actions'
+  @connect({
+    kfIsInit(state) {
+      return state.common.kfIsInit
+    },
+    kf(state) {
+      return state.common.kf
+    }
+  }, {
+    kfInit
+  })
+  export default class Agency extends wepy.page {
+    config = {
+      navigationBarTitleText: '成为代理'
+    }
+    components = {};
+    data = {
+      kfInfo: {}
+    }
+    mixins = [base]
+    methods = {
+      copy(e) {
+        wepy.setClipboardData({
+          data: this.kf.weixin, // 需要设置的内容,
+          success: res => {
+            wx.showToast({
+              title: '复制成功'
+            })
+          }
+        })
+      },
+      call() {
+        wepy.makePhoneCall({
+          phoneNumber: this.kf.telephone
+        })
+      }
+    }
+    onLoad(options) {
+      if (!this.kfIsInit) this.methods.kfInit()
+      this.kfInfo = {
+        ...this.kf,
+        telephone: Util.starPhone(this.kf.telephone)
+      }
+      this.$apply()
+    }
+  }
+</script>

@@ -1,0 +1,2 @@
+export const RICH_TEXT_UPDATE = 'RICH_TEXT_UPDATE'
+export const RICH_TEXT_REMOVE = 'RICH_TEXT_REMOVE'

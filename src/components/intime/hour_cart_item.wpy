@@ -1,0 +1,71 @@
+<style lang="scss" scoped>
+.hour-cart{
+    width: 100%;
+    .hour-cart-item{
+        width:690rpx;
+        margin: 0 auto;
+        min-height: 200rpx;
+        background: rgba(17,130,164,1);
+        border-radius: 10rpx;
+        box-sizing: border-box;
+        padding: 42rpx 51rpx;
+        color:#8BB7C9;
+        font-size: 24rpx;
+        margin-top: 40rpx;
+        .cart-type{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .cart-title{
+                color:#FFFFFF;
+                font-size: 34rpx;
+            }
+        }
+        .cart-num{
+            margin: 10rpx 0;
+        }
+    }
+}
+.bd-c{
+    background: #025872 !important
+}
+</style>
+<template>
+    <view class="hour-cart">
+        <view  wx:for="{{list}}" wx:key="{{key}}" @tap="emitItem({{item}})" class="hour-cart-item {{index===selectIndex?'bd-c':''}}">
+            <view class="cart-type">
+                <view class="cart-title">{{item.type===1?'小时卡':'月卡'}}</view>
+                <view wx:if="{{item.type===1}}">剩余{{item.surplusTime/60}}小时</view>
+                <view wx:if="{{item.type===2&&item.isExpire===0}}">{{item.surplusTime}}到期</view>
+                <view wx:if="{{item.type===2&&item.isExpire}}">已过期</view>
+            </view>
+            <view class="cart-num">
+                <text>卡号：</text> <text>{{item.cardNumber}}</text>
+            </view>
+            <view class="cart-user-range">
+                <text>可用范围：</text>
+                <text wx:if="{{item.type===1}}">全天可用</text>
+                <text wx:else>16:30~21:30内可用</text>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+export default class HourCart extends wepy.component {
+  props = {
+    list: {
+      default: []
+    }
+  }
+  data = {
+    selectIndex: null
+  }
+  methods = {
+    emitItem(value) {
+      this.selectIndex = this.list.findIndex(row => row.timeCardId === value.timeCardId)
+      this.$emit('getHourInfo', value)
+    }
+  }
+}
+</script>

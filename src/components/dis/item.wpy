@@ -1,0 +1,32 @@
+<style lang="scss" scoped>
+  @import "../../scss/common";
+  @import "../../scss/item";
+</style>
+
+<template>
+  <view class="item" style="flex-basis: {{ 100 / length }}%" @tap="onClick" >
+    <image class="img" src="{{item.img}}" />
+    <text class="text">{{item.name}}</text>
+    <button wx:if="{{item.type === 'share'}}" class="share" open-type="share"></button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Item extends wepy.component {
+    props = {
+      item: {
+        default: 'title'
+      },
+      length: { // 一排多少个
+        default: 4
+      }
+    }
+    methods = {
+      onClick() {
+        if (this.item.type !== 'navigate') return
+        this.$emit('click', this.item.url || null)
+      }
+    }
+  }
+</script>

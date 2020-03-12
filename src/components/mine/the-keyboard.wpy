@@ -1,0 +1,100 @@
+<style lang="scss" scoped>
+@import '../../scss/common';
+.keyboard-wrap {
+  width: 100%;
+  height: 520rpx;
+  background: #ffffff;
+    .keyboard{
+       .top{
+         text-align: center;
+         position: relative;
+         font-size: $fontSize2;
+         height: 90rpx;
+         line-height: 90rpx;
+         color: $black;
+         .complete{
+           position: absolute;
+           right: 30rpx;
+           top: 0;
+           color:$mainColor;
+           font-size: $fontSize2;
+         }
+       }
+       .center{
+         width: 100%;
+         height: 400rpx;
+         display: flex;
+         padding: 20rpx 0;
+         justify-content:space-evenly;
+         flex-wrap: wrap;
+         background: rgb(209,211,223);
+         >view{
+          width: 190rpx;
+          height: 90rpx;
+          border-radius: $borderRadius;
+          line-height: 90rpx;
+          background: $subMainColor;
+          text-align: center;
+          box-shadow:1px 1px 1px $gray;
+         }
+       }
+    }
+}
+</style>
+
+<template>
+  <view class="keyboard-wrap" style="{{configStyle}}">
+     <view class="keyboard">
+         <view class="top">六合天成安全键盘 <view class="complete" @tap="close">完成</view></view>
+         <view class="center">
+           <view wx:for="{{keyboardDate}}" @tap="inputNum('{{item}}')">{{item}}</view>
+         </view>
+     </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+
+export default class Identity extends wepy.page {
+  config = {
+    navigationBarTitleText: '身份认证'
+  };
+  data = {
+    keyboardDate: [1, 2, 3, 4, 5, 6, 7, 8, 9, 'X', 0, '删除'],
+    str: ''
+  }
+  mixins = [base, router]
+  methods = {
+    // 提交绑卡
+    onSubmit() {
+    },
+     // 获取验证码
+    getCode() {
+    },
+    onInput() {
+    },
+    close() {
+      this.$emit('iSclose', false)
+    },
+    inputNum(num) {
+      if (num === '删除') {
+        if (this.str) {
+          this.str = this.str.substr(0, this.str.length - 1)
+        }
+      } else {
+        this.str = this.str + num
+      }
+      this.$apply()
+      this.$emit('submitNum', this.str)
+    }
+  };
+  onLoad(options, data) {
+  }
+  onUnload() {
+    clearTimeout(this.timer)
+  }
+}
+</script>

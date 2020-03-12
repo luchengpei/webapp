@@ -1,0 +1,146 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .family-member {
+    .family-member-header {
+      display: flex;
+      color: #159dfc;
+      font-size: 72rpx;
+      background: #ffffff;
+      padding: 30rpx 0;
+      .member {
+        border-right: 1rpx solid #d9d9d9;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        >text {
+          font-size: $fontSize3;
+          color: $gray;
+        }
+        >view {
+          display: inline;
+          letter-spacing: 8rpx;
+        }
+      }
+      .activate {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        >text {
+          font-size: $fontSize3;
+          color: $gray;
+        }
+        >view {
+          display: inline;
+          letter-spacing: 8rpx;
+        }
+      }
+    }
+    .family-member-gender {
+      margin-top: 30rpx;
+      background: #ffffff;
+      .content {
+        display: flex;
+        padding: 34rpx 30rpx 0rpx 30rpx;
+        flex-wrap: wrap;
+        .item {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          margin-bottom: 30rpx;
+          align-items: center;
+          width: 170rpx;
+          >image {
+            width: 110rpx;
+            height: 110rpx;
+            border-radius: 50%;
+          }
+          >view {
+            font-size: $fontSize4;
+            margin-top: 10rpx;
+            color: $black;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 170rpx;
+          }
+          >text {
+            font-size: $fontSize4;
+            margin-top: 6rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: $gray;
+            display: inline-block;
+            max-width: 170rpx;
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="family-member">
+    <view class="family-member-header">
+      <view class="member">
+        <text>全部成员</text>
+        <view>{{dataMember.memberNum}}</view>
+      </view>
+      <view class="activate">
+        <text>加入成员</text>
+        <view>{{dataMember.joinNum}}</view>
+      </view>
+    </view>
+    <view class="family-member-gender">
+      <view class="title">
+        <TitleA title="加入成员列表"></TitleA>
+      </view>
+      <view class="content">
+        <view class="item" wx:for="{{dataMember.list}}" wx:key="{{index}}">
+          <image src="{{item.icon}}"></image>
+          <text>{{item.name?item.name:''}}</text>
+          <view>{{item.lineage?item.lineage:''}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import Title from '@/components/common/title'
+  import family from '@/api/family'
+  export default class FamilyMember extends wepy.page {
+    config = {
+      navigationBarTitleText: '家谱成员'
+    }
+    components = {
+      TitleA: Title,
+      TitleB: Title,
+      TitleC: Title
+    }
+    data = {
+      dataMember: ''
+    }
+    mixins = [base]
+    methods = {}
+    async getMemberListApi() {
+      try {
+        let res = await family.getMemberList()
+        this.dataMember = res
+        console.log(res)
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onLoad(option) {
+      this.getMemberListApi()
+    }
+  }
+</script>

@@ -1,0 +1,163 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .mine-section-wrap {
+    // margin-top: 20rpx;
+    margin-top: 30rpx;
+
+    // background: #fff;
+  }
+  .mine-section-list {
+    // background-color: #fff;
+    >.list-content-wrap:nth-last-child(1){
+      border: 0;
+    }
+    .list-content-wrap {
+      height: 100rpx;
+      // border-bottom: 1rpx solid #dadbdf;
+      position: relative;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content:space-between;
+      padding: 0 30rpx;
+      background-color: #fff;
+      &:nth-child(4n) {
+        border-right: none;
+      }
+      // &.last-row {
+      //   border-bottom: none;
+      // }
+      &.interlayer{
+        margin-top:30rpx;
+      }
+      .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .cover {
+          width: 60rpx;
+          height: 60rpx;
+        }
+        .content-title {
+          margin-left: 20rpx;
+          font-size: 24rpx;
+          color: #444;
+        }
+      }
+      i {
+        font-size: 24rpx;
+        color:#aaa;
+      }
+    }
+    .list-content-wrap:after {
+      position: absolute;
+      left: 30rpx;
+      right: 0rpx;
+      bottom: 0rpx;
+      content: '';
+      border-bottom: 1rpx solid #dadbdf;
+    }
+     .last-row:after {
+      display: none;
+    }
+    .list-content__hover {
+      opacity: 0.7;
+    }
+  }
+  .mine-list {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #fff;
+    padding: 20rpx 0px;
+    .list-content {
+      width: 25%;
+      height: 160rpx;
+      border-right: 1rpx solid #dadbdf;
+      border-bottom: 1rpx solid #dadbdf;
+      box-sizing: border-box;
+      &:nth-child(4n) {
+        border-right: none;
+      }
+      &.last-row {
+        border-bottom: none;
+      }
+      .cover {
+        width: 60rpx;
+        height: 60rpx;
+        display: block;
+        margin: 0 auto;
+        margin-top: 22rpx;
+        margin-bottom: 22rpx;
+      }
+      .content-title {
+        font-size: 24rpx;
+        color: #444;
+        display: block;
+        text-align: center;
+      }
+    }
+    .list-content__hover {
+      opacity: 0.7;
+    }
+  }
+</style>
+
+<template>
+  <view class="simple-pannel-list">
+    <block wx:if="{{pannelList.type === '1'}}">
+      <view class="mine-section-wrap">
+        <view class="mine-section-list">
+          <block wx:for="{{pannelList.list}}" wx:key="{{index}}" wx:for-index="index" wx:for-item="item">
+            <view class="list-content-wrap {{pannelList.length%4 !== 0  ? ((index + 1) > (pannelList.length - pannelList.length%4) ? 'last-row' : '') : ((index + 1) > (pannelList.length - 4) ? 'last-row' : '')}} {{index === 2 || index === 4 ? 'interlayer' : ''}} {{index === 1 || index ===3 || index === pannelList.list.length-1 ? 'last-row' : ''}}" hover-class="list-content__hover" @tap="routerTo({{item.link}})">
+              <div class="content">
+                <image class="cover" src="{{item.icon}}" mode="aspectFill" />
+                <div class="content-title">{{item.name}}</div>
+              </div>
+              <i class="iconfont icon-arrow"></i>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+    <block wx:if="{{pannelList.type === '2'}}">
+      <view class="mine-section-wrap">
+        <view class="mine-list">
+          <block wx:for="{{pannelList.list}}" wx:key="{{index}}" wx:for-index="index" wx:for-item="item">
+            <view class="list-content {{pannelList.length%4 !== 0 ? ((index + 1) > (pannelList.length - pannelList.length%4) ? 'last-row' : '') : ((index + 1) > (pannelList.length - 4) ? 'last-row' : '')}} " hover-class="list-content__hover" @tap="routerTo({{item.link}})">
+              <image class="cover" src="{{item.icon}}" mode="aspectFill" />
+              <div class="content-title">{{item.name}}</div>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import SimplePannel from '@/components/mine/simple_pannel'
+  export default class SimplePannelList extends wepy.component {
+    components = {
+      SimplePannel: SimplePannel
+    }
+    props = {
+      list: {},
+    }
+    data = {
+      pannelList: wepy.$appConfig.mineMenu,
+      map:[2,4]
+    }
+    mixins = [router]
+    methods = {
+      init() {
+        console.log(wepy.$appConfig.mineMenu, 'asdfasdfasdf')
+        this.pannelList = wepy.$appConfig.mineMenu
+        this.$apply()
+        console.log(this.pannelList)
+      }
+    }
+    onLoad() {}
+  }
+</script>

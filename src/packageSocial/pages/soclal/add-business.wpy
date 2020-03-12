@@ -1,0 +1,377 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .business {
+    padding-bottom: 68rpx;
+  }
+  .save {
+    height: 92rpx;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: $mainColor;
+    color: $subMainColor;
+    font-size: $fontSize3;
+    text-align: center;
+    line-height: 92rpx;
+  }
+  .business-from {
+    padding-left: 30rpx;
+    background: #ffffff;
+    margin-bottom: 30rpx;
+    .the-input {
+      padding-right: 30rpx;
+      border-bottom: 1rpx solid #e0e0e0;
+      display: flex;
+      justify-content: left;
+      font-size: $fontSize2;
+      align-items: center;
+      .required {
+        position: relative;
+        &::after {
+          position: absolute;
+          right: -14rpx;
+          top: 29rpx;
+          font-size: $fontSize4;
+          content: '*';
+          color: red;
+        }
+      }
+      .title {
+        .title__inline {
+          height: 88rpx;
+          line-height: 88rpx;
+          width: 150rpx;
+          color: $black;
+          text-align: justify;
+          white-space: nowrap;
+          &::after {
+            width: 100%;
+            display: inline-block;
+            content: ''; //这三个都不可以少
+          }
+        }
+        .nowrap {
+          white-space: nowrap;
+        }
+      }
+      .select-avatar {
+        width: 72%;
+        margin-left: 50rpx;
+        height: 50rpx;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        >image {
+          height: 64rpx;
+          width: 64rpx;
+          border-radius: 50%;
+          margin-right: 20rpx;
+        }
+        >i {
+          color: #aaa;
+          font-size: 24rpx;
+        }
+      }
+      .background-pop {
+        width: 72%;
+        margin-left: 50rpx;
+        height: 50rpx;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        >i {
+          color: #aaa;
+          font-size: 24rpx;
+        }
+        >view {
+          width: 54rpx;
+          height: 32rpx;
+          border-radius: 16rpx;
+          background: #f7564c;
+          font-size: $fontSize4;
+          color: $subMainColor;
+          text-align: center;
+          line-height: 32rpx;
+          margin-left: 28rpx;
+        }
+      }
+      >input {
+        margin: 0 30rpx 0 50rpx;
+        color: #a5a5a5;
+        height: 46rpx;
+        flex: 1;
+      }
+    }
+    .the-input:nth-last-child(1) {
+      border-bottom: 0rpx;
+    }
+    .section-wrapper {
+      >picker {
+        width: 72%;
+        margin-left: 50rpx;
+      }
+      .section {
+        font-size: $fontSize2;
+        color: #a5a5a5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        >i {
+          color: #aaa;
+          font-size: 24rpx;
+        }
+      }
+    }
+  }
+  .form-item-wrap {
+    margin-top: 30rpx;
+    padding-bottom: 20rpx;
+    font-size: $fontSize2;
+    .text {
+      font-size: $fontSize4;
+      color: #a5a5a5;
+    }
+  }
+</style>
+
+<template>
+  <view class="business">
+    <view class="business-from">
+      <view class="the-input">
+        <view class="title required">
+          <view class="title__inline">业务名称</view>
+        </view>
+        <input placeholder="{{isEndit?'请填写业务名称，最多6个字':''}}" maxlength="6" disabled="{{!isEndit}}" value="{{formData.name}}" @blur="nameFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title required">
+          <view class="title__inline">业务描述</view>
+        </view>
+        <input placeholder="{{isEndit?'请填写业务描述，最多20个字':''}}" maxlength="20" disabled="{{!isEndit}}" value="{{formData.introduction}}" @blur="introductionFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input section-wrapper">
+        <view class="title required">
+          <view class="title__inline">接入类型</view>
+        </view>
+        <picker mode="selector" bindchange="typeFn" disabled="{{!isEndit}}" value="{{index}}" range="{{typeArray}}">
+          <view class="section">
+            {{typeArray[index]}}
+            <i class="iconfont icon-arrow" wx:if="{{isEndit}}"></i>
+          </view>
+        </picker>
+      </view>
+      <view class="the-input" wx:if="{{index}}">
+        <view class="title required">
+          <view class="title__inline">业务介绍</view>
+        </view>
+        <view class="background-pop" @tap="selfIntroductionFn">
+          <view wx:if='{{imageList.length}}'>{{imageList.length}}</view>
+          <i class="iconfont icon-arrow"></i>
+        </view>
+      </view>
+      <view class="the-input section-wrapper" wx:if="{{!index}}">
+        <view class="title required">
+          <view class="title__inline">appID</view>
+        </view>
+        <input placeholder="{{isEndit?'请填appID':''}}" maxlength="30" disabled="{{!isEndit}}" value="{{formData.appId}}" @blur="appIdFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title required">
+          <view class="title__inline">业务Logo</view>
+        </view>
+        <view class="select-avatar" @tap="getLogo">
+          <image mode="aspectFill" src="{{formData.logo?formData.logo:'/images/avatar.png'}}" class="avatar"></image>
+          <i class="iconfont icon-arrow"></i>
+        </view>
+      </view>
+      <!-- <view class="form-item-wrap">
+          <view class="upload-wrap">
+            <SelectImg :uploadList.sync="proofMaterial" @uploadFile.user='uploadFile' :upLoadNum.sync="upLoadNum" :isClose.sync='isAdd' padding="0"></SelectImg>
+          </view>
+          <view class="text">
+            支持jpg、png图片格式，2m以内，图片尺寸33x33
+          </view>
+        </view> -->
+    </view>
+    <view class="save" @tap="skipAdd">
+      保存
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import SelectImg from '@/components/activity/upload'
+  import Validator from '@/utils/Validator'
+  import WxApi from '@/utils/WxApi'
+  // import Tips from '@/utils/Tips'
+  import upload from '@/utils/FileHttp'
+  export default class Business extends wepy.page {
+    config = {
+      navigationBarTitleText: '企业添加业务'
+    }
+    mixins = [base]
+    props = ['type']
+    components = {
+      SelectImg
+    }
+    data = {
+      formData: {
+        name: '',
+        introduction: '',
+        type: 0,
+        logo: '',
+        introductionImage: '',
+        content: '',
+        appId: ''
+      },
+      dataListIndex: '',
+      upLoadNum: 1,
+      entryType: 0,
+      typeArray: ['小程序', '富文本'],
+      isEndit: true,
+      proofMaterial: [],
+      isAdd: true,
+      quickData: {
+        type: '',
+        data: []
+      },
+      index: 0,
+      isSubmit: 0
+    }
+    onLoad(option) {
+      wepy.setStorageSync('quickTextarea', '')
+      this.quickData = wepy.getStorageSync('quickList') || []
+      if (!this.quickData.data) {
+        this.quickData.data = []
+      }
+      this.typeSkip = option.typeSkip
+      this.entryType = option.entryType
+      this.dataListIndex = Number(option.index)
+      this.initData()
+    }
+    onShow() {
+      this.formData.content = wepy.getStorageSync('quickTextarea') || ''
+    }
+    methods = {
+      // 业务介绍
+      selfIntroductionFn() {
+        wepy.navigateTo({
+          url: `/packageSocial/pages/soclal/textarea?typeSkip=quickTextarea`
+        })
+      },
+      nameFn(e) {
+        Validator.isCharacter(e.detail.value, this, '业务名称')
+        this.formData.name = e.detail.value
+      },
+      // 业务描述
+      introductionFn(e) {
+        Validator.isCharacter(e.detail.value, this, '业务描述')
+        this.formData.introduction = e.detail.value
+      },
+      // appid
+      typeFn(e) {
+        this.index = Number(e.detail.value)
+        this.$apply()
+      },
+      appIdFn(e) {
+        Validator.isCharacter(e.detail.value, this, 'appId')
+        this.formData.appId = e.detail.value
+      },
+      // 获取logo
+      async getLogo() {
+        let resPath = await WxApi.wxChooseImg(1).catch(err => {
+          return err
+        })
+        let res = await upload.uploadImg(resPath)
+        let uploadRes = res.map(v => {
+          return {
+            url: v
+          }
+        })
+        this.formData.logo = uploadRes[0].url
+        this.$apply()
+      },
+      uploadFile(e) {
+        let imgData = ''
+        e.map((item) => {
+          imgData += item.url + ','
+        })
+        this.formData.introductionImage = imgData.substring(0, imgData.length - 1)
+      },
+      skipAdd() {
+        this.quickData.type = this.typeSkip
+        this.formData.type = Number(this.index) + 1
+        this.formData.entryType = this.entryType
+        this.formData.content = this.formData.content || ''
+        this.formData.appId = this.formData.appId || ''
+        console.log(this.index)
+        if (!this.index) {
+          delete this.formData.content
+        } else {
+          delete this.formData.appId
+        }
+        console.log(this.formData)
+        this.submitValidation(this.formData)
+        if (!this.isSubmit) return false
+        if (this.dataListIndex === 0 || this.dataListIndex) {
+          this.quickData.data.splice(this.dataListIndex, 1, this.formData)
+        } else {
+          this.quickData.data.push(this.formData)
+        }
+        wepy.setStorageSync('quickList', this.quickData)
+        wepy.navigateBack({
+          delta: 2
+        })
+      }
+    }
+    // 提交时表单校验
+    submitValidation(params) {
+      this.isSubmit = 1
+      for (let item of Object.keys(params)) {
+        switch (item) {
+          case 'name':
+            Validator.isCharacter(params[item], this, '业务名称')
+            break
+          case 'introduction':
+            Validator.isCharacter(params[item], this, '业务描述')
+            break
+          case 'appId':
+            Validator.isCharacter(params[item], this, 'appId')
+            break
+          case 'content':
+            Validator.isCharacter(params[item], this, '业务介绍')
+            break
+          case 'logo':
+            Validator.isCharacter(params[item], this, '业务logo')
+            break
+        }
+        if (!this.isSubmit) return false
+      }
+    }
+    initData() {
+      if (this.dataListIndex === 0 || this.dataListIndex) {
+        this.quickList = this.quickData.data
+        this.formData.name = this.quickData.data[this.dataListIndex].name
+        this.formData.introduction = this.quickData.data[this.dataListIndex].introduction
+        this.formData.logo = this.quickData.data[this.dataListIndex].logo
+        this.formData.type = Number(this.quickData.data[this.dataListIndex].type) - 1
+        this.index = Number(this.quickData.data[this.dataListIndex].type) - 1
+        this.formData.content = this.quickData.data[this.dataListIndex].content
+        this.formData.appId = this.quickData.data[this.dataListIndex].appId || ''
+        wepy.setStorageSync('quickTextarea', this.formData.content)
+        this.proofMaterial = []
+        if (this.quickData.data[this.dataListIndex].introductionImage) {
+          this.quickData.data[this.dataListIndex].introductionImage.split(',').map(v => {
+            this.proofMaterial.push({
+              url: v
+            })
+          })
+        }
+        this.$apply()
+      }
+    }
+  }
+</script>

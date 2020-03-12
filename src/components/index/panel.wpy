@@ -1,0 +1,61 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .index-panel-wrap {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    margin-bottom: 20rpx;
+    .index-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 88rpx;
+      border-bottom: 1rpx solid $borderColor;
+      .index-panel-header__inner {
+        position: relative;
+        font-size: $fontSize2;
+        color: $mainColor;
+        &::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 2rpx;
+          width: 30rpx;
+          background: $mainColor;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="index-panel-wrap" style="margin-bottom: {{mb ? 20 : 0}}rpx;">
+    <view class="index-panel-header">
+      <view class="index-panel-header__inner">- {{title}} -</view>
+    </view>
+    <view class="index-panel-content">
+      <slot name="content"></slot>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  export default class IndexPanel extends wepy.component {
+    mixins = [base]
+    props = {
+      title: {
+        type: String,
+        default: '标题'
+      },
+      mb: {
+        type: Boolean,
+        default: true
+      }
+    };
+    methods = {};
+    onLoad() {}
+  }
+</script>

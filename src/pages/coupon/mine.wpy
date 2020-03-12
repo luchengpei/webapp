@@ -1,0 +1,84 @@
+<style lang="scss">
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+</style>
+
+<template>
+  <view class="page-container">
+    <Tab :tab="tab" @change.user="switchTab" />
+    <view style="margin-top:80rpx;">
+      <Use wx:if="{{tab.selectedId}}" :list.sync="list" status="use"></Use>
+      <NoUse wx:if="{{!tab.selectedId}}" :list.sync="list" status="ago"></NoUse>
+      <Empty wx:if="{{list.length===0}}" title="你没有可用的优惠券" subtitle="赶紧去领取优惠券喔"></Empty>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Tab from '@/components/common/tab'
+  import coupon from '@/api/coupon'
+  import pagination from '@/mixins/pagination'
+  import CouponPage from '@/components/coupon/coupon_item'
+  import Empty from '@/components/common/empty'
+  import base from '@/mixins/base'
+  export default class Recommend extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的优惠券'
+    }
+    components = {
+      Empty,
+      Tab,
+      Use: CouponPage,
+      NoUse: CouponPage
+    };
+    data = {
+      page: '', // 分页对象
+      list: [], // 数据
+      tab: {
+        list: [{
+          id: 1,
+          title: '可用券'
+        },
+        {
+          id: 0,
+          title: '失效券'
+        }
+        ],
+        selectedId: 1
+      }
+    }
+    mixins = [base, pagination]
+    methods = {
+      switchTab() {
+        this.getListData()
+        this.$apply()
+      }
+    }
+    params() { // 请求时获取优惠券的参数
+      return {
+        couponsLevel: this.tab.selectedId,
+        issuedId: wepy.getStorageSync('pid')
+      }
+    }
+      // 获取优惠券
+    async getListData() {
+      this.page = await coupon.myCouponList()
+      await this.next()
+      this.list = this.page.list
+      console.log('-----------^^^^^------------邓紫棋', this.list)
+      this.$apply()
+    }
+    // 到达底部
+    async onReachBottom () {
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+    onLoad() {
+      this.getListData()
+    }
+  }
+</script>

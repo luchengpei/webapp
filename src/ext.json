@@ -1,0 +1,14 @@
+{
+  "extEnable": true,
+  "extAppid": "wxd62aa409526cbd69",
+  "directCommit": false,
+  "ext": {
+    "platformAppId": "bona61XLAA9B1HGTNDRV2348",
+    "companyId": 536,
+    "industryMark": "",
+    "applicationId": -1,
+    "color": { "mainColor": "#197AC9", "secondaryColor": "#197AC9" },
+    "projectId": 780
+  },
+  "window": {}
+}

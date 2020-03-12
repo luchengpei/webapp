@@ -1,0 +1,198 @@
+
+<style lang="scss" scoped>
+  .cloumn-select {
+    box-sizing: border-box;
+    padding-left: 40rpx;
+    background-color: #fff;
+  }
+  .content {
+    width: 100%;
+    display: flex;
+    height: 88rpx;
+    align-items: center;
+    padding-right: 40rpx;
+    border-bottom: 1rpx solid #e0e0e0;
+    box-sizing: border-box;
+    .left {
+      // border: 1px solid green;
+      box-sizing: border-box;
+      font-size: 34rpx;
+      color: #444444;
+    }
+    .right {
+      flex: 1; // border: 1px solid green;
+      box-sizing: border-box;
+    }
+  }
+  .right-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; // border: 1px solid green;
+    .value {
+      margin-left: 40rpx;
+      flex: 1;
+      margin-right: 40rpx;
+      display: flex;
+      font-size: 34rpx; // border: 1px solid red;
+      box-sizing: border-box;
+      input {
+        flex: 1;
+        display: block; // border: 1px solid purple;
+      }
+    }
+  }
+  .content-code {
+    width: 100%;
+    display: flex;
+    height: 88rpx;
+    align-items: center;
+    padding-right: 40rpx;
+    border-bottom: 1rpx solid #e0e0e0;
+    box-sizing: border-box;
+    .left {
+      // border: 1px solid green;
+      box-sizing: border-box;
+      font-size: 34rpx;
+      color: #444444;
+    }
+    .right {
+      flex: 1; // border: 1px solid green;
+      box-sizing: border-box;
+    }
+  }
+  .right-content-code {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; // border: 1px solid green;
+    .value {
+      margin-left: 40rpx;
+      flex: 1;
+      margin-right: 40rpx;
+      display: flex;
+      font-size: 34rpx; // border: 1px solid red;
+      box-sizing: border-box;
+      input {
+        flex: 1;
+        display: block; // border: 1px solid purple;
+      }
+    }
+  }
+  .content-no-input {
+    width: 100%;
+    display: flex;
+    height: 88rpx;
+    align-items: center;
+    padding-right: 40rpx;
+    justify-content: space-between;
+    border-bottom: 1rpx solid #e0e0e0;
+    box-sizing: border-box;
+    .left {
+      // border: 1px solid green;
+      box-sizing: border-box;
+      font-size: 34rpx;
+      color: #444444;
+    }
+    .right {
+      box-sizing: border-box;
+       font-size: 34rpx;
+      color: #444444;
+    }
+  }
+</style>
+
+<template lang="wxml">
+  <view class="cloumn-select">
+    <!-- 正常输入框 -->
+    <view class="content" wx:if="{{type==='input'}}">
+      <view class="left">{{title}}</view>
+      <view class="right">
+        <view class="right-content">
+          <view class="value">
+            <input value="{{current}}" type="text" @input="changeInput" placeholder-style="font-size:34rpx;color:#a5a5a5" placeholder="{{placeholder}}" maxlength="{{maxlength}}"/>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 验证码输入框 -->
+    <view class="content-code" wx:if="{{type==='code'}}">
+      <view class="left">{{title}}</view>
+      <view class="right">
+        <view class="right-content">
+          <view class="value">
+            <input value="{{current}}" type="text" @input="changeInput" placeholder-style="font-size:34rpx;color:#a5a5a5" placeholder="{{placeholder}}" maxlength="{{maxlength}}"/>
+          </view>
+        </view>
+      </view>
+      <view class="right-button">
+        <button disabled="{{disabled}}" type="default" size="mini" @tap="getCode">{{codeText}}</button>
+      </view>
+    </view>
+    <!-- 非输入框 -->
+    <view class="content-no-input" wx:if="{{type==='noInput'}}">
+      <view class="left">{{title}}</view>
+      <view class="right"> 微信支付</view>
+    </view>
+  </view>
+  </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Time from '@/utils/Time'
+  export default class ItemInput extends wepy.component {
+    components = {};
+    props = {
+      type: {
+        default: 'input'
+      },
+      title: { // 标题
+        default: '标题'
+      },
+      current: { // 输入框的值
+        default: '',
+        twoWay: true
+      },
+      placeholder: { //  placeholder
+        default: '请输入'
+      },
+      maxlength: {
+        default: -1
+      }
+    }
+    data = {
+      time: 60,
+      codeText: '获取验证码',
+      disabled: false
+    }
+    methods = {
+      // 赋值
+      changeInput(val) {
+        this.current = val.detail.value
+        this.$apply()
+      },
+      // 获取验证码
+      getCode() {
+        this.$emit('getCode', this.time)
+      }
+    };
+    codeDeal() {
+      Time.clearTime()
+      Time.downTime(this.time, res => {
+        let ss = res.slice(3)
+        if (ss === '00') {
+          Time.clearTime()
+          this.codeText = `获取验证码`
+          this.disabled = false
+        }
+        if (ss !== '00') {
+          this.codeText = `${ss}后重新获取`
+          this.disabled = true
+        }
+        this.$apply()
+      })
+    }
+    watch = {}
+    events = {};
+  }
+</script>

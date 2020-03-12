@@ -1,0 +1,616 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .join-family {
+    padding-bottom: 122rpx;
+    .join-family-basic-top {
+      margin-top: 30rpx;
+    }
+    .join-family-basic {
+      padding-left: 30rpx;
+      background: #ffffff;
+      margin-bottom: 30rpx;
+      .the-input {
+        border-bottom: 1rpx solid #e0e0e0;
+        display: flex;
+        justify-content: left;
+        font-size: $fontSize2;
+        align-items: center;
+        .required {
+          position: relative;
+          &::after {
+            position: absolute;
+            right: -14rpx;
+            top: 29rpx;
+            font-size: $fontSize4;
+            content: '*';
+            color: red;
+          }
+        }
+        .title {
+          .title__inline {
+            height: 88rpx;
+            line-height: 88rpx;
+            width: 140rpx;
+            color: $black;
+            text-align: justify;
+            &::after {
+              width: 100%;
+              display: inline-block;
+              content: ''; //这三个都不可以少
+            }
+          }
+        }
+        .select-avatar {
+          width: 72%;
+          margin-left: 50rpx;
+          height: 50rpx;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          >image {
+            width: 26rpx;
+            height: 28rpx;
+            margin-right: 30rpx;
+          }
+          >image:nth-child(1) {
+            height: 64rpx;
+            width: 64rpx;
+            border-radius: 50%;
+          }
+        }
+        >input {
+          margin: 0 30rpx 0 50rpx;
+          color: #a5a5a5;
+          height: 46rpx;
+          flex: 1;
+        }
+      }
+      .the-input:nth-last-child(1) {
+        border-bottom: 0rpx;
+      }
+      .section-wrapper {
+        >picker {
+          width: 72%;
+          margin-left: 50rpx;
+        }
+        .section {
+          font-size: $fontSize2;
+          color: #a5a5a5;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          >image {
+            width: 26rpx;
+            height: 28rpx;
+          }
+          margin-right: 29rpx;
+        }
+      }
+      .textarea {
+        font-size: 32rpx;
+        .title-wrap {
+          display: flex;
+        }
+        .title {
+          .title__inline {
+            height: 88rpx;
+            line-height: 88rpx;
+            width: 140rpx;
+            color: $black;
+            text-align: justify;
+            &::after {
+              width: 100%;
+              display: inline-block;
+              content: ''; //这三个都不可以少
+            }
+          }
+        }
+        .textarea-wrap {
+          width: 100%;
+          padding-bottom: 20rpx;
+          >textarea {
+            font-size: $fontSize2;
+            overflow: auto;
+            color: #a5a5a5;
+            width: 690rpx;
+            min-height: 170rpx;
+          }
+        }
+      }
+    }
+    .join-family-family {
+      background: #ffffff;
+      padding: 30rpx 30rpx 60rpx 30rpx;
+      .user-info {
+        display: flex;
+        align-items: center;
+        >image {
+          width: 100rpx;
+          height: 100rpx;
+          border-radius: 50%;
+        }
+        >view {
+          margin-left: 25rpx;
+          .name {
+            color: $black;
+            font-size: $title;
+            margin-bottom: 6rpx;
+          }
+          .number {
+            font-size: $fontSize4;
+            color: $gray;
+          }
+        }
+      }
+    }
+    .join-family-bottom {
+      position: fixed;
+      display: flex;
+      height: 92rpx;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      >view {
+        flex: 1;
+        line-height: 92rpx;
+        text-align: center;
+        font-size: $fontSize2;
+        background: #159dfc;
+        color: #ffffff;
+      }
+      >view:nth-child(1) {
+        background: #ffffff;
+        color: $black;
+      }
+    }
+    .avatar-wrapper {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(43, 39, 39, 0.77);
+      top: 0;
+      left: 0;
+      z-index: 10;
+      .avatar {
+        position: relative;
+        width: 591rpx;
+        background: #fff;
+        border-radius: 10rpx;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        .title {
+          height: 60rpx;
+          padding: 30rpx 30rpx;
+          font-size: $fontSize2;
+        }
+        .content {
+          height: 300rpx;
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          padding: 0 30rpx;
+          .item {
+            width: 108rpx;
+            height: 108rpx;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            >image {
+              border: 2rpx;
+              width: 100rpx;
+              height: 100rpx;
+              border-radius: 50%;
+            }
+          }
+        }
+        .btn {
+          border-top: 1rpx solid $borderColor;
+          display: flex;
+          >view {
+            flex: 1;
+            text-align: center;
+            line-height: 100rpx;
+            font-size: $fontSize2;
+            color: $mainColor;
+          }
+          width: 100%;
+          height: 100rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="join-family">
+    <TitleA class="join-family-basic-top" title="基本信息"></TitleA>
+    <view class="join-family-basic">
+      <view class="the-input">
+        <view class="title required">
+          <view class="title__inline">姓名</view>
+        </view>
+        <input placeholder="{{isEdit?'(必填) 请输入姓名':''}}" maxlength="4" disabled="{{!isEdit}}" value="{{formData.name}}" @blur="nameFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title">
+          <view class="title__inline">世系</view>
+        </view>
+        <input placeholder="{{isEdit?'(可不填) 请输入您的世系':''}}" maxlength="15" disabled="{{!isEdit}}" value="{{formData.lineage}}" @blur="lineageMapFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title">
+          <view class="title__inline">字辈</view>
+        </view>
+        <input placeholder="{{isEdit?'(可不填) 请输入您的字辈':''}}" maxlength="15" disabled="{{!isEdit}}" value="{{formData.workGeneration}}" @blur="workGenerationFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input">
+        <view class="title">
+          <view class="title__inline">堂号</view>
+        </view>
+        <input placeholder="{{isEdit?'(可不填) 请输入您的堂号':''}}" maxlength="15" disabled="{{!isEdit}}" value="{{formData.dougou}}" @blur="dougouFn('{{item}}')" placeholder-class="g-placeholder" />
+      </view>
+      <view class="the-input section-wrapper">
+        <view class="title">
+          <view class="title__inline">性别</view>
+        </view>
+        <picker mode="selector" bindchange="genderFn" disabled="{{!isEdit}}" value="{{index}}" range="{{genderArray}}">
+          <view class="section">
+            {{genderArray[formData.sex]}}
+            <image src="/images/right.png" wx:if="{{isEdit}}"></image>
+          </view>
+        </picker>
+      </view>
+      <view class="the-input section-wrapper">
+        <view class="title">
+          <view class="title__inline">出生日期</view>
+        </view>
+        <picker mode="date" value="{{formData.birthday}}" disabled="{{!isEdit}}" bindchange="bindDateChange">
+          <view class="section">
+            <view class="data"> {{!formData.birthday?isEdit?'请选择出生日期':'':''}} {{formData.birthday}}
+            </view>
+            <image src="/images/right.png" wx:if="{{!formData.birthday&&isEdit}}"></image>
+          </view>
+        </picker>
+      </view>
+      <view class="the-input section-wrapper">
+        <view class="title">
+          <view class="title__inline">是否健在</view>
+        </view>
+        <picker mode="selector" bindchange="existFn" disabled="{{!isEdit}}" value="{{isHealthy}}" range="{{existArray}}">
+          <view class="section">
+            {{existArray[formData.isHealthy]}}
+            <image src="/images/right.png" wx:if="{{!formData.birthday&&isEdit}}"></image>
+          </view>
+        </picker>
+      </view>
+      <view class="the-input section-wrapper" wx:if="{{isHealthy}}">
+        <view class="title">
+          <view class="title__inline">卒于</view>
+        </view>
+        <picker mode="date" value="{{formData.timeOfDeath}}" disabled="{{!isEdit}}" bindchange="timeOfDeathChange">
+          <view class="section">
+            <view class="data"> {{!formData.timeOfDeath?isEdit?'请选择日期':'':''}} {{formData.timeOfDeath}}
+            </view>
+            <image src="/images/right.png" wx:if="{{!formData.birthday&&isEdit}}"></image>
+          </view>
+        </picker>
+      </view>
+      <!-- <view class="the-input">
+                  <view class="title">
+                    <view class="title__inline">选择头像</view>
+                  </view>
+                  <view class="select-avatar" @tap="selectAvatarPop">
+                    <image src='{{prepareAvatar}}' class="avatar"></image>
+                    <image src="/images/right.png"></image>
+                  </view>
+                </view> -->
+      <view class="textarea">
+        <view class="title">
+          <view class="title__inline">本人介绍</view>
+        </view>
+        <view class="textarea-wrap">
+          <textarea auto-height @blur="bindTextAreaBlur" maxlength="200" disabled="{{!isEdit}}" value='{{formData.introduce}}' placeholder="{{isEdit?'(可不填) 请输入本人介绍':''}}" placeholder-class="g-placeholder" />
+        </view>
+      </view>
+    </view>
+    <TitleB title="绑定信息" wx:if="{{!addOrEditData.relationType}}"></TitleB>
+    <view class="join-family-family" wx:if="{{!addOrEditData.relationType}}">
+      <view class="user-info">
+        <image class="avatar" src='{{memberData.avatar}}' mode="aspectFill"></image>
+        <view>
+          <view class="name">{{memberData.nickname?memberData.nickname:''}}</view>
+          <view class="number">{{memberData.phone?memberData.phone:''}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="avatar-wrapper" wx:if="{{avatarPop}}" @touchmove.stop="() => {}">
+      <view class="avatar">
+        <view class="title">
+          请选择头像
+        </view>
+        <view class="content">
+          <view class="item" wx:for="{{avatarList}}" @tap="selectAvatar('{{item}}')">
+            <image src="{{item.avatar}}" style="border:2rpx solid{{item.id === selectIitemID?'#06a0ff':'#fff'}}"></image>
+          </view>
+        </view>
+        <view class="btn">
+          <view @tap="cancel">取消</view>
+          <view @tap="confirm">确定</view>
+        </view>
+      </view>
+    </view>
+    <view class="join-family-bottom" wx:if="{{isEdit}}">
+      <view @tap="back">返回</view>
+      <view @tap="submit">确定</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import family from '@/api/family'
+  import Title from '@/components/common/title'
+  import Validator from '@/utils/Validator'
+  import router from '@/mixins/router'
+  import Tips from '@/utils/Tips'
+  export default class JoinFamily extends wepy.page {
+    config = {
+      navigationBarTitleText: '添加家谱成员'
+    }
+    components = {
+      TitleA: Title,
+      TitleB: Title
+    }
+    props = {}
+    data = {
+      genderArray: ['男', '女'],
+      existArray: ['是', '否'],
+      region: [],
+      formData: {
+        name: '',
+        lineage: '',
+        workGeneration: '',
+        introduce: '',
+        dougou: '',
+        sex: 0,
+        birthday: '',
+        memberAvatar: '',
+        timeOfDeath: '',
+        isHealthy: 0
+      },
+      addOrEditData: {},
+      memberData: '',
+      isSubmit: 0,
+      customItem: '全部',
+      isEdit: true,
+      // selectorSex: true, // 成员性别是否可选
+      isHealthy: 0,
+      avatarList: [],
+      avatarPop: false,
+      selectIitemID: '',
+      prepareAvatar: ''
+    }
+    mixins = [base, router]
+    methods = {
+      // 获取名字
+      nameFn(e) {
+        Validator.isCharacter(e.detail.value, this, '名字')
+        this.formData.name = e.detail.value
+      },
+      // 获取字辈
+      workGenerationFn(e) {
+        // Validator.isCharacter(e.detail.value, this, '字辈', false)
+        this.formData.workGeneration = e.detail.value
+      },
+      // 获取堂号
+      dougouFn(e) {
+        Validator.isCharacter(e.detail.value, this, '堂号', false)
+        this.formData.dougou = e.detail.value
+      },
+      // 获取出生年月
+      bindDateChange(e) {
+        this.formData.birthday = e.detail.value
+      },
+      // 获取性别
+      genderFn(e) {
+        this.formData.sex = e.detail.value
+        console.log(e.detail.value, this.formData.gender)
+      },
+      // 卒于
+      timeOfDeathChange(e) {
+        this.formData.timeOfDeath = e.detail.value
+        this.$apply()
+      },
+      // 获取世系
+      lineageMapFn(e) {
+        // Validator.isCharacter(e.detail.value, this, '世系', false)
+        this.formData.lineage = e.detail.value
+      },
+      // 是否健在
+      existFn(e) {
+        this.formData.isHealthy = e.detail.value
+        this.isHealthy = Number(e.detail.value)
+        this.$apply()
+      },
+      // 获取基本描述
+      bindTextAreaBlur(e) {
+        this.formData.introduce = e.detail.value
+      },
+      selectAvatarPop() {
+        if (!this.isEdit) return false
+        this.avatarPop = !this.avatarPop
+        this.$apply()
+      },
+      selectAvatar(data) {
+        this.selectIitemID = data.id
+        this.prepareAvatar = data.avatar
+        this.$apply()
+      },
+      // 取消选择头像
+      cancel() {
+        this.prepareAvatar = ''
+        this.avatarPop = !this.avatarPop
+        this.$apply()
+      },
+      // 确定选择头像
+      confirm() {
+        this.formData.memberAvatar = this.prepareAvatar
+        this.avatarPop = !this.avatarPop
+        this.$apply()
+      },
+      submit() {
+        let params = Object.assign({}, this.formData, this.addOrEditData)
+        params.sex = Number(this.formData.sex) === 0 ? 1 : 2
+        params.isHealthy = Number(this.formData.isHealthy) === 0 ? 1 : 2
+        if (!Number(this.formData.isHealthy)) {
+          delete params.timeOfDeath
+        }
+        this.submitValidation(params)
+        if (!this.isSubmit) return false
+        if (this.addOrEditData.type === 'add') {
+          this.familyNodeAddApi(params)
+        } else {
+          params.memberId = params.fromMemberId
+          delete params.relationType
+          delete params.type
+          delete params.fromMemberId
+          this.updateMember(params)
+        }
+      },
+      back() {
+        wx.navigateBack({
+          delta: 1
+        })
+      }
+    }
+    // 数据初始化
+    init() {
+      this.formData = {
+        name: '',
+        lineage: '',
+        workGeneration: '',
+        introduce: '',
+        dougou: '',
+        sex: 0,
+        isHealthy: 0
+      }
+      this.addOrEditData.relationType = Number(this.addOrEditData.relationType)
+      if (this.addOrEditData.type === 'look') {
+        this.isEdit = false
+        wx.setNavigationBarTitle({
+          title: '查看家谱成员'
+        })
+        this.memberInfoApi(this.addOrEditData.fromMemberId)
+      } else if (this.addOrEditData.type === 'edit') {
+        wx.setNavigationBarTitle({
+          title: '编辑家谱成员'
+        })
+        this.memberInfoApi(this.addOrEditData.fromMemberId)
+      } else {
+        wx.setNavigationBarTitle({
+          title: '添加家谱成员'
+        })
+        if (this.addOrEditData.relationType === 1 || this.addOrEditData.relationType === 5) {
+          this.formData.sex = 0
+        } else if (this.addOrEditData.relationType === 2 || this.addOrEditData.relationType === 6) {
+          this.formData.sex = 1
+        } else if (this.addOrEditData.relationType === 4) {
+          this.formData.sex = Number(this.addOrEditData.sex) === 1 ? 1 : 0
+        } else {
+          // this.selectorSex = false
+          // this.$apply()
+        }
+      }
+      this.$apply()
+    }
+    // 提交时表单校验
+    submitValidation(params) {
+      this.isSubmit = 1
+      for (let item of Object.keys(params)) {
+        switch (item) {
+          case 'name':
+            Validator.isCharacter(params[item], this, '名字')
+            break
+          case 'dougou':
+            Validator.isCharacter(params[item], this, '堂号', false)
+            break
+        }
+        if (!this.isSubmit) return false
+      }
+    }
+    async familyNodeAddApi(params) {
+      try {
+        await family.familyNodeAdd(params)
+        Tips.success('添加成功')
+        wx.navigateBack({
+          delta: 1
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 获取会员信息
+    async memberInfoApi(memberId) {
+      try {
+        let res = await family.memberInfo(memberId)
+        this.getData(res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 数据获取
+    getData(data) {
+      this.memberData = data
+      this.formData.name = data.name
+      this.formData.sex = data.sex === 2 ? 1 : 0
+      this.formData.dougou = data.dougou || ''
+      this.formData.introduce = data.introduce || ''
+      this.formData.workGeneration = data.workGeneration || ''
+      this.formData.timeOfDeath = data.timeOfDeath || ''
+      this.formData.userId = data.userId
+      this.isHealthy = data.isHealthy === 2 ? 1 : 0
+      this.formData.isHealthy = data.isHealthy === 2 ? 1 : 0
+      this.formData.lineage = data.lineage
+      this.formData.birthday = data.birthday || ''
+      this.formData.phone = data.phone
+      this.formData.memberAvatar = data.memberAvatar || ''
+      this.addOrEditData.genealogyId = data.genealogyId
+      this.$apply()
+    }
+    // 获取头像列表
+    async getMemberAvatar() {
+      let res = await family.getAvatar()
+      this.avatarList = res
+      this.$apply()
+    }
+    // 更新成员
+    async updateMember(params) {
+      try {
+        let res = await family.updateMember(params)
+        if (res === '修改成功') {
+          Tips.success('修改成功')
+        }
+        wx.navigateBack({
+          delta: 1
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onShow() {
+      this.init()
+    }
+    onLoad(option, data) {
+      this.addOrEditData = data.preload.addOrEditData
+      this.getMemberAvatar()
+      this.$apply()
+    }
+  }
+</script>

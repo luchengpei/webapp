@@ -1,0 +1,97 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .goods-list-page-container {
+    width: 100%;
+    background: $bgColor;
+  }
+</style>
+
+<template>
+  <view class="goods-list-page-container" style="{{configStyle}}">
+    <SearchBar :keyword.sync="keyword" :showSearch.sync="showSearch" :isFocus.sync="isFocus" @search.user="onSearch" @cancel.user="onCancel" wx:if="{{mode === 'search'}}" />
+    <repeat wx:if="{{listData.length>0}}">
+      <EnterpriseList :listData="listData" :type="listType"></EnterpriseList>
+    </repeat>
+    <block wx:if="{{listData.length===0}}">
+      <Empty title='暂无企业' subtitle='' :fixed="fixed"></Empty>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import enterprise from '@/api/enterprise'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import EnterpriseList from '@/components/enterprise/enterprise_list'
+  import SearchBar from '@/components/goods/search_bar'
+  import Empty from '@/components/common/empty'
+  export default class Goods extends wepy.page {
+    config = {
+      navigationBarTitleText: '企业搜索',
+      enablePullDownRefresh: true
+    }
+    components = {
+      EnterpriseList,
+      SearchBar,
+      Empty
+    };
+    data = {
+      firstLoading: true,
+      categoryId: '', // 类目ID
+      mode: 'search', // search 搜索页模式
+      sortType: '', // 价格 product_price 销量  buying_num
+      sort: '',
+      listData: [],
+      page: {
+        list: []
+      },
+      keyword: '',
+      showSearch: false,
+      isFocus: false
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      onSearch() {
+        this.getCompanyListApi()
+      },
+      onCancel() {}
+    }
+    onLoad(options) {}
+    // 获取公司列表
+    async getCompanyListApi() {
+      try {
+        this.page = await enterprise.getCompanyList()
+        await this.next()
+        this.listData = []
+        this.listData = this.page.list
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 列表传参
+    params() {
+      let data = this.keyword
+      data = data.replace(/\r\n/g, '<br>')
+      data = data.replace(/\n/g, '')
+      data = data.replace(/\s/g, '')
+      return {
+        companyName: data
+      }
+    }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      this.$apply()
+    }
+  }
+</script>

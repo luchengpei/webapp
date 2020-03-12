@@ -1,0 +1,213 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  $remind:#F7564C;
+  .bank-card-wrap {
+    .no-card-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 170rpx 30rpx 0 30rpx;
+      .icon-info {
+        font-size: 240rpx;
+        color: #f76260;
+        margin-bottom: 40rpx;
+      }
+      .tips-title {
+        font-size: 32rpx;
+        color: $black;
+        margin-bottom: 40rpx;
+      }
+      .tips-desc {
+        font-size: $fontSize4;
+        color: $gray;
+        margin-bottom: 200rpx;
+      }
+    }
+    .card-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .card {
+        width: 100%;
+        padding: 30rpx 0;
+        background: $subMainColor;
+        .card-inner__bottom {
+          color: $gray;
+          .user-info {
+            display: flex;
+            flex-direction: column;
+            .cell {
+              padding: 10rpx 30rpx;
+              display: flex;
+              justify-content: space-between;
+              font-size: $fontSize4;
+              align-items: center;
+              .cell-label {
+                .cell-label__inline {
+                  color: $black;
+                  font-size: $fontSize3;
+                  height: 36rpx;
+                  line-height: 36rpx;
+                  text-align: justify;
+                  &::after {
+                    width: 100%;
+                    display: inline-block;
+                    content: ''; //这三个都不可以少
+                  }
+                }
+              }
+              .cell-value {
+                height: 36rpx;
+                line-height: 36rpx;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .remind{
+    width: 100%;
+    text-align: center;
+    font-size: $fontSize3;
+    color: $remind;
+    margin-top: 56rpx;
+  }
+  .bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 92rpx;
+    background: $mainColor;
+    text-align: center;
+    font-size: $fontSize3;
+    line-height: 92rpx;
+    color: $subMainColor;
+  }
+</style>
+
+<template>
+  <view class="bank-card-wrap" style="{{configStyle}}">
+    <view class="no-card-wrap" wx:if="{{!card}}">
+      <i class="iconfont icon-info"></i>
+      <view class="tips-title">您还没进行实名认证</view>
+      <view class="tips-desc">需要实名认证后才能执行相关操作</view>
+      <view class="g-button">去实名认证</view>
+    </view>
+    <view class="card-wrap" wx:if="{{card}}">
+      <Tag text="注意：仅支持绑定一张银行卡，银行卡仅支持修改一次。" />
+      <Title title="当前银行卡信息"></Title>
+      <view class="card">
+        <view class="card-inner__bottom">
+          <view class="user-info">
+            <view class="cell">
+              <view class="cell-label">
+                <view class="cell-label__inline">姓名</view>
+              </view>
+              <view class="cell-value">{{card.starName}}</view>
+            </view>
+            <view class="cell">
+              <view class="cell-label">
+                <view class="cell-label__inline">身份证</view>
+              </view>
+              <view class="cell-value">{{card.idCard}}</view>
+            </view>
+            <view class="cell">
+              <view class="cell-label">
+                <view class="cell-label__inline">手机号</view>
+              </view>
+              <view class="cell-value">{{card.phone}}</view>
+            </view>
+            <view class="cell">
+              <view class="cell-label">
+                <view class="cell-label__inline">银行卡</view>
+              </view>
+              <view class="cell-value">{{card.cardNo || ' '}}</view>
+            </view>
+            <view class="cell">
+              <view class="cell-label">
+                <view class="cell-label__inline">银行卡类型</view>
+              </view>
+              <view class="cell-value">储蓄卡</view>
+            </view>
+            <view class="cell">
+              <view class="cell-label">
+                <view class="cell-label__inline">银行</view>
+              </view>
+              <view class="cell-value">{{card.openBank || ' '}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="remind">
+       注意：银行卡仅支持修改一次
+    </view>
+    <view class="bottom">
+      <view class="change-text" hover-class="g-hover" @tap="toEdit">更改银行卡</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import wallet from '@/api/wallet'
+  import Tips from '@/utils/Tips'
+  import Title from '@/components/common/title'
+  import Tag from '@/components/common/tag'
+  export default class BankCard extends wepy.page {
+    config = {
+      navigationBarTitleText: ''
+    };
+    components = {
+      Tag,
+      Title
+    };
+    data = {
+      card: {}
+    };
+    mixins = [base, router];
+    methods = {
+      // 编辑银行卡
+      toEdit() {
+        if (this.card.isModify === 1) {
+          Tips.toast('您已修改过一次银行卡，不可再次修改', null, 'none')
+          return
+        }
+        const form = {
+          name: this.card.userName,
+          phone: this.card.subMerchantPhone,
+          idCard: this.card.subMerchantIdCard,
+          subMerchantId: this.card.subMerchantId,
+          starName: this.card.starName
+        }
+        wepy.navigateTo({
+          url: `/pages/bank/edit_card?form=${JSON.stringify(form)}`
+        })
+      }
+    };
+    onLoad(options, data) {
+      this.getCard()
+      wx.setNavigationBarTitle({
+        title: `${this.card ? '实名认证' : '实名认证'}`
+      })
+    }
+    // 获取实名认证信息
+    getCard() {
+      const user = wepy.getStorageSync('user')
+      wallet.cardInfo({
+        userId: user.userId
+      }).then(res => {
+        this.card = {
+          ...res,
+          starName: `${res.userName.substr(0, 1)}${res.userName.substr(1).replace(/\S/g, '*')}`
+        }
+        this.$apply()
+      })
+    }
+  }
+</script>

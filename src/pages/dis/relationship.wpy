@@ -1,0 +1,150 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .relationship-list {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    .relationship-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 40rpx;
+      padding-right: 40rpx;
+      border-top: 1rpx solid $borderColor;
+      &:first-child {
+        border: none;
+      }
+      .img-container {
+        width: 100rpx;
+        height: 100rpx;
+        margin: 18rpx 0;
+        border-radius: 50%;
+        overflow: hidden;
+        background: $imageBgColor;
+        >image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .center-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-left: 25rpx;
+        .name-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 400rpx;
+          .name {
+            display: block;
+          font-size: $fontSize2;
+          color: $black;
+          margin-bottom: 12rpx;
+          overflow: hidden;/*超出部分隐藏*/
+          white-space: nowrap;/*不换行*/
+          text-overflow:ellipsis;/*超出部分文字以...显示*/
+          max-width: 320rpx;
+          
+        }
+        .level {
+          flex: 1;
+            display: block;
+            font-size: $fontSize5;
+            color: $gray;
+            margin-left: 15rpx;
+          }
+        }
+        
+        .phone {
+          font-size: $fontSize4;
+          color: $gray;
+        }
+      }
+      .coin-icon {
+        width: 50rpx;
+        height: 50rpx;
+        margin-right: 20rpx;
+      }
+      .money {
+        font-size: $fontSize3;
+        color: $mainColor;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="mod-relationship" style="{{configStyle}}">
+    <block wx:if="{{relationshipList.length > 0}}">
+    <view class="relationship-list">
+      <view wx:for="{{relationshipList}}" class="relationship-item">
+        <view class="img-container">
+          <image src="{{item.avatar}}" mode="scaleToFill" lazy-load="false">
+          </image>
+        </view>
+        <view class="center-container">
+          <view class="name-container">
+            <text class="name">{{item.realName}}</text>
+            <text class="level" wx:if="{{item.identifying === 1}}">(一级)</text>
+            <text class="level" wx:elif="{{item.identifying === 2}}">(二级)</text>
+          </view>
+          
+          <text class="phone">{{item.mobile}}</text>
+        </view>
+        <image class="coin-icon" src="/images/mine_page/dis/icon_coin.png" mode="scaleToFill" lazy-load="false">
+        </image>
+        <view class="money">{{item.sumOrderPrice}}</view>
+      </view>
+    </view>
+    </block>
+    <block wx:else>
+      <Empty title="暂无人脉信息" subtitle="" />
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import nRouter from '@/mixins/new_router'
+  import dis from '@/api/dis'
+  import pagination from '@/mixins/pagination'
+  import Empty from '@/components/common/empty'
+
+  export default class Relationship extends wepy.page {
+    config = {
+      navigationBarTitleText: '人脉'
+    }
+    mixins = [base, pagination, nRouter]
+    data = {
+      relationshipList: [],
+      page: {
+        list: []
+      }
+    }
+    components = {
+      Empty
+    }
+    methods = {}
+    async onLoad(options) {
+      this.getRelationship()
+      this.$apply()
+    }
+    async getRelationship() {
+      this.page = dis.getRelationshipList()
+      await this.next()
+      this.relationshipList = this.page.list
+      this.$apply()
+    }
+    // 列表传参
+    params() {
+      return {}
+    }
+    async onReachBottom() {
+      await this.next()
+      this.relationshipList = this.page.list
+      this.$apply()
+    }
+}
+</script>

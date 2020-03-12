@@ -1,0 +1,66 @@
+<style lang="scss">
+  @import '../../scss/common';
+  .activity-success {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    >i {
+      margin-top: 120rpx;
+      font-size: 200rpx;
+      color: $mainColor;
+    }
+    >text {
+      margin-top: 50rpx;
+      margin-bottom: 150rpx;
+      font-size: 38rpx;
+    }
+    >button {
+      font-size: 38rpx;
+      height: 88rpx;
+      line-height: 88rpx;
+      width: 670rpx;
+      margin: 0 auto;
+      background: $mainColor;
+      color: #fff;
+      border-color: $mainColor;
+    }
+  }
+</style>
+ 
+<template>
+  <view class="activity-success" style="{{configStyle}}">
+    <i class="iconfont icon-info_kick"></i>
+    <text>恭喜，您已参与成功！</text>
+    <button @tap="back">完成</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  export default class ActivitySuccess extends wepy.page {
+    config = {
+      navigationBarTitleText: '参与成功'
+    }
+    mixins = [base, router]
+    components = {}
+    data = {
+      goBackPage: 1
+    }
+    methods = {
+      back() {
+        // this._redirectTo(`/pages/activity/detail?id=${wepy.getStorageSync('activityId')}`)
+      wx.navigateBack({
+      delta: this.goBackPage 
+        })
+      }
+    }
+    onLoad(options, data) {
+      let pages = getCurrentPages()
+      this.goBackPage = pages.length - 2
+    }
+  }
+</script>

@@ -1,0 +1,309 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .order-confirm-index {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background-color: $bgColor;
+    box-sizing: border-box;
+  }
+  .order-main {
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 100rpx;
+    .order-info {
+      margin-top: 30rpx;
+      padding: 30rpx;
+      background: #fff;
+      box-sizing: border-box;
+      .top-name {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 30rpx;
+        border-bottom: 1rpx solid $borderColor;
+        .top-left-img {
+          width: 36rpx;
+          height: 36rpx;
+          margin-right: 20rpx;
+          border-radius: 10rpx;
+          overflow: hidden;
+          >image {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .top-center-text {
+          flex: 1;
+          font-size: 24rpx;
+          color: #999999;
+        }
+        .top-right-tip {
+          background: #A8D5FB;
+          font-size: 20rpx;
+          color: #ffffff;
+          padding: 5rpx 10rpx 5rpx 10rpx;
+        }
+      }
+      .top-title {
+        margin-top: 25rpx;
+        color: #444444;
+        font-size: 32rpx;
+      }
+      .top-time {
+        margin-top: 25rpx;
+        color: #999999;
+        font-size: 24rpx;
+      }
+      .top-address {
+        margin-top: 10rpx;
+        color: #999999;
+        font-size: 24rpx;
+      }
+    }
+  }
+  // 
+  .pay-money-main {
+    padding: 30rpx;
+    background: #fff;
+    box-sizing: border-box;
+    .pay-cloum {
+      color: #444444;
+      font-size: 34rpx;
+      line-height: 65rpx;
+      text {
+        color: #F11717
+      }
+    }
+  }
+  // 
+  .bottom-fixed {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 92rpx;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    .left-money {
+      text-align: center;
+      flex: 1;
+      font-size: 34rpx;
+      color: #2F3336;
+      text {
+        color: #F11717;
+      }
+    }
+    .right-buttom {
+      width: 350rpx;
+      background: $mainColor;
+      color: #ffffff;
+      font-size: 36rpx;
+      text-align: center;
+      line-height: 92rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class='order-confirm-index' style="{{configStyle}}">
+    <view class="order-main">
+      <!-- 头部订单信息 -->
+      <view class="order-info">
+        <view class="top-name" @tap="activeInfoRouter">
+          <view class="top-left-img">
+            <image src="{{info.activityInfo.activityIcon}}"></image>
+          </view>
+          <view class="top-center-text">{{info.activityInfo.typeName}}·{{info.activityInfo.subTypeName}}</view>
+          <view class="top-right-tip">{{info.activityInfo._activityStatus}}</view>
+        </view>
+        <view class="top-title">{{info.activityInfo.title}}</view>
+        <view class="top-time">时间：{{info.activityInfo._startTime}} ~ {{info.activityInfo._endTime}}</view>
+        <view class="top-address">地址：{{info.activityInfo.address}}</view>
+      </view>
+      <!-- 缴费 -->
+      <view class="bn-mt-30">
+        <PalMoney title="缴费"></PalMoney>
+          <view class="pay-money-main">
+            <view class="pay-cloum" wx:if="{{info.payInfo.settingName}}">项目：{{info.payInfo.settingName}}</view>
+            <view class="pay-cloum" wx:if='{{!isMemberFree}}'>金额：<text>￥{{info.payInfo.price}}</text></view>
+            <view class="pay-cloum" wx:else>金额：会员免费</view>
+          </view>
+      </view>
+      <!-- 表单 -->
+      <view class="bn-mt-30" wx:if="{{formInfoArr.length!==0}}">
+        <FormInfo title="报名信息"> </FormInfo>
+          <view class="form-info">
+            <repeat for="{{formInfoArr}}" key="index" index="index" item="item">
+              <LeftInput :item.sync="item"></LeftInput>
+            </repeat>
+          </view>
+      </view>
+    </view>
+    <!-- 底部按钮 -->
+    <view class="bottom-fixed {{isIpx ? 'fix-ipx-btn' : ''}}">
+      <view class="left-money" wx:if='{{!isMemberFree}}'>实付总额：<text>￥{{info.payInfo.price}}</text></view>
+      <view class="left-money" wx:else>实付总额：<text>￥0</text></view>
+
+      <view class="right-buttom" @tap="subOrder">提交订单</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  import LeftInput from '@/components/activity/form_input_arr'
+  import LeftTitle from '@/components/common/title'
+  import Tips from '@/utils/Tips'
+  import activity from '@/api/activity'
+  import order from '@/api/order'
+  import WxApi from '@/utils/WxApi'
+  import { ACTIVITY_ORDER_TYPE } from '@/utils/Constants'
+
+  export default class OrderConfirm extends wepy.page {
+    constructor() {
+      super()
+      // 当前活动状态
+      this.data.activeState = new Map([
+        ['1', '未开始'],
+        ['2', '报名中'],
+        ['3', '进行中'],
+        ['4', '已结束'],
+        ['5', '活动失败']
+      ])
+    }
+    config = {
+      navigationBarTitleText: '订单确认'
+    }
+    components = {
+      PalMoney: LeftTitle,
+      FormInfo: LeftTitle,
+      LeftInput
+    }
+    data = {
+      isMemberFree: '',
+      info: '', // 数据
+      activeState: '', // 活动状态字典
+      formInfoArr: [] // http表单信息
+    }
+    mixins = [router, base]
+    methods = {
+      // 提交订单
+      async subOrder() {
+        let data = await this.getOrder()// 下单接口
+        if(this.isMemberFree){
+          this._routerTo(`/pages/activity/success`)
+          return false
+        }
+        let query = {
+          payType: 1,
+          orderId: data.orderId,
+          orderType: 18,
+          subject: '活动订单',
+          body: '活动描述',
+          openId: wepy.getStorageSync('user').openId,
+          outTradeNo: data.orderNo
+        }
+
+        // let payQuery = await activity.pay(query) // 获取支付参数
+        // let _payQuery = {// 支付参数构造
+        //   timeStamp: payQuery.orderInfo.timeStamp,
+        //   nonceStr: payQuery.orderInfo.nonceStr,
+        //   package: payQuery.orderInfo.packageValue,
+        //   signType: payQuery.orderInfo.signType,
+        //   paySign: payQuery.orderInfo.paySign
+        // }
+        // 第三方支付
+        let payInfo = await order.thirdPay({
+          orderNo: data.orderNo,
+          orderType: ACTIVITY_ORDER_TYPE
+        })
+        const _payQuery = {
+          timeStamp: payInfo.timeStamp,
+          nonceStr: payInfo.nonceStr,
+          package: payInfo.wxPackage,
+          signType: payInfo.signType,
+          paySign: payInfo.paySign
+        }
+        WxApi.wxPayFun(_payQuery).then(res => {
+          // 支付回调
+          this._routerTo(`/pages/activity/success`)
+        })
+        .catch(err => {
+          activity.payFailReturn(data.orderId)
+          Tips.error('支付失败')
+          return err
+        })
+      }
+    }
+// 参数整理
+    formDealValue() {
+      return new Promise((resolve, reject) => {
+        let applyInfo = {}
+        this.formInfoArr.map((v, i) => {
+          applyInfo[v.text] = v.model
+          // 表单验证
+          if (v.model === '' && v.isRequired === 1) {
+            Tips.error(`请输入${v.text}`)
+            reject(Error, '表单验证')
+          }
+        })
+        let data = {
+          applyInfo: JSON.stringify(applyInfo), // 表单字段
+          activityId: wepy.getStorageSync('activityId'), // 活动ID
+          settingId: wepy.getStorageSync('settingId') // 设置ID
+        }
+        resolve(data)
+      })
+    }
+    // 获取订单详情数据
+    async getOrder(id, type) {
+      let query = await this.formDealValue()
+      let data = await activity.signUp(query)
+      return data
+    }
+    // 获取活动表单字段
+    async getActiveFormInfo() {
+      let data = await activity.getForm({
+        settingId: wepy.getStorageSync('settingId')
+      })
+      // 处理表单字段
+      data.map((v, i) => {
+        let border = !(data.length === i + 1)
+        this.formInfoArr.push({
+          text: v.name,
+          placeholder: `请输入${v.name}`,
+          model: '',
+          border,
+          isRequired: v.isRequired
+        })
+      })
+      this.$apply()
+    }
+    // 获取订单数据
+    async getOrderData() {
+      let query = {
+        activityId: wepy.getStorageSync('activityId'), // 活动ID
+        settingId: wepy.getStorageSync('settingId') // 设置ID
+      }
+      let data = await activity.getOrderData(query)
+      data.activityInfo._activityStatus = this.activeState.get(data.activityInfo.activityStatus.toString())
+      this.info = data
+      this.$apply()
+    }
+    // 初始化
+    async init() {
+      await this.getActiveFormInfo() // 表单信息
+      await this.getOrderData()
+      this.$apply()
+    }
+    onLoad(options) {
+      console.log(options, 'xxxxx1110')
+      this.isMemberFree = Number(options.isMemberFree)
+      this.$apply()
+      this.init()
+    }
+  }
+</script>

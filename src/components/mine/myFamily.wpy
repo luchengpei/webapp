@@ -1,0 +1,123 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .see-all {
+    font-size: 28rpx;
+    color: #a5a5a5;
+    margin-right: 10rpx;
+  }
+  .mine-section-wrap {
+    margin-top: 20rpx;
+    background: #fff;
+  }
+  .mine-section-wrap {
+    margin-top: 20rpx;
+    background: #fff;
+  }
+  .family-btn-wrap {
+    height: 196rpx;
+    display: flex;
+    .family-btn {
+      position: relative;
+      .circle {
+        position: absolute;
+        right: 20rpx;
+        top: 20rpx;
+        height: 30rpx;
+        text-align: center;
+        line-height: 30rpx;
+        background: red;
+        color: $subMainColor;
+        font-size: $fontSize4;
+        padding: 0 10rpx;
+        border-radius: 15rpx;
+      }
+      .icon {
+        width: 94rpx;
+        height: 94rpx;
+        border-radius: 50%;
+        background: $mainColor;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i {
+          color: #fff;
+          font-size: 52rpx;
+        }
+      }
+      >button {
+        position: absolute;
+        opacity: 0;
+        height: 196rpx;
+        width: 100%;
+      }
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      image {
+        width: 92rpx;
+        height: 92rpx;
+      }
+      text {
+        margin-top: 16rpx;
+        font-size: 28rpx;
+        line-height: 36rpx;
+        color: $black;
+      }
+    }
+  }
+</style>
+
+<template>
+   <view class="mine-section-wrap" >
+        <FamilyTitle title="我的家谱"></FamilyTitle>
+        <view class="family-btn-wrap">
+            <view class="family-btn" @tap="skipFamily" wx:for="{{myFamilyList.list}}" @tap="routerTo({{item.link}})">
+              <image src="{{item.icon}}"></image>
+              <text>{{item.name}}</text>
+            </view>
+          </view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import Util from '@/utils/Util'
+  import Tips from '@/utils/Tips'
+  import SectionTitle from '@/components/common/title'
+  export default class SimplePannelList extends wepy.component {
+    components = {
+      FamilyTitle: SectionTitle
+    }
+    props = {
+      genealogyId:{
+          default:''
+      }
+    }
+    data={
+      myFamilyList:{}
+    }
+    mixins = [router]
+    methods = {
+      init(){
+        this.myFamilyList =  wepy.$appConfig.myFamilyList
+        this.$apply()
+        console.log()
+      },
+      shareHint() {
+        if (this.genealogyId === '') {
+          Tips.toast('请创建家谱', null, 'none')
+        } else {
+          wepy.navigateTo({
+            url: `/packageFamily/pages/family/tree?genealogyId=${this.genealogyId}`
+          })
+        }
+      }
+    }
+    onLoad() {
+    }
+  }
+</script>

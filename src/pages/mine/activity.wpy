@@ -1,0 +1,60 @@
+<style lang="scss" scoped>
+  .page-container {
+    height: 100%;
+    margin-bottom: 98rpx;
+  }
+</style>
+
+<template>
+  <view class="page-container" style="{{configStyle}}">
+    <block wx:if="{{list.length > 0}}">
+      <repeat for="{{list}}" key="index" index="index" item="item">
+        <ActivityItem :item="item" />
+      </repeat>
+    </block>
+    <block wx:else>
+      <Empty title="暂未参加活动" subtitle="" />
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import ActivityItem from '@/components/activity/activity_item'
+  import Empty from '@/components/common/empty'
+  import activity from '@/api/activity'
+  import pagination from '@/mixins/pagination'
+  export default class About extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的活动',
+      enablePullDownRefresh: true
+    }
+    components = {
+      ActivityItem,
+      Empty
+    }
+    data = {
+      list: [],
+      page: {}
+    }
+    mixins = [base, pagination]
+    onLoad() {
+      this.getActivityList()
+    }
+    async getActivityList() {
+      this.page = activity.mineList()
+      await this.next()
+      this.list = this.page.list
+      this.$apply()
+    }
+     // 上拉触底
+    async onReachBottom() {
+      this.getActivityList()
+    }
+    async onPullDownRefresh() {
+      await this.getActivityList()
+      wx.stopPullDownRefresh()
+    }
+}
+</script>

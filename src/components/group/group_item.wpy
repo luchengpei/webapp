@@ -1,0 +1,172 @@
+<style lang="scss" scoped> 
+  @import '../../scss/common';
+  .goods-item {
+    background: #fff;
+    &:first-child {
+      .main-box {
+        border-top: none;
+      }
+    }
+    .main-box {
+      position: relative;
+      display: flex;
+      padding: 30rpx 40rpx 30rpx 0;
+      margin-left: 40rpx;
+      border-top: 1rpx solid $borderColor;
+      .goods-pic {
+        width: 150rpx;
+        height: 150rpx;
+        background: #000;
+        border-radius: 8rpx;
+      }
+      .goods-info {
+        position: relative;
+        flex: 1;
+        padding-left: 40rpx;
+        .cart {
+          position: absolute;
+          right: 0;
+          bottom: 15rpx;
+          width: 70rpx;
+          height: 60rpx;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1rpx solid $mainColor;
+          border-radius: 6rpx;
+          .icon {
+            width: 34rpx;
+            height: 32rpx;
+          }
+        }
+        .line-box {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 5rpx 0;
+          align-items: flex-end;
+        }
+        .quantity-box {
+          height: 100rpx;
+        }
+        .name {
+          font-size: $fontSize2;
+          color: $black;
+          line-height: 46rpx;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+        .dead-line {
+          font-size: $fontSize4;
+          line-height: 46rpx;
+          color: $mainColor;
+        }
+        .num {
+          font-size: $fontSize4;
+          line-height: 46rpx;
+          color: $gray;
+        }
+        .labels {
+          text-align: right;
+          .item {
+            padding: 0 20rpx;
+            height: 28rpx;
+            line-height: 28rpx;
+            text-align: center;
+            background: #ffa200;
+            color: #fff;
+            font-size: $fontSize5;
+            margin-right: 10rpx;
+            border-radius: 4rpx;
+          }
+        }
+        .price {
+          font-size: 34rpx;
+          line-height: 46rpx;
+          color: $priceRed;
+        }
+        .price-cross {
+          font-size: 24rpx;
+          line-height: 46rpx;
+          color: $gray;
+          text-decoration: line-through;
+        }
+        .open-group {
+          font-size: $fontSize4;
+          height: 60rpx;
+          // width: 120rpx;
+          padding: 0 34rpx;
+          line-height: 60rpx;
+          border-radius: 6rpx;
+          background: $mainColor;
+          color: #fff;
+          text-align: center;
+          border: 1rpx solid $mainColor;
+          &.opening {
+            color: $mainColor;
+            background: #fff;
+            padding: 0 24rpx;
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="goods-item">
+    <view class="main-box" @tap="tap">
+      <image class="goods-pic" src="{{item.productThumbnail}}" />
+      <view class="goods-info">
+        <view class="name">{{item.productName}}</view>
+        <view class="line-box">
+          <view class="dead-line">{{item.timeDown ? '距结束' + item.timeDown : ''}}</view>
+          <view class="num">已拼{{item.groupNum}}件</view>
+        </view>
+        <view class="line-box">
+          <view class="labels">
+            <view class="item">{{item.groupBuyingPersonNum}}人拼</view>
+          </view>
+        </view>
+        <view class="line-box">
+          <view class="price">￥{{item.groupBuyingPrice}}</view>
+          <view class="price-cross">￥{{item.productCrossLinePrice}}</view>
+          <view wx:if="{{item.groupStatus === 0}}" class="open-group opening">开团成功</view>
+          <view wx:else class="open-group" >开 团</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/new_router'
+  import base from '@/mixins/base'
+  export default class GroupItem extends wepy.component {
+    props = {
+      item: {},
+      mode: {} // index 首页 normal 普通商品列表
+    }
+    data={
+      timeDown: ''
+    }
+    mixins = [router, base]
+    methods = {
+      tap() {
+        if (!this.item.timeDown) return 0
+        this._goRouter('/pages/goods/detail', {
+          id: this.item.productId,
+          mode: 'group_sale',
+          activityId: this.item.groupBuyingActivityId,
+          shareType: 'no'
+        })
+      }
+    }
+    computed={
+    }
+  }
+</script>

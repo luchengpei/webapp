@@ -1,0 +1,126 @@
+<style lang='scss' scoped>
+  @import "../../scss/common";
+  .member-header-wrap {
+    height: 369rpx;
+    width: 100%;
+    background: $mainColor;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .bg {
+      height: 369rpx;
+      width: 100%;
+      position: absolute;
+    }
+    .header-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      padding: 72rpx $margin 98rpx $margin;
+      height: 200rpx;
+      width: 100%;
+      .avar {
+        width: 200rpx;
+        height: 200rpx;
+        border-radius: 50%;
+      }
+      .text-wrap {
+        flex:1;
+        margin-left: $margin;
+        display: flex;
+        flex-direction: column;
+        .name {
+          font-size: $title;
+          color: #ffffff;
+        }
+        .time {
+          font-size: $fontSize4;
+          color: #ffffff;
+          line-height: 60rpx;
+        }
+        .tag {
+          width: 110rpx;
+          height: 28rpx;
+          line-height: 28rpx;
+          text-align: center;
+          font-size: $fontSize5;
+          color: $mainColor;
+          background-color: #ffffff;
+          border-radius: $borderRadius;
+        }
+      }
+      .btn {
+        width: 162rpx;
+        height: 58rpx;
+        line-height: 58rpx;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        text-align: center;
+        font-size: $fontSize3;
+        color: #ffffff;
+        border-radius: 10rpx;
+        margin-left: 8rpx;
+      }
+      .btnLong {
+        width: 182rpx;
+      }
+      .btnWarn {
+        width: 182rpx;
+        border: 1px solid rgb(247,86, 76);
+        background-color: rgb(247,86, 76);
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="member-header-wrap">
+    <image class="bg" src="{{cover || '../../images/mine_page/mine_head_bg_mask.png'}} " />
+    <view class="header-wrap">
+      <view class="avar">
+        <image class="avar" src="{{avatar || '../../images/mine_page/dis/mine_head_default.png'}}" />
+      </view>
+      <view class="text-wrap">
+        <text class="name">{{nickName}}</text>
+        <text class="time">{{time}}</text>
+        <text class="tag" wx:if="{{tag}}">{{tag}}</text>
+      </view>
+      <view class="btn {{btnClass}}" type="default" @tap="onClick">{{btnText}}</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Header extends wepy.component {
+    props = {
+      nickName: {
+        default: ''
+      },
+      time: {
+        default: ''
+      },
+      tag: {
+        default: ''
+      },
+      btnText: {
+        default: '升级'
+      },
+      btnClass: { // btnLong btnWarn
+        default: 'btn'
+      },
+      avatar: {
+        default: '../../images/mine_page/dis/mine_head_default.png'
+      },
+      cover: {
+        default: ''
+      }
+    }
+    methods = {
+      onClick() {
+        this.$emit('click')
+      }
+    }
+  }
+</script>

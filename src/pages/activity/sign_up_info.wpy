@@ -1,0 +1,79 @@
+<style lang="scss">
+  @import '../../scss/common';
+  .form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20rpx;
+    padding-left: 30rpx;
+    background: #fff;
+    .field {
+      display: flex;
+      height: 88rpx;
+      line-height: 88rpx;
+      font-size: 34rpx;
+      padding-right: 30rpx;
+      align-items: center;
+      border-bottom: 1rpx solid $borderColor;
+      &:last-child {
+        border: none;
+      }
+      .label {
+        width: 136rpx;
+        color: $black;
+        text-align: justify;
+        text-align-last: justify;
+        &:after {
+          content: '';
+          height: 0;
+          width: 100%;
+          display: block;
+          overflow: hidden;
+        }
+      }
+      .input {
+        margin-left: 67rpx;
+        flex: 1;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="activity-sign-up-info" style="{{configStyle}}">
+    <view class="form">
+      <repeat for="{{form}}" key="index" index="index" item="item">
+        <view class="field" wx:if="{{!item.deleted}}">
+          <view class="label">{{item.fieldName}}</view>
+          <input class="input" name="{{item.name}}" value="{{item.fieldValue}}" disabeld/>
+        </view>
+      </repeat>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import activity from '@/api/activity'
+  import base from '@/mixins/base'
+  export default class ActivitySignUpInfo extends wepy.page {
+    config = {
+      navigationBarTitleText: '报名信息'
+    }
+    components = {}
+    data = {
+      formId: '',
+      form: []
+    }
+    mixins = [base]
+    onLoad(options) {
+      this.formId = options.formId || ''
+      if (this.formId) this.getForm()
+    }
+    getForm() {
+      activity.getFormValue(this.formId).then(res => {
+        this.form = res
+        this.$apply()
+      })
+    }
+  }
+</script>

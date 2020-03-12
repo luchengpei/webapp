@@ -1,0 +1,132 @@
+<style lang="scss" scoped>
+  @import '../../../scss/common';
+  .my-collect-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+  }
+  .my-collect {
+    position: relative;
+    padding-top: 88rpx;
+  }
+</style>
+
+<template>
+  <view class="my-collect">
+    <view class="my-collect-title">
+      <Tab :tab.sync="tab" :fixed="fixed" @change.user="switchTab" />
+    </view>
+    <repeat wx:if="{{listData.length>0}}">
+      <EnterpriseList :listData="listData" :type="type" @upDate.user='updateList' wx:if="{{selectedId===1}}"></EnterpriseList>
+    </repeat>
+    <repeat wx:if="{{listData.length>0}}">
+      <ContactsList :listData="listData" :type="type" @upDate.user='updateList' wx:if="{{selectedId===2}}"></ContactsList>
+    </repeat>
+    <block wx:if="{{listData.length===0}}">
+      <Empty title='暂无该类收藏' subtitle='' :fixed="fixed"></Empty>
+    </block>
+  </view>
+</template>
+ 
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import Empty from '@/components/common/empty'
+  import Tab from '@/components/common/tab'
+  import enterprise from '@/api/enterprise'
+  import EnterpriseList from '@/components/enterprise/enterprise_list'
+  import ContactsList from '@/components/enterprise/contacts-list'
+  export default class MyCollect extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的收藏',
+      enablePullDownRefresh: true
+    }
+    components = {
+      Empty,
+      Tab,
+      EnterpriseList,
+      ContactsList
+    };
+    data = {
+      fixed: false,
+      type: '2',
+      tab: {
+        list: [{
+          id: 1,
+          title: '企业'
+        },
+        {
+          id: 2,
+          title: '个人主页'
+        }
+        ],
+        selectedId: 1
+      },
+      selectedId: 1,
+      listData: []
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      switchTab(data) {
+        this.selectedId = data.selectedId
+        this.$apply()
+        this.getCollectionListApi()
+      },
+      updateList() {
+        this.getCollectionListApi()
+      }
+    }
+    onShow() {
+      this.$invoke('EnterpriseList', 'init')
+    }
+    onLoad(options) {
+      this.getCollectionListApi()
+    }
+    async getCollectionListApi() {
+      try {
+        this.page = await enterprise.getCollectionList()
+        await this.next()
+        this.listData = this.page.list
+        if (this.selectedId === 1) {
+          this.page.list.map((item, index) => {
+            this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+          })
+        }
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    // 请求参数
+    params() {
+      return {
+        type: this.selectedId
+      }
+    }
+    // 上拉加载
+    async onReachBottom() {
+      await this.next()
+      this.listData = this.page.list
+      if (this.selectedId === 1) {
+        this.page.list.map((item, index) => {
+          this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+        })
+      }
+      this.$apply()
+    }
+    // 下拉刷新
+    async onPullDownRefresh() {
+      await this.reload()
+      this.listData = this.page.list
+      if (this.selectedId === 1) {
+        this.page.list.map((item, index) => {
+          this.listData[index].backgroundPicture = item.backgroundPicture.split(',')[0]
+        })
+      }
+      this.$apply()
+    }
+  }
+</script>

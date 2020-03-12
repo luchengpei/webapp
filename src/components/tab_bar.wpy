@@ -1,0 +1,83 @@
+<style lang="scss" scoped>
+  @import '../scss/common';
+  .tabbar {
+    position: fixed;
+    width: 100%;
+    height: 98rpx;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-top: 1rpx solid #cdcdcd;
+    background: #fff;
+    z-index: 100;
+    .tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .tab-icon {
+        margin-top: 14rpx;
+        height: 46rpx;
+        width: 46rpx;
+      }
+      .tab-text {
+        margin-top: 14rpx;
+        font-size: 20rpx;
+        color: #a5a5a5;
+        &.active {
+          color: $mainColor;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="tabbar {{isIpx ? 'fix-ipx-btn' : ''}}">
+    <view class="tab" wx:for="{{tabs}}" wx:for-item="item" wx:key="index" @tap="go({{item}}, {{index}})">
+      <image class="tab-icon" src="{{item.key === current ? item.activeIcon : item.defaultIcon}}" mode="scaleToFill" lazy-load="false">
+      </image>
+      <view class="tab-text {{item.key === current  ? 'active' : ''}} iconColor">
+        {{item.text}}
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import Util from '@/utils/Util'
+  export default class TabBarBottom extends wepy.component {
+    mixins = [base]
+    props = {
+      tabs: {
+        type: Array,
+        default: []
+      },
+      current: {
+        type: String,
+        default: 'index',
+        twoWay: true
+      }
+    }
+    data = {}
+    onLoad() {}
+    methods = {
+      go(item, index) {
+        if (item.key === this.current) return
+        if (item.key === 'cart' && !Util.isLogin()) {
+          wepy.navigateTo({
+            url: '/pages/login'
+          })
+        } else {
+          // 切换当前页面
+          this.$emit('onSwitchTab', item.key)
+        }
+      }
+    }
+  }
+</script>

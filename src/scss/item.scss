@@ -1,0 +1,23 @@
+@import "./common";
+.item {
+  margin: $margin 0rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  .img {
+    width: 58rpx;
+    height: 58rpx;
+  }
+  .text {
+    font-size: $fontSize4;
+    color: $black;
+  }
+  .share {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+}

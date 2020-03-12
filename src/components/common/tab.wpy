@@ -1,0 +1,120 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .tab {
+    top: 0;
+    z-index: 2;
+    height: 88rpx;
+    width: 100%;
+    background: #fff;
+    &.tab-fixed {
+      position: fixed;
+    }
+    .tab-container {
+      display: flex;
+      flex-direction: row;
+      .tab-item {
+        flex: 1;
+        &.selected {
+          .tab-title {
+            text {
+              color: $mainColor;
+              border-bottom: 6rpx solid $mainColor;
+            }
+          }
+        }
+        .tab-title {
+          text-align: center;
+          min-width: 90rpx;
+          text {
+            display: inline-block;
+            height: 82rpx;
+            line-height: 88rpx;
+            font-size: 28rpx;
+            color: $gray;
+            border-bottom: 0rpx solid $mainColor;
+            padding: 0 10rpx;
+          }
+        }
+      }
+    }
+    .tab-scroll-container {
+      white-space: nowrap;
+      width: 100%;
+      .tab-item {
+        margin-right: 20rpx;
+        display: inline-block;
+        &:first-child {
+          margin-left: 40rpx;
+        }
+      }
+      .tab-title {}
+    }
+  }
+</style>
+
+<template>
+  <view class="tab {{ fixed ? 'tab-fixed' : ''}}">
+    <block wx:if="{{tab.scroll}}">
+      <scroll-view class="tab-container tab-scroll-container" scroll-x style="height:{{ tab.height ? tab.height + 'px' : 'auto' }}">
+        <view class="tab-container tab-scroll-container">
+          <view wx:for="{{tab.list}}" wx:key="id" class="tab-item {{tab.selectedId == item.id ? 'selected' : ''}}" data-component-id="{{componentId}}" data-item-id="{{item.id}}" @tap="handleTabChange">
+            <view class="tab-title">
+              <text>{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </block>
+    <block wx:else>
+      <view class="tab-container">
+        <view wx:for="{{tab.list}}" wx:key="id" class="tab-item {{tab.selectedId == item.id ? 'selected' : ''}}" data-component-id="{{componentId}}" data-item-id="{{item.id}}" @tap="handleTabChange">
+          <view class="tab-title">
+            <text>{{item.title}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Tab extends wepy.component {
+    props = {
+      tab: {
+        twoWay: true
+      },
+      fixed: {
+        default: true
+      }
+    }
+    data = {};
+    methods = {
+      /**
+       * 事件处理函数
+       */
+      handleTabChange(e) {
+        const dataset = e.currentTarget.dataset
+        const componentId = dataset.componentId
+        const selectedId = dataset.itemId
+        const data = {
+          componentId,
+          selectedId
+        }
+        // 处理排序情况
+        // if (this.tab.order) {
+        //   const lastId = this.tab.selectedId
+        //   if (lastId == selectedId) {
+        //     this.tab.sord = this.tab.sord == 'desc' ? 'asc' : 'desc'
+        //   }
+        //   data.sord = this.tab.sord
+        // }
+        // 直接修改数据/双向通讯
+        this.tab.selectedId = selectedId
+        // 发射事件
+        this.$emit('change', data)
+      }
+    };
+    events = {};
+  }
+</script>

@@ -1,0 +1,330 @@
+<style lang="scss" scoped>
+  @import '../../scss/common';
+  .order-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    margin-bottom: 20rpx;
+    .order-item-container {
+      margin-left: 40rpx;
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        height: 88rpx;
+        line-height: 88rpx;
+        border-bottom: 1rpx solid $borderColor;
+        .order-no {
+          font-size: 28rpx;
+          color: $black;
+        }
+        .order-status-text {
+          font-size: 28rpx;
+          color: $mainColor;
+          margin-right: 40rpx;
+        }
+      }
+    }
+    .order-goods-list-container {}
+    .order-count-row {
+      display: flex;
+      font-size: 28rpx;
+      padding-right: 40rpx;
+      height: 88rpx;
+      line-height: 88rpx;
+      border-bottom: 1rpx solid $borderColor;
+      .order-goods-num {
+        flex: 1;
+        color: $black;
+        text-align: right;
+        margin-right: 30rpx;
+      }
+      .order-goods-price-text {
+        color: $black;
+        text {
+          color: $priceRed;
+        }
+      }
+    }
+    .order-btn-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 88rpx;
+      line-height: 88rpx;
+      padding-right: 40rpx;
+      .btn {
+        box-sizing: border-box;
+        height: 56rpx;
+        line-height: 54rpx;
+        border: 1rpx solid $mainColor;
+        border-radius: 6rpx;
+        margin-left: 24rpx;
+        padding: 0 24rpx;
+        font-size: 24rpx;
+        color: $mainColor;
+        min-width: 150rpx;
+        text-align: center;
+      }
+    }
+    .group-order-btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 88rpx;
+      line-height: 88rpx;
+      padding-right: 40rpx;
+      margin-left: 40rpx;
+      .time {
+        font-size: 28rpx;
+        color: $gray;
+      }
+      .share-btn {
+        box-sizing: border-box;
+        height: 56rpx;
+        line-height: 54rpx;
+        border: 1rpx solid $mainColor;
+        border-radius: 6rpx;
+        padding: 0 24rpx;
+        font-size: 24rpx;
+        color: $mainColor;
+        min-width: 150rpx;
+        text-align: center;
+        background: #fff;
+        margin-right: 0;
+        &::after {
+          border: none;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <!-- 订单Item -->
+  <view class="order-item">
+    <view class="order-item-container" @tap="routerTo('/pages/order/detail?oid={{detail.productOrderId}}&mode={{mode}}')">
+      <!-- 订单头部 -->
+      <view class="order-header">
+        <text class="order-no">订单编号：{{detail.productOrderNo}}</text>
+        <block wx:if="{{mode === 'default'}}">
+          <text class="order-status-text" wx:if="{{detail.orderStatus === 0}}">待付款</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 1 && detail.isFund === 0}}">等待卖家发货</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 1 && detail.isFund === 1 && detail.refundStatus === 0}}">退款中</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 1 && detail.isFund === 1 && detail.refundStatus === 1}}">退款成功</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 2 && detail.isFund === 0 }}">卖家已发货</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 2 && detail.isFund === 1 && detail.refundStatus === 0}}">退货中</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 2 && detail.isFund === 1 && detail.refundStatus === 1}}">退货成功</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 3}}">已收货</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 4}}">交易完成</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 5}}">交易关闭</text>
+        </block>
+        <!-- 接龙 -->
+        <block wx:elif="{{mode === 'chain'}}">
+          <text class="order-status-text" wx:if="{{detail.orderStatus === 0}}">待付款</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 1 && detail.isFund === 0}}">等待卖家发货</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 1 && detail.isFund === 1 && detail.refundStatus === 0}}">退款中</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 1 && detail.isFund === 1 && detail.refundStatus === 1}}">退款成功</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 2 && detail.isFund === 0 }}">卖家已发货</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 2 && detail.isFund === 1 && detail.refundStatus === 0}}">退货中</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 2 && detail.isFund === 1 && detail.refundStatus === 1}}">退货成功</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 3}}">已收货</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 4}}">交易完成</text>
+          <text class="order-status-text" wx:elif="{{detail.orderStatus === 5}}">交易关闭</text>
+        </block>
+        <block wx:elif="{{mode === 'group'}}">
+          <text class="order-status-text">还差1人成团</text>
+        </block>
+      </view>
+      <!-- 订单商品列表 -->
+      <view class="order-goods-list-container">
+        <!-- 普通 -->
+        <repeat for="{{detail.orderProductList}}" key="index" index="index" item="item" wx:if="{{mode === 'default'}}">
+          <OrderGoods :detail="item" />
+        </repeat>
+        <!-- 接龙 -->
+        <repeat for="{{detail.productList}}" key="index" index="index" item="item" wx:if="{{mode === 'chain'}}">
+          <OrderGoods :detail="item" />
+        </repeat>
+      </view>
+      <!-- 合计 -->
+      <block wx:if="{{mode === 'default'}}">
+        <view class="order-count-row">
+          <text class="order-goods-num">共{{detail.orderProductList.length}}件商品</text>
+          <text class="order-goods-price-text">合计：<text>¥{{detail.payPrice}}</text></text>
+        </view>
+      </block>
+    </view>
+    <!-- 普通订单操作按钮组 -->
+    <block wx:if="{{mode === 'default'}}">
+      <view class="order-btn-row">
+        <!-- 待付款 -->
+        <block wx:if="{{detail.orderStatus === 0}}">
+          <view class="btn" @tap="cancelOrder">取消订单</view>
+          <view class="btn" @tap="pay">继续付款</view>
+        </block>
+        <!-- 待发货 -->
+        <block wx:if="{{detail.orderStatus === 1}}">
+          <view class="btn" @tap="refundOrder" wx:if="{{detail.isFund === 0 && detail.type !== 7 && detail.type !== 6}}">申请退款</view>
+          <view class="btn" @tap="cancelRefundOrder" wx:elif="{{detail.isFund === 1 && detail.refundStatus === 0}}">取消退款</view>
+          <view class="btn" @tap="contactKf({{kf}})">联系客服</view>
+        </block>
+        <!-- 已发货 -->
+        <block wx:if="{{detail.orderStatus === 2}}">
+          <view class="btn" @tap="returnGoods" wx:if="{{detail.isFund === 0}}">申请退货</view>
+          <view class="btn" @tap="goLogistics">查看物流</view>
+          <view class="btn" @tap="confirm">确认收货</view>
+        </block>
+        <!-- 已收货 -->
+        <block wx:if="{{detail.orderStatus === 3}}">
+          <!-- <view class="btn" @tap="goLogistics">查看物流</view> -->
+          <view class="btn" @tap="deleteOrder">删除订单</view>
+        </block>
+        <!-- 已关闭 -->
+        <block wx:if="{{detail.orderStatus === 4 || detail.orderStatus === 5}}">
+          <view class="btn" @tap="deleteOrder">删除订单</view>
+        </block>
+      </view>
+    </block>
+    <!-- 接龙操作按钮组 -->
+    <block wx:elif="{{mode === 'chain'}}">
+      <view class="order-btn-row">
+        <block wx:if="{{detail.orderStatus === 0}}">
+          <!-- <view class="btn" @tap="cancelOrder">取消订单</view> -->
+          <view class="btn" @tap="pay">继续付款</view>
+        </block>
+        <!-- 待发货 -->
+        <block wx:if="{{detail.orderStatus === 1}}">
+          <view class="btn" @tap="contactKf({{kf}})">联系客服</view>
+        </block>
+        <!-- 已发货 -->
+        <block wx:if="{{detail.orderStatus === 2}}">
+          <!-- <view class="btn" @tap="returnGoods" wx:if="{{detail.isFund === 0}}">申请退货</view> -->
+        </block>
+        <!-- 已收货 -->
+        <block wx:if="{{detail.orderStatus === 3}}">
+          <view class="btn" @tap="deleteOrder">删除订单</view>
+        </block>
+        <!-- 已关闭 -->
+        <block wx:if="{{detail.orderStatus === 4 || detail.orderStatus === 5}}">
+          <view class="btn" @tap="deleteOrder">删除订单</view>
+        </block>
+      </view>
+    </block>
+    <block wx:elif="{{mode === 'group'}}">
+      <!-- 拼团按钮组 -->
+      <view class="group-order-btn-row" wx:if="{{mode === 'group'}}">
+        <view class="time">剩余 22:59:25</view>
+        <button class="share-btn" data-id="11" open-type="share">邀请好友参团</button>
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import OrderGoods from '@/components/order/order_goods'
+  import router from '@/mixins/router'
+  import order from '@/api/order'
+  import Tips from '@/utils/Tips'
+  import { EC_ORDER_TYPE } from '@/utils/Constants'
+
+  import {
+    connect
+  } from 'wepy-redux'
+  @connect({
+    kf(state) {
+      return state.common.kf
+    }
+  }, {})
+  export default class OrderItem extends wepy.component {
+    props = {
+      mode: {
+        type: String,
+        default: 'default' // 普通订单default 拼团订单group
+      },
+      detail: {
+        type: Object,
+        default: {}
+      }
+    };
+    components = {
+      OrderGoods: OrderGoods
+    }
+    mixins = [router];
+    methods = {
+      async pay() {
+        try {
+          let _this = this
+          let oid = this.detail.productOrderId
+          let orderNo = this.detail.productOrderNo
+          // let wxdata = await order.pay(this.detail.productOrderId, this.detail.productOrderNo, user.openId)
+          let payInfo = await order.thirdPay({
+            orderNo: orderNo,
+            orderType: EC_ORDER_TYPE
+          })
+          wx.requestPayment({
+            'timeStamp': payInfo.timeStamp,
+            'nonceStr': payInfo.nonceStr,
+            'package': payInfo.wxPackage,
+            'signType': payInfo.signType,
+            'paySign': payInfo.paySign,
+            'success': function(res) {
+              // order.payStatus({
+              //   orderId: oid,
+              //   outTradeNo: orderNo
+              // })
+              wx.navigateTo({
+                url: `/pages/order/result?price=${_this.detail.orderPrice}`
+              })
+            },
+            'fail': function(res) {
+              wx.navigateTo({
+                url: `/pages/order/detail?oid=${oid}`
+              })
+            }
+          })
+        } catch (error) {
+          console.log('error', error)
+        }
+      },
+      cancelOrder() {
+        Tips.confirm('确定要取消订单吗？').then(() => {
+          this.$emit('cancelOrder', this.detail.productOrderId)
+        })
+      },
+      confirm() {
+        Tips.confirm('确定要确认收货吗？').then(() => {
+          this.$emit('confirmOrder', this.detail.productOrderId)
+        })
+      },
+      urgeShipment() {
+        this.$emit('urgeShipment', this.detail.productOrderId)
+      },
+      deleteOrder() {
+        Tips.confirm('确定要删除订单吗？').then(() => {
+          this.$emit('deleteOrder', this.detail.productOrderId)
+        })
+      },
+      goLogistics() {
+        this.$emit('goLogistics', this.detail.productOrderId)
+      },
+      refundOrder() {
+        Tips.confirm('确定要申请退款吗？').then(() => {
+          this.$emit('refundOrder', this.detail.productOrderId, 1)
+        })
+      },
+      returnGoods() {
+        Tips.confirm('确定要申请退货吗？').then(() => {
+          this.$emit('returnGoods', this.detail.productOrderId, 2)
+        })
+      },
+      cancelRefundOrder() {
+        Tips.confirm('确定要取消退款吗？').then(() => {
+          this.$emit('cancelRefundOrder', this.detail.productOrderId)
+        })
+      }
+    };
+    onLoad() {}
+  }
+</script>

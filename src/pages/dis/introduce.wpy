@@ -1,0 +1,159 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .mod-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30rpx;
+    background: #fff;
+    >image {
+      width: 200rpx;
+      height: 167rpx;
+      background: $bgColor;
+    }
+    .name {
+      font-size: $fontSize3;
+      color: $mainColor;
+      margin: 10rpx;
+    }
+    .rights-container {
+      display: flex;
+      flex-direction: column;
+      width: 670rpx;
+      height: 220rpx;
+      background: #ebf9f2;
+      .rights-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        >image {
+          width: 60rpx;
+          height: 60rpx;
+          background: $bgColor;
+          margin-top: 40rpx;
+          margin-bottom: 20rpx;
+        }
+        >text {
+          font-size: $fontSize4;
+          color: $black;
+        }
+      }
+    }
+    .rights-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      justify-content: space-around;
+    }
+    .title-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20rpx;
+      .line {
+        position: absolute;
+        width: 350rpx;
+        height: 1rpx;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        background: $gray;
+      }
+      >text {
+        padding: 0 10rpx;
+        font-size: $fontSize4;
+        background: #ebf9f2;
+        color: $gray;
+        z-index: 99;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="mod-introduce" style="{{configStyle}}">
+    <Tab :tab.sync="tab" @change.user="switchTab" :fixed.sync="fixed"/>
+    <view class="mod-header">
+      <!-- <image src="{{}}" mode="scaleToFill"
+        lazy-load="false">
+      </image>
+      <text class="name">黄金会员</text>
+      <view class="rights-container">
+        <view class="title-container">
+          <view class="line"></view>
+          <text>会员专属权益</text>
+        </view>
+        <view class="rights-box">
+        <view class="rights-item">
+          <image src="{{}}" mode="scaleToFill"
+            lazy-load="false">
+          </image>
+          <text>会员亲子课</text>
+        </view>
+        <view class="rights-item">
+          <image src="{{}}" mode="scaleToFill"
+            lazy-load="false">
+          </image>
+          <text>送好友VIP</text>
+        </view>
+        <view class="rights-item">
+          <image src="{{}}" mode="scaleToFill"
+            lazy-load="false">
+          </image>
+          <text>会员亲子课</text>
+        </view>
+        </view>
+
+      </view> -->
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import nRouter from '@/mixins/new_router'
+  import Tab from '@/components/common/tab'
+  export default class Introduce extends wepy.page {
+    config = {
+      navigationBarTitleText: '会员排行榜'
+    }
+    mixins = [base, nRouter]
+    data = {
+      fixed: false,
+      tab: {
+        list: [{
+          id: '-1',
+          title: '青铜'
+        },
+        {
+          id: '1',
+          title: '白银'
+        },
+        {
+          id: '2',
+          title: '黄金'
+        },
+        {
+          id: '3',
+          title: '钻石'
+        }
+        ],
+        selectedId: '-1'
+      }
+    }
+    components = {
+      Tab
+    }
+    methods = {
+      switchTab(tab) {
+      }
+    }
+    onLoad () {
+    }
+  }
+</script>

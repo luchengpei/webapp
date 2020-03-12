@@ -1,0 +1,83 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  .join-user-index {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background-color: $bgColor;
+    box-sizing: border-box;
+    .main {
+      background: #ffffff;
+    }
+  }
+  .content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20rpx;
+    box-sizing: border-box;
+    .item {
+      width: 20%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20rpx;
+      box-sizing: border-box;
+      .img {
+        width: 110rpx;
+        height: 110rpx;
+        border-radius: 110rpx;
+        overflow: hidden;
+        image{
+            width: 100%;
+            height: 100%;
+        }
+      }
+      .text {
+        margin-top: 20rpx;
+        color: #444444;
+        font-size: 20rpx; 
+        text-align: center;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class='join-user-index' style="{{configStyle}}">
+    <view class="main">
+      <view class="content">
+        <repeat for="{{array}}" key="index" index="index" item="item">
+          <view wx:if="{{item!=='no'}}" class="item">
+            <view class="img">
+              <image src="{{item.avatar}}" @tap="_toImgLook({{item.avatar}})"></image>
+            </view>
+            <view class="text">{{item.nickname}}</view>
+          </view>
+        </repeat>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import router from '@/mixins/router'
+  import base from '@/mixins/base'
+  export default class JoinUser extends wepy.page {
+    config = {
+      navigationBarTitleText: '参与人员'
+    }
+    data = {
+      show: false,
+      array: []
+    }
+    mixins = [base, router]
+    methods = {
+    }
+    onLoad() {
+      this.array = wepy.getStorageSync('joinUser') ? wepy.getStorageSync('joinUser') : []
+      this.$apply()
+    }
+  }
+</script>

@@ -1,0 +1,374 @@
+<style lang="scss" scoped>
+@import '../scss/common';
+.index-page {
+  width: 100%;
+  background: $bgColor;
+  .list-container {
+    margin-top: 30rpx;
+    background: #fff;
+    .list-tabs {
+      position: sticky;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: row;
+      border-bottom: 1rpx solid #e5e5e5;
+      background: #fff;
+      z-index: 1000;
+      .list-tabs-item {
+        position: relative;
+        flex: 1;
+        padding: 30rpx 0;
+        text-align: center;
+        font-size: 28rpx;
+        color: $gray;
+        &.active {
+          color: $mainColor;
+        }
+        &:first-child {
+          &:after {
+            display: inline-block;
+            width: 1rpx;
+            height: 40rpx;
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            margin-top: -20rpx;
+            background: #e5e5e5;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
+
+<template>
+  <view class="index-page" style="{{configStyle}}">
+    <GlobalTipCoupon :alertData.sync="alertData" :display.sync="displayTip"></GlobalTipCoupon>
+    <ServiceOver></ServiceOver>
+    <!-- 自定义排版 -->
+    <block wx:for="{{customConfig}}" wx:key="index">
+      <block wx:if="{{item.component === 'GoodsPanel'}}">
+        <GoodsPanel></GoodsPanel>
+      </block>
+      <block wx:elif="{{item.component === 'NewsPanel'}}">
+        <NewsPanel></NewsPanel>
+      </block>
+      <block wx:elif="{{item.component === 'ActivityPanel'}}">
+        <ActivityPanel></ActivityPanel>
+      </block>
+      <block wx:elif="{{item.component === 'SearchBar'}}">
+        <SearchBar></SearchBar>
+      </block>
+      <block wx:elif="{{item.component === 'Swiper'}}">
+        <Swiper></Swiper>
+      </block>
+      <block wx:elif="{{item.component === 'NavigateBar'}}">
+        <NavigateBar></NavigateBar>
+      </block>
+      <block wx:elif="{{item.component === 'NoticeBar'}}">
+        <NoticeBar></NoticeBar>
+      </block>
+    </block>
+
+    <!-- 商品列表 -->
+    <!-- <view class="list-container">
+      <view class="list-tabs" id="list-tabs">
+        <view class="list-tabs-item {{type === '0' ? 'active' : ''}}" @tap="switchType('0')">发现</view>
+        <view class="list-tabs-item {{type === '1' ? 'active' : ''}}" @tap="switchType('1')">热销</view>
+      </view>
+    </view>-->
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import Tips from '@/utils/Tips'
+import ServiceOver from '@/components/common/service_over'
+import GoodsList from '@/components/goods/goods_list'
+import NavigateBar from '@/components/index/navigate_bar'
+import SearchBar from '@/components/index/search_bar'
+import Swiper from '@/components/index/swiper'
+import GoodsPanel from '@/components/index/goods_panel'
+import NewsPanel from '@/components/index/news_panel'
+import ActivityPanel from '@/components/index/activity_panel'
+import NoticeBar from '@/components/index/notice_bar'
+import GlobalTipCoupon from '@/components/common/global_tip_coupon'
+import pagination from '@/mixins/pagination'
+import goods from '@/api/goods'
+import router from '@/mixins/router'
+import { connect } from 'wepy-redux'
+import { projectInit } from '@/store/actions'
+const eshopNavigate = [
+  {
+    image: '/images/navigate_pintuan.png',
+    link: 'pages/goods/group',
+    name: '多人拼团'
+  }, {
+    image: '/images/navigate_miaosha.png',
+    link: 'pages/flash/flash_list',
+    name: '限时秒杀'
+  },
+  {
+    image: '/images/navigate_fanxian.png',
+    link: 'pages/goods/cash_back',
+    name: '返现优品'
+  },
+  {
+    image: '/images/navigate_activity.png',
+    link: 'pages/news/list',
+    name: '实时资讯'
+  }
+]
+
+const familyEshopNavigate = [
+  {
+    image: '/images/navigate_zupu.png',
+    link: 'packageFamily/pages/family/index',
+    name: '徐氏族谱',
+    jumpType: '0'
+  }, {
+    image: '/images/mine_page/family_zupu.png',
+    link: 'pages/family/family-management',
+    name: '家谱管理',
+    jumpType: '0'
+  },
+  {
+    image: '/images/navigate_activity.png',
+    link: 'pages/activity',
+    name: '活动招募',
+    jumpType: '0'
+  },
+  {
+    image: '/images/navigate_xushi.png',
+    link: 'pages/news/list',
+    name: '徐氏新闻',
+    jumpType: '0'
+  },
+  {
+    image: '/images/navigate_pintuan.png',
+    link: 'packageSocial/pages/contacts/contacts',
+    name: '人脉',
+    jumpType: '0'
+  },
+  {
+    image: '/images/navigate_miaosha.png',
+    link: 'pages/flash/flash_list',
+    name: '限时秒杀',
+    jumpType: '0'
+  },
+  {
+    image: '/images/navigate_fanxian.png',
+    link: 'pages/goods/cash_back',
+    name: '返现优品',
+    jumpType: '0'
+  },
+  {
+    image: '/images/navigate_contact.png',
+    // link: 'pages/news/list',
+    name: '联系我们',
+    jumpType: '1'
+  }
+]
+@connect(
+  {
+    project(state) {
+      return state.common.project
+    }
+  },
+  { projectInit }
+)
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '首页',
+    enablePullDownRefresh: true
+  };
+  data = {
+    firstLoading: true,
+    alertData: '',      //  弹窗数据
+    displayTip: false,  // 弹窗显示
+    customConfig: [     // 自定义配置
+      {
+        component: 'SearchBar'
+      },
+      {
+        component: 'Swiper'
+      },
+      {
+        component: 'NoticeBar'
+      },
+      {
+        component: 'NavigateBar',
+        config: {
+          list: familyEshopNavigate
+        },
+        type: '2' // 导航栏风格 1单行限制5 2双行限制8 3 横向滚动限制10
+      },
+      {
+        component: 'NewsPanel',
+        config: {
+          title: '推荐资讯'
+        }
+      },
+      {
+        component: 'ActivityPanel',
+        config: {
+          title: '推荐活动'
+        }
+      },
+      {
+        component: 'GoodsPanel',
+        config: {
+          title: '发现好物'
+        }
+      }
+    ]
+  };
+  components = {
+    GoodsList,
+    NavigateBar,
+    ServiceOver,
+    GlobalTipCoupon,
+    NoticeBar,
+    Swiper,
+    SearchBar,
+    GoodsPanel,
+    NewsPanel,
+    ActivityPanel
+  }
+  mixins = [base, pagination, router];
+  methods = {};
+  onShow() {
+    this.$invoke('NoticeBar', 'init')
+  }
+  async onLoad(options) {
+    // 从分享进来 带scene 需要初始化项目
+    if (options.scene) {
+      await this.initProject(options)
+    }
+    // if (wepy.getStorageSync('token')) {
+    //   // await this.isVip()
+    //   if (!wepy.getStorageSync('useAlert')) {
+    //     this.getGlobalAlert()
+    //     wepy.setStorageSync('useAlert', '已经弹框')
+    //   }
+    // }
+    this.getGlobalAlert()
+    // 初始化Tabs
+    console.log('初始化Tabs==========')
+    if (wepy.$instance.globalData.tabs) {
+      this.initExtTabs()
+    } else {
+      wepy.$instance.tabsCallback = tabs => {
+        this.initExtTabs()
+      }
+    }
+
+    // 判断onLaunch projectId是否已经初始化
+    if (wepy.$instance.globalData.projectId) {
+      this.methods.projectInit()
+      this.getIndexData()
+    } else {
+      wepy.$instance.projectIdCallback = projectId => {
+        this.methods.projectInit()
+        this.getIndexData()
+      }
+    }
+
+    // 缓存项目ID
+    // await this.saveProjectId(this.routeOptions)
+    if (!this.firstLoading) return
+    this.firstLoading = false
+  }
+  // 获取全局广告弹窗
+  async getGlobalAlert() {
+    this.alertData = await goods.getAlert()
+    this.alertData.limit = Number(this.alertData.limit)
+    // 判断是否有弹窗配置
+    if (!this.alertData.hasConfig) return
+    if (this.alertData.limit === 0) {
+      // 不限制次数
+      this.showAlertPoster()
+    } else if (this.alertData.limit > 0) {
+      // 限制次数
+      if (!wepy.getStorageSync('alertStore')) {
+        // 没有缓存，直接弹
+        this.showAlertPoster()
+      } else if (
+        wepy.getStorageSync('alertStore') &&
+        Number(wepy.getStorageSync('alertStore')) < this.alertData.limit
+      ) {
+        // 有缓存，次数判断
+        this.showAlertPoster()
+      }
+    }
+    this.$apply()
+  }
+  // 弹框
+  showAlertPoster() {
+    let total = 0
+    if (wepy.getStorageSync('alertStore')) {
+      total = wepy.getStorageSync('alertStore')
+    }
+    wepy.setStorageSync('alertStore', total + 1)
+    this.displayTip = true
+    this.$apply()
+  }
+   // 初始化首页数据
+  async getIndexData() {
+    const homeConfig = wepy.getStorageSync('homeConfig')
+    if (homeConfig && homeConfig.length > 0) {
+      this.customConfig = homeConfig
+    }
+    this.customConfig.forEach(custom => {
+      console.log('Custome Component', custom.component)
+      this.$invoke(custom.component, 'init', custom)
+      wx.stopPullDownRefresh()
+    })
+    Tips.loaded()
+  }
+
+  // TODO 判断是否会员接口需要重写
+  // // 判断用户是否为会员
+  // async isVip() {
+  //   try {
+  //     let data = await vip.getUserVipRankNum()
+  //     wepy.setStorageSync('isVip', false)
+  //     if (data.state === 0) {
+  //       wepy.setStorageSync('isVip', true)// 是会员
+  //     }
+  //   } catch (error) {
+  //     wepy.setStorageSync('isVip', false)// 是会员
+  //   }
+  // }
+
+  /**
+   * 监听上拉加载事件
+   */
+  async onReachBottom() {
+    this.$invoke('GoodsPanel', 'handleOnReachBottom')
+  }
+  /**
+   * 监听下拉刷新
+   */
+  async onPullDownRefresh() {
+    this.getIndexData()
+  }
+  /**
+   * 回到页面事件
+   */
+  onRoute() {}
+  onShareAppMessage() {
+    return {
+      title: this.project.projName || '小铺头',
+      // path: `pages/index?p=index&scene=${wepy.getStorageSync('pid')}_${
+      //   wepy.getStorageSync('user').userId
+      // }`
+      path: `pages/index?p=index&scene=${this.sceneData}`
+    }
+  }
+}
+</script>

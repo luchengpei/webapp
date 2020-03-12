@@ -1,0 +1,186 @@
+<style lang='scss' scoped>
+  @import '../../scss/common';
+  @import '../../scss/dis';
+  .upgrade-member-wrap {
+    margin-bottom: 60rpx;
+    .sub-btn {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      color: #ffffff;
+      height: 92rpx;
+      line-height: 92rpx;
+      font-size: $title;
+      background-color: $mainColor;
+      border-radius: 0rpx;
+    }
+  }
+</style>
+
+<template>
+  <import src="../../components/wxparse/wxParse.wxml"/>
+  <view class="upgrade-member-wrap upgrade-wrap" style="{{configStyle}}">
+    <block wx:if="{{activeItem}}">
+      <MemberHeader :obj.sync="activeItem" />
+      <block wx:if="{{activeItem.noNeedLen.length<3 && (activeItem.mustNeedLen.length>0 || activeItem.oneNeedLen.length>0)}}">
+        <view class="buy-wrap">
+          <view class="condition-wrap">
+            <view class="line" />
+            <view class="gray">会员升级条件</view>
+            <view class="line" />
+          </view>
+          <view class="content">
+            <block wx:if="{{activeItem.mustNeedLen.length>2}}">
+              <ConditionNo @onPayMember.user="onPayMember" :obj.sync="activeItem"  key="mustNeed" />
+            </block>
+            <block wx:else>
+              <view class="cell" wx:if="{{activeItem.mustNeedLen.length>0}}">
+                <ConditionMust @onPayMember.user="onPayMember" :obj.sync="activeItem" key="mustNeed" />
+              </view>
+              <view class="cell" wx:if="{{activeItem.oneNeedLen.length>0}}">
+                <ConditionOne  @onPayMember.user="onPayMember" :obj.sync="activeItem" key="oneNeed" />
+              </view>
+            </block>
+          </view>
+        </view>
+      </block>
+       <block wx:if="{{activeItem.levelDesc}}">
+          <view class="introduce-wrap">
+            <view class="condition-wrap">
+              <view class="line"/>
+              <view class="gray">会员详情介绍</view>
+              <view class="line"/>
+            </view>
+            <view class="content">
+              <Html2wxml
+                :parserName="activeItem.levelName"
+                :parserContent.sync="levelDesc"
+              ></Html2wxml>
+            </view>
+          </view>
+        </block>
+      
+      <button type="primary" class="sub-btn {{isIpx ? 'fix-ipx-btn' : ''}}" @tap="onSubmit">{{isMember?'升级会员':'开通会员'}}</button>
+    </block>
+    <block wx:else>
+      <Empty title="暂无数据" subtitle="" />
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import dis from '@/api/dis'
+  import order from '@/api/order'
+  import Util from '@/utils/Util'
+  import nRouter from '@/mixins/new_router'
+  import MemberHeader from '@/components/dis/member_header'
+  import Condition from '@/components/dis/condition'
+  import Tips from '@/utils/Tips'
+  import Empty from '@/components/common/empty'
+  import Html2wxml from '@/components/common/html2wxml'
+  import { MEMBER_ORDER_TYPE } from '@/utils/Constants'
+  import {
+    connect
+  } from 'wepy-redux'
+  @connect({
+    project(state) {
+      return state.common.project
+    }
+  }, {})
+  export default class UpgradeMember extends wepy.page {
+    config = {
+      navigationBarTitleText: '升级会员'
+    }
+    mixins = [base, nRouter]
+    components = {
+      MemberHeader,
+      ConditionOne: Condition,
+      ConditionMust: Condition,
+      ConditionNo: Condition,
+      Empty,
+      Html2wxml
+    }
+    data = {
+      btnText: '开通会员',
+      activeItem: null,
+      isMember: false, // 判断这个页面开通会员还是升级会员 true为开通会员
+      levelDesc: '',
+      isBind: ''  // 0 未绑卡 1 已绑卡
+    }
+    methods = {
+      onSubmit() {
+        if (!this.isMember) { // 申请会员
+          dis.onApplyMember({
+            memberSource: `${this.project.projName || ''}•小程序`
+          }).then(() => {
+            if (this.isBind === 1) {
+              wepy.redirectTo({url: `/pages/dis/finish?isMember=${true}`})
+            } else if (this.isBind === 0) {
+              wepy.redirectTo({url: `/pages/bank/bind_prompt`})
+            }
+          })
+        } else { // 升级会员
+          dis.onUpgradeMember().then(() => {
+            if (this.isBind === 1) {
+              wepy.redirectTo({url: `/pages/dis/finish`})
+            } else if (this.isBind === 0) {
+              wepy.redirectTo({url: `/pages/bank/bind_prompt`})
+            }
+          })
+        }
+      },
+      onPayMember() { // 缴费成为会员
+        const { disLevelId, volPay } = this.activeItem
+        const params = {
+          disLevelId,
+          orderPrice: volPay,
+          payMethod: 1  // 1 小程序。2支付宝 3银联。4公众号 5钱包',
+        }
+        dis.onPayMember(params).then(async (res) => {
+          const { disOrderNum, disUpgradeOrderId } = res
+          order.thirdPay({
+            orderNo: disOrderNum,
+            orderType: MEMBER_ORDER_TYPE
+          }).then(async (wxdata) => {
+          // order.pay(disUpgradeOrderId, disOrderNum, user.openId, 1, 15).then(async (wxdata) => {
+            // const { timeStamp, nonceStr, packageValue, signType, paySign } = wxdata.orderInfo
+            const { timeStamp, nonceStr, wxPackage, signType, paySign } = wxdata
+            try {
+              await wepy.requestPayment({timeStamp, nonceStr, package: wxPackage, signType, paySign})
+              // await order.payStatus({orderId: disUpgradeOrderId, outTradeNo: disOrderNum}, 15)
+              this.getLevelInfo()
+            } catch (error) {
+              Tips.error('取消支付')
+            }
+          }).catch(() => {
+            dis.onCancelMember()
+          })
+        }).catch((err) => {
+          Tips.error(err)
+          dis.onCancelMember()
+        })
+      }
+    }
+    onLoad(option) {
+      let { isMember, isBind } = option
+      wepy.setNavigationBarTitle({title: isMember ? '升级会员' : '开通会员'})
+      this.isMember = isMember
+      this.isBind = +isBind
+    }
+    onShow() {
+      this.getLevelInfo()
+    }
+    getLevelInfo() {
+      dis.getLevelInfo().then((res) => {
+        this.activeItem = {...res, ...Util.getMember(res)}
+        console.log('this.activeItem', this.activeItem)
+        this.levelDesc = this.activeItem.levelDesc
+        this.$apply()
+        this.$invoke('Html2wxml', 'htmlParserNotice')
+      })
+    }
+  }
+</script>

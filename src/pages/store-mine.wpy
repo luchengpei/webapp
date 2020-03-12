@@ -1,0 +1,450 @@
+<style lang="scss" scoped>
+@import '../scss/common';
+
+.mine-page {
+  .top-section {
+    width: 100%;
+    height: 400rpx;
+    background-color: #1182a4;
+    .bg {
+      height: 400rpx;
+      width: 100%;
+      position: absolute;
+    }
+    .head-wrap {
+      padding: 83rpx 0 0 63rpx;
+      display: flex;
+      .head-img {
+        position: relative;
+        .cover {
+          width: 160rpx;
+          height: 160rpx;
+          border: none;
+          border-radius: 50%;
+        }
+        .vip-text {
+          position: absolute;
+          top: 140rpx;
+          left: 0;
+          width: 160rpx;
+          height: 40rpx;
+          background: rgba(9, 102, 73, 1);
+          border-radius: 20rpx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: $fontSize3;
+          color: #fff;
+          font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        // .vip-img {
+        //   position: absolute;
+        //   top: 140rpx;
+        //   left: 0;
+        //   width: 160rpx;
+        //   height: 40rpx;
+        // }
+      }
+      .head-text {
+        margin: 24rpx 0 0 56rpx;
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        .text-name {
+          color: #fff;
+          font-size: $fontSize2;
+        }
+        .text-tel {
+          margin-top: 10rpx;
+          font-size: $fontSize4;
+          color: rgba(255, 255, 255, 0.5);
+        }
+        .text-btn {
+          width: 150rpx;
+          height: 60rpx;
+          background-color: #fff;
+          border-radius: 6rpx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: $fontSize4;
+          color: rgba(17, 130, 164, 1);
+          margin-top: 25rpx;
+        }
+      }
+      .head-text-no {
+        margin: 52rpx 0 0 56rpx;
+      }
+    }
+  }
+  .common-info {
+    width: 100%;
+    margin-top: 30rpx;
+    background-color: #fff;
+    .common-part {
+      width: 100%;
+      height: 100rpx;
+      padding: 0rpx 30rpx;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      .left {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .img {
+          width: 46rpx;
+          height: 46rpx;
+        }
+        .text {
+          font-size: $fontSize2;
+          color: $black;
+          margin-left: 24rpx;
+        }
+      }
+      .right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .num {
+          font-size: $fontSize2;
+          color: #aaaaaa;
+        }
+        .count {
+          font-size: $fontSize2;
+          color: $black;
+        }
+        .gt {
+          width: 26rpx;
+          height: 26rpx;
+          margin-left: 24rpx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #aaaaaa;
+        }
+      }
+    }
+    .common-part:after {
+      position: absolute;
+      left: 30rpx;
+      right: 0rpx;
+      bottom: 0rpx;
+      content: '';
+      border-bottom: 1rpx solid #d7dbdf;
+    }
+    .no-border:after {
+      display: none;
+    }
+  }
+}
+</style>
+
+<template>
+  <view class="mine-page">
+    <view
+      class="top-section"
+      @tap="infor()"
+    >
+      <image
+        class="bg"
+        src="../images/store/mine_bg.png"
+      />
+      <view class="head-wrap">
+        <view class="head-img">
+          <!-- <image
+            class=""
+            src="http://pic4.zhimg.com/50/v2-5ee31c6a4ecd54b0f1b7c415cd1ea43f_b.jpg"
+            mode="aspectFill"
+          /> -->
+          <image
+            class="cover"
+            src="{{user.avatar ? user.avatar : '/images/avatar.jpg'}}"
+          />
+          <view class="vip-text" wx:if='{{user.levelName}}'>
+            {{user.levelName}}
+          </view>
+          <!-- <image
+            class="vip-img"
+            src="../images/store/mine_label_vip.png"
+          /> -->
+        </view>
+        <view class="head-text {{!user.username ? 'head-text-no': ''}}">
+          <text
+            class="text-name"
+            wx:if="{{!user.username}}"
+            @tap="routerTo('/pages/login')"
+          >点击登录/注册</text>
+          <text
+            class="text-name"
+            wx:else
+          >{{user.nickname || user.username}}</text>
+          <view
+            class="text-tel"
+            wx:if="{{user.username}}"
+          >{{user.mobile}}</view>
+          <view
+            wx:if="{{user.username}}"
+            class="text-btn"
+            @tap="routerTo('/packageStore/pages/member-homepage')"
+          > 购买服务</view>
+        </view>
+
+      </view>
+    </view>
+    <view class="middle-info common-info">
+      <view
+        class="common-part"
+        @tap="routerTo('/packageStore/pages/my-baby')"
+      >
+        <!-- <view class="common-part"  @tap="routerTo('/packageStore/pages/my-baby?saveType=add')"> -->
+        <view class="left">
+          <image
+            class="img"
+            src="../images/store/mine_ic_01baby.png"
+          />
+          <view class="text">我的宝贝</view>
+        </view>
+        <view class="right">
+          <!-- <view class="num">2</view> -->
+          <view class="right">
+            <view class="gt">
+              <i class="iconfont icon-arrow"></i>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view
+        class="no-border my-rooms common-part"
+        @tap="routerTo('/packageStore/pages/trusteeship-record')"
+      >
+        <view
+          class="left"
+          @tap="_go('/pages/mine/my-room')"
+        >
+          <image
+            class="img"
+            src="../images/store/mine_ic_02rec.png"
+          />
+          <view class="text">托管记录</view>
+        </view>
+        <view class="right">
+          <view class="right">
+            <view class="gt">
+              <i class="iconfont icon-arrow"></i>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="middle-info common-info">
+      <view
+        class="common-part"
+        @tap="routerTo('/packageStore/pages/card-bag')"
+      >
+        <view
+          class="left"
+          @tap="_go('/pages/mine/wallet')"
+        >
+          <image
+            class="img"
+            src="../images/store/mine_ic_03card.png"
+          />
+          <view class="text">我的时光卡</view>
+        </view>
+        <view class="right">
+          <!-- <view class="num">2</view> -->
+          <view class="right">
+            <view class="gt">
+              <i class="iconfont icon-arrow"></i>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view
+        class="no-border my-rooms common-part"
+        @tap="routerTo('/packageStore/pages/coupon')"
+      >
+        <view
+          class="left"
+          @tap="_go('/pages/mine/my-room')"
+        >
+          <image
+            class="img"
+            src="../images/store/mine_ic_04coupon.png"
+          />
+
+          <view class="text">我的优惠券</view>
+        </view>
+        <view class="right">
+          <!-- <view class="num">12</view> -->
+          <view class="right">
+            <view class="gt">
+              <i class="iconfont icon-arrow"></i>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="relate-info common-info">
+      <view
+        class="my-rooms common-part"
+        @tap="routerTo('/pages/mine/activity')"
+      >
+        <view class="left">
+          <image
+            class="img"
+            src="../images/store/mine_ic_05actity.png"
+          />
+
+          <view class="text">我的活动</view>
+        </view>
+        <view class="right">
+          <!-- <view class="num">2</view> -->
+          <view class="right">
+            <view class="gt">
+              <i class="iconfont icon-arrow"></i>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view
+        class="my-rooms common-part"
+        @tap="routerTo('/pages/mine/favorite')"
+      >
+        <view class="left">
+          <image
+            class="img"
+            src="../images/store/mine_ic_06collect.png"
+          />
+
+          <view class="text">我的收藏</view>
+        </view>
+        <view class="right">
+          <view class="gt">
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+      </view>
+      <view
+        class="no-border common-part"
+        @tap="routerTo('/pages/mine/about')"
+      >
+        <view class="left">
+          <image
+            class="img"
+            src="../images/store/mine_ic_07about.png"
+          />
+
+          <!-- <image class="right-arrow" src="{{imageUrl}}/ic-right-arrow.png" /> -->
+          <view class="text">关于我们</view>
+        </view>
+        <view class="right">
+          <view class="gt">
+            <i class="iconfont icon-arrow"></i>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import base from '@/mixins/base'
+import router from '@/mixins/router'
+// import store from '@/api/store'
+import AvatarBar from '@/components/mine/avatar_bar'
+import MyOrderPannel from '@/components/mine/my_order_pannel'
+import SectionTitle from '@/components/common/title'
+import SimplePannel from '@/components/mine/simple_pannel'
+import SimplePannelList from '@/components/mine/simple_pannel_list'
+import {
+  connect
+} from 'wepy-redux'
+import {
+  cartInit
+} from '@/store/actions'
+import Util from '@/utils/Util'
+// import Tips from '@/utils/Tips'
+import mine from '@/api/mine'
+@connect({
+  isInit(state) {
+    return state.cart.init
+  }
+}, {
+  cartInit
+})
+export default class MinePage extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的'
+  };
+  mixins = [base, router];
+  components = {
+    AvatarBar: AvatarBar,
+    MyOrderPannel: MyOrderPannel,
+    SimplePannel: SimplePannel,
+    SimplePannelList: SimplePannelList,
+    FamilyTitle: SectionTitle,
+    FamilyTitleB: SectionTitle
+  };
+  data = {
+    user: {},
+    firstLoading: true,
+    count: 0
+  };
+  methods = {
+    infor() {
+      if (!Util.isLogin()) {
+        // Tips.toast('请登录', null, 'none')
+        this._routerTo('/pages/login')
+        return false
+      }
+      this._routerTo('/packageStore/pages/personal-infor')
+    }
+  }
+  async onLoad() {
+    this.user = wepy.getStorageSync('user') || {}
+    this.user.mobile = this.user.mobile ? this.user.mobile.replace(/(\d{3})(\d{4})/, '$1 $2 ') : ''
+    console.log(this.user, '111111111111111111111111111111111111111111111111111111111111111111')
+    if (Util.isLogin() && !this.isInit) await this.methods.cartInit()
+    if (!this.firstLoading) return
+    this.firstLoading = false
+    this.$apply()
+  }
+
+  async onShow() {
+    this.user = wepy.getStorageSync('user') || {}
+    this.user.mobile = this.user.mobile ? this.user.mobile.replace(/(\d{3})(\d{4})/, '$1 $2 ') : ''
+    this.$apply()
+  }
+  // onPullDownRefresh() {
+  //   this.$emit('onStopPullDown')
+  // }
+  async getMessageCount() {
+    let res = await mine.getMessageCount()
+    this.count = res.count
+    this.$apply()
+  }
+  onReachBottom() { }
+  /**
+   * 回到页面事件
+   */
+  onRoute() {
+    // if (this.firstLoading) return
+    // if (!Util.isLogin()) return
+  }
+  // onShow() {
+  //   if (!Util.isLogin()) return false
+  //   this.getFamilyId()
+  //   this.$invoke('AvatarBar', 'init')
+  //   this.getMessageCount()
+  // }
+}
+</script>

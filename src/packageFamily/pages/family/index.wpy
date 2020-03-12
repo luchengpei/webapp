@@ -1,0 +1,141 @@
+<style lang="scss">
+  @import '../../../scss/common';
+  .riggle-list {
+    padding: 40rpx 30rpx 0 30rpx;
+    .riggle-list-banner-img {
+      >image {
+        width: 690rpx;
+        height: 330rpx;
+        border-radius: 12px;
+      }
+    }
+    .riggle-list-nav-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 62rpx;
+      justify-content: space-between;
+      >.list {
+        margin-bottom: 55rpx;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 165rpx;
+        width: 180rpx;
+        >button {
+          height: 165rpx;
+          width: 180rpx;
+          position: absolute;
+          opacity: 0;
+        }
+        >image {
+          width: 180rpx;
+          height: 120rpx;
+          border-radius: 8px;
+        }
+        >text {
+          font-size: $fontSize4;
+          color: $black;
+          margin-top: 10px;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="riggle-list">
+    <view class="riggle-list-banner-img">
+      <image src="/images/family/banner-zupu.jpg" mode="aspectFill"></image>
+    </view>
+    <view class="riggle-list-nav-wrapper">
+      <view class="list" wx:for="{{navInfo}}" wx:for-item="item" wx:key="{{item.text}}" @tap="navSkip('{{item.skip}}')">
+        <button open-type='contact' wx:if="{{item.skip==='contact-us'}}"></button>
+        <image src="{{item.img}}" mode="aspectFill"></image>
+        <text>{{item.text}}</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import base from '@/mixins/base'
+  import router from '@/mixins/router'
+  import pagination from '@/mixins/pagination'
+  import Util from '@/utils/Util'
+  import family from '@/api/family'
+  export default class FamilyIndex extends wepy.page {
+    config = {
+      navigationBarTitleText: '徐氏族谱'
+    }
+    data = {
+      page: '',
+      listData: [],
+      navInfo: [{
+        img: '/images/family/icon-pushu.png',
+        text: '谱书',
+        skip: '/packageFamily/pages/family/spectrum-book'
+      },
+      {
+        img: '/images/family/icon-shixi.png',
+        text: '世系图',
+        skip: '/packageFamily/pages/family/pedigree-chart'
+      },
+      {
+        img: '/images/family/icon-zibei.png',
+        text: '字辈谱',
+        skip: '/packageFamily/pages/family/genealogy'
+      },
+      {
+        img: '/images/family/icon-tanghao.png',
+        text: '堂号文化',
+        skip: '/packageFamily/pages/family/hall-culture'
+      },
+      {
+        img: '/images/family/icon-xungen.png',
+        text: '寻根问祖',
+        skip: '/packageFamily/pages/family/ask-them-list'
+      },
+      {
+        img: '/images/family/icon-lianxi.png',
+        text: '联系我们',
+        skip: 'contact-us'
+      }
+      ]
+    }
+    mixins = [base, router, pagination]
+    methods = {
+      navSkip(data) {
+        if (data === 'contact-us') return false
+        if (data === '/packageFamily/pages/family/ask-them-list') {
+          if (!this.listData.length) {
+            this._routerTo('/packageFamily/pages/family/ask-them')
+            return false
+          }
+        }
+        this._routerTo(data)
+        // wepy.navigateTo({
+        //   url: data
+        // })
+      }
+    }
+    async askThemList() {
+      try {
+        this.page = await family.askThemList()
+        await this.next()
+        this.listData = this.page.list
+        console.log(1231231231231231, this.listData)
+  
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onShow() {
+      if (!Util.isLogin()) return
+      this.askThemList()
+    }
+    onLoad(option) {}
+  }
+</script>
